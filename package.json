@@ -24,7 +24,7 @@
     "url": "git+https://github.com/bozzelliandrea/kitchen-management.git"
   },
   "author": "https://github.com/bozzelliandrea",
-  "license": "MIT",
+  "license": "GNU General Public License v3.0",
   "bugs": {
     "url": "https://github.com/bozzelliandrea/kitchen-management/issues"
   },
