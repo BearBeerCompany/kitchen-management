@@ -1,0 +1,15 @@
+<footer>
+  <navbar-button (onClick)="onNavClick(routing.Dashboard)"
+                 [active]="selectedRoute === routing.Dashboard"
+                 icon="pi-home">
+  </navbar-button>
+  <navbar-button (onClick)="onNavClick(routing.Plates)"
+                 [active]="selectedRoute === routing.Plates"
+                 icon="pi-database">
+  </navbar-button>
+  <navbar-button (onClick)="onNavClick(routing.Settings)"
+                 [active]="selectedRoute === routing.Settings"
+                 icon="pi-cog">
+  </navbar-button>
+</footer>
+

@@ -3,17 +3,22 @@ import {PrimeNGConfig} from "primeng/api";
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  template: `
+    <div class="app-container">
+      <router-outlet></router-outlet>
+    </div>
+    <navbar></navbar>
+  `,
+  styles: [`
+    .app-container {
+      height: 90vh;
+      max-height: 90vh;;
+    }
+  `]
 })
 export class AppComponent {
-  active: boolean = false;
 
   constructor(private _primengConfig: PrimeNGConfig) {
     this._primengConfig.ripple = true;
-  }
-
-  toggleActive() {
-    this.active = !this.active;
   }
 }

@@ -8,11 +8,13 @@ import {FormsModule} from "@angular/forms";
 import {ButtonModule} from 'primeng/button';
 import {RippleModule} from "primeng/ripple";
 import {NavbarButtonComponent} from './components/navbar-button/navbar-button.component';
+import {NavbarComponent} from './components/navbar/navbar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarButtonComponent
+    NavbarButtonComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
