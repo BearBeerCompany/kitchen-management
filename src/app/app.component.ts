@@ -12,7 +12,7 @@ import {PrimeNGConfig} from "primeng/api";
   styles: [`
     .app-container {
       height: 90vh;
-      max-height: 90vh;;
+      max-height: 90vh;
     }
   `]
 })
