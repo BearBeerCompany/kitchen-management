@@ -7,10 +7,13 @@ import {PrimeNGConfig} from "primeng/api";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'app';
-  value: number = 23;
+  active: boolean = false;
 
   constructor(private _primengConfig: PrimeNGConfig) {
     this._primengConfig.ripple = true;
+  }
+
+  toggleActive() {
+    this.active = !this.active;
   }
 }
