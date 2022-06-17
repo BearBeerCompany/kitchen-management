@@ -1,3 +1,21 @@
-<section>
+<ng-container [ngSwitch]="mode">
+  <section *ngSwitchCase="plateMode.Skeleton" class="skeleton">
+    <button (mouseenter)="onMouseEnter()"
+            (mouseleave)="onMouseLeave()"
+            id="add-plate">
+      <i [class]="'pi ' + icon"></i>
+    </button>
+  </section>
+  <section *ngSwitchCase="plateMode.On" class="on">
+    <span id="empty-container">
+      <h3>{{i18n.PLATE.EMPTY}}</h3>
+      <i class="pi pi-inbox" id="empty"></i>
+    </span>
+  </section>
+  <section *ngSwitchCase="plateMode.Off" class="off">
 
-</section>
+  </section>
+  <section *ngSwitchCase="plateMode.Form" class="on">
+
+  </section>
+</ng-container>
