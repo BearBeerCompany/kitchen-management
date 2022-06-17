@@ -1,14 +1,9 @@
 @import "~primeng/resources/themes/lara-light-indigo/theme.css";
 
-
-.app-container {
-  height: 90vh;
-  max-height: 90vh;
-}
-
 footer {
   height: 10vh;
   max-height: 10vh;
+  width: 100%;
 
   background: var(--gray-400);
   border-top: var(--surface-700) 1px solid;
@@ -16,6 +11,9 @@ footer {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  position: fixed;
+  bottom: 0;
 
   navbar-button {
     width: calc(100% / 3);
