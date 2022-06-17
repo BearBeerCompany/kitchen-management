@@ -7,15 +7,31 @@
     </button>
   </section>
   <section *ngSwitchCase="plateMode.On" class="on">
+    <header></header>
+    <p-tag [value]="i18n.PLATE.FREE"
+           severity="success"
+           styleClass="mr-2"></p-tag>
     <span id="empty-container">
       <h3>{{i18n.PLATE.EMPTY}}</h3>
       <i class="pi pi-inbox" id="empty"></i>
     </span>
   </section>
   <section *ngSwitchCase="plateMode.Off" class="off">
-
+    <header></header>
+    <p-tag [style]="{backgroundColor: 'black'}"
+           [value]="i18n.PLATE.OFF"
+           styleClass="mr-2"></p-tag>
   </section>
-  <section *ngSwitchCase="plateMode.Form" class="on">
-
+  <section *ngSwitchCase="plateMode.Form" class="form">
+    <h3>Configura Piastra</h3>
+    <span class="p-float-label">
+        <input id="inputtext" pInputText type="text">
+        <label for="inputtext">{{i18n.PLATE.FORM.NAME}}</label>
+    </span>
+    <p-colorPicker [inline]="true"></p-colorPicker>
+    <div id="confirmForm">
+      <button class="p-button-secondary" label="Annulla" pButton pRipple type="button"></button>
+      <button class="p-button-success" label="Salva" pButton pRipple type="button"></button>
+    </div>
   </section>
 </ng-container>

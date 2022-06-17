@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {mode, PlateMode} from "../plate-mode";
-import {I18N} from "../../../../assets/i18n-ita";
+import {I18nService} from "../../../services/i18n.service";
 
 @Component({
   selector: 'plates',
@@ -10,9 +10,10 @@ import {I18N} from "../../../../assets/i18n-ita";
 export class PlatesComponent implements OnInit {
 
   public plateMode: typeof PlateMode = mode();
-  public i18n = I18N;
+  public readonly i18n: any;
 
-  constructor() {
+  constructor(public i18nService: I18nService) {
+    this.i18n = i18nService.instance;
   }
 
   ngOnInit(): void {
