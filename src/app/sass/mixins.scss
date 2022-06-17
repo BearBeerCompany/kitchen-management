@@ -1,0 +1,36 @@
+// Style mixins
+
+@mixin black-glass {
+  background: rgba(0, 0, 0, 0.77);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.9px);
+  -webkit-backdrop-filter: blur(10.9px);
+  border: 1px solid rgba(0, 0, 0, 1);
+}
+
+@mixin grey-glass {
+  background: rgba(96, 96, 96, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4.3px);
+  -webkit-backdrop-filter: blur(4.3px);
+  border: 1px solid rgba(96, 96, 96, 1);
+}
+
+@mixin light-grey-glass {
+  background: rgba(120, 120, 120, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.2px);
+  -webkit-backdrop-filter: blur(10.2px);
+  border: 1px solid rgba(120, 120, 120, 0.3);
+}
+
+// Position Mixins
+
+@mixin center-flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

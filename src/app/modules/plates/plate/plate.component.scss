@@ -1,13 +1,69 @@
+@import "~primeng/resources/themes/lara-light-indigo/theme.css";
+@import 'mixins';
+
 section {
   height: 100%;
 
   margin: 10px;
 
-  // glass plate effect
-  background: rgba(96, 96, 96, 0.28);
-  border-radius: 16px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4.3px);
-  -webkit-backdrop-filter: blur(4.3px);
-  border: 1px solid rgba(96, 96, 96, 1);
+  #add-plate {
+    height: 30%;
+    width: 30%;
+
+    @include grey-glass;
+
+    transition: width 0.5s, height 0.5s;
+
+    i {
+      font-size: 30px;
+      color: white;
+      font-weight: bold;
+
+      transition: font-size 0.5s, height 0.5s, transform .7s ease-in-out;
+    }
+
+    &:hover {
+      height: 40%;
+      width: 40%;
+
+      cursor: pointer;
+
+      i {
+        font-size: 50px;
+        transform: rotate(360deg);
+      }
+    }
+  }
+}
+
+.off {
+  @include black-glass;
+}
+
+.on {
+  @include grey-glass;
+
+  #empty-container {
+
+    height: 100%;
+
+    @include center-flex;
+    flex-direction: column;
+
+    h3 {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      word-spacing: 10px;
+    }
+
+    i#empty {
+      font-size: 100px;
+    }
+  }
+}
+
+.skeleton {
+  @include light-grey-glass;
+
+  @include center-flex;
 }
