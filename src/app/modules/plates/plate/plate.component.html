@@ -28,10 +28,11 @@
         <input id="inputtext" pInputText type="text">
         <label for="inputtext">{{i18n.PLATE.FORM.NAME}}</label>
     </span>
+    <label>Colore</label>
     <p-colorPicker [inline]="true"></p-colorPicker>
     <div id="confirmForm">
       <button class="p-button-secondary" label="Annulla" pButton pRipple type="button"></button>
-      <button class="p-button-success" label="Salva" pButton pRipple type="button"></button>
+      <button (click)="onSubmit()" class="p-button-success" label="Salva" pButton pRipple type="button"></button>
     </div>
   </section>
 </ng-container>
