@@ -5,7 +5,11 @@
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Plates)"
                  [active]="selectedRoute === routing.Plates"
-                 icon="pi-database">
+                 icon="pi-inbox">
+  </navbar-button>
+  <navbar-button (onClick)="onNavClick(routing.Orders)"
+                 [active]="selectedRoute === routing.Orders"
+                 icon="pi-shopping-cart">
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Settings)"
                  [active]="selectedRoute === routing.Settings"
