@@ -2,6 +2,6 @@ export {};
 
 declare global {
   namespace fs {
-    function fileAdd(): void;
+    function fileAdd(): Promise<any>;
   }
 }

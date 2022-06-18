@@ -1,7 +1,7 @@
-import {Component, Input} from '@angular/core';
+import {Component, Inject, Input} from '@angular/core';
 import {mode, PlateMode} from "../plate-mode";
 import {I18nService} from "../../../services/i18n.service";
-import {FileSystemService} from "../../../services/file-system.service";
+import {ApiConnector} from "../../../services/api-connector";
 
 @Component({
   selector: 'plate',
@@ -17,7 +17,7 @@ export class PlateComponent {
   @Input() mode?: PlateMode;
 
   constructor(public i18nService: I18nService,
-              private _fileSystemService: FileSystemService) {
+              @Inject('ApiConnector') private _fileSystemService: ApiConnector) {
     this.i18n = i18nService.instance;
   }
 
@@ -34,7 +34,7 @@ export class PlateComponent {
   }
 
   public onSubmit(): void {
-    this._fileSystemService.writeFile();
+    this._fileSystemService.addPlate();
   }
 
 }

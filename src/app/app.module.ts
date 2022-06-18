@@ -9,6 +9,10 @@ import {ButtonModule} from 'primeng/button';
 import {RippleModule} from "primeng/ripple";
 import {NavbarButtonComponent} from './components/navbar-button/navbar-button.component';
 import {NavbarComponent} from './components/navbar/navbar.component';
+import {ApiConnector} from "./services/api-connector";
+import {environment} from "../environments/environment";
+import {FileSystemConnectorService} from "./services/file-system-connector.service";
+import {HttpRestConnectorService} from "./services/http-rest-connector.service";
 
 @NgModule({
   declarations: [
@@ -25,7 +29,10 @@ import {NavbarComponent} from './components/navbar/navbar.component';
     ButtonModule,
     RippleModule,
   ],
-  providers: [],
+  providers: [{
+    provide: 'ApiConnector',
+    useClass: environment.connector === "fs" ? FileSystemConnectorService : HttpRestConnectorService
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule {

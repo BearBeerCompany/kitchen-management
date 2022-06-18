@@ -1,7 +1,7 @@
 const fs = require("fs");
 const {Notification} = require('electron');
 
-exports.addFiles = () => {
+async function addFiles() {
 
   // fs.writeFile(`${__dirname}/test.txt`, content, err => {
   //   if (err) {
@@ -12,7 +12,8 @@ exports.addFiles = () => {
 
   // display notification
   filesAdded();
-};
+  return Promise.resolve("Hello");
+}
 
 const filesAdded = () => {
   const notif = new Notification({
@@ -22,3 +23,7 @@ const filesAdded = () => {
 
   notif.show();
 };
+
+module.exports = {
+  addFiles
+}

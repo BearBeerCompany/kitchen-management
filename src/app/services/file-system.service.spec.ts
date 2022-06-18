@@ -1,13 +1,13 @@
 import {TestBed} from '@angular/core/testing';
 
-import {FileSystemService} from './file-system.service';
+import {FileSystemConnectorService} from './file-system-connector.service';
 
 describe('FileSystemService', () => {
-  let service: FileSystemService;
+  let service: FileSystemConnectorService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FileSystemService);
+    service = TestBed.inject(FileSystemConnectorService);
   });
 
   it('should be created', () => {
