@@ -4,7 +4,8 @@ import {RouterModule, Routes} from '@angular/router';
 export enum Routing {
   Dashboard = "dashboard",
   Plates = "plates",
-  Settings = "settings"
+  Settings = "settings",
+  Orders = "orders"
 }
 
 const routes: Routes = [
@@ -24,6 +25,10 @@ const routes: Routes = [
   {
     path: Routing.Settings,
     loadChildren: () => import("./modules/settings/settings.module").then(m => m.SettingsModule)
+  },
+  { 
+    path: Routing.Orders,
+    loadChildren: () => import('./modules/orders/orders.module').then(m => m.OrdersModule) 
   },
   {
     path: '**',
