@@ -4,17 +4,21 @@
           (mouseleave)="hidePrevious = true"
           (mouseover)="hidePrevious = false"
           [hidden]="hidePrevious"
+          *ngIf="currentPage !== 0"
           class="carousel-button carousel__previous-page">
     <i [hidden]="hidePrevious" class="pi pi-angle-left"></i>
   </button>
-  <plate [color]="'#1976D2'" [mode]="plateMode.Off"></plate>
-  <plate [color]="'#1976D2'" [mode]="plateMode.On"></plate>
-  <plate [mode]="plateMode.Form"></plate>
-  <plate [mode]="plateMode.Skeleton"></plate>
+  <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
+                                                     currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
+    <plate (onNew)="onNewPlate($event)"
+           [config]="plate">
+    </plate>
+  </ng-container>
   <button (click)="onNextPage()"
           (mouseleave)="hideNext = true"
           (mouseover)="hideNext = false"
           [hidden]="hideNext"
+          *ngIf="(currentPage + 1) !== totalPages"
           class="carousel-button carousel__next-page">
     <i [hidden]="hideNext" class="pi pi-angle-right"></i>
   </button>
