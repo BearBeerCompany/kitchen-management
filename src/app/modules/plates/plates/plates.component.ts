@@ -35,9 +35,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   }
 
   public ngOnInit(): void {
-    this.plateList = this._loadPlatesConfig();
-    this._total = this.plateList.length;
-    this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+    this._loadPlatesConfig();
   }
 
   public ngAfterViewInit(): void {
@@ -82,7 +80,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   }
 
   public onNewPlate(config: Plate) {
-    this._apiConnector.addPlate(config);
+    this._apiConnector.addPlate(config).subscribe(() => this._loadPlatesConfig());
   }
 
   private _swipeStart(event: Touch) {
@@ -106,36 +104,28 @@ export class PlatesComponent implements OnInit, AfterViewInit {
     return event.changedTouches ? event.changedTouches[0] : event;
   }
 
-  private _loadPlatesConfig(): Plate[] {
-    return [
-      {
-        color: "#1976D2",
-        mode: PlateMode.On,
-        slot: [6, 6],
-        name: "Piastra 1"
-      },
-      {
-        color: "#d29e19",
-        mode: PlateMode.On,
-        slot: [0, 8],
-        name: "Piastra 2"
-      },
-      {
-        color: "#f51eb1",
-        mode: PlateMode.On,
-        slot: [0, 4],
-        name: "Piastra 3"
-      },
-      {
-        color: "#4b3a93",
-        mode: PlateMode.On,
-        slot: [0, 4],
-        name: "Piastra 4"
-      },
-      {
-        mode: PlateMode.Skeleton
-      }
-    ];
+  private _loadPlatesConfig(): void {
+    this.plateList = [];
+    this._apiConnector.getPlates()
+      .subscribe((plates: any) => {
+        this.plateList = [
+          ...plates?.map((p: any) => this.buildPlate(p)),
+          {
+            mode: PlateMode.Skeleton
+          }
+        ];
+        this._total = this.plateList.length;
+        this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+      });
+  }
+
+  private buildPlate(config: any): Plate {
+    return {
+      color: config?.color,
+      name: config?.name,
+      mode: config?.mode ?? PlateMode.On,
+      slot: config?.slot
+    } as Plate;
   }
 
 }

@@ -46,14 +46,17 @@ export class PlateComponent {
   public onSubmit(): void {
     this.onNew.emit({
       name: this.form?.get("name")?.value,
-      color: this.form?.get("color")?.value
+      color: this.form?.get("color")?.value,
+      slot: [0, this.form?.get("number")?.value],
+      mode: PlateMode.On
     } as Plate);
   }
 
   public loadForm(): void {
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
-      color: new FormControl("", Validators.required)
+      color: new FormControl("", Validators.required),
+      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
     this._config.mode = PlateMode.Form;
   }

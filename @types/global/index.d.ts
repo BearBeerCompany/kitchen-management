@@ -4,6 +4,8 @@ export {};
 
 declare global {
   namespace fs {
-    function fileAdd(config: Plate): Promise<any>;
+    function plateAdd(config: Plate): Promise<any>;
+
+    function readPlates(): Promise<Plate[]>;
   }
 }

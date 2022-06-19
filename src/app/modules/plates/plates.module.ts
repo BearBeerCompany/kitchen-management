@@ -9,6 +9,7 @@ import {ColorPickerModule} from 'primeng/colorpicker';
 import {ButtonModule} from 'primeng/button';
 import {RippleModule} from "primeng/ripple";
 import {ReactiveFormsModule} from "@angular/forms";
+import {InputNumberModule} from "primeng/inputnumber";
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
     ColorPickerModule,
     ButtonModule,
     RippleModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    InputNumberModule
   ]
 })
 export class PlatesModule {

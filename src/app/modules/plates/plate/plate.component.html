@@ -37,6 +37,11 @@
       <label>{{i18n.PLATE.FORM.COLOR}}</label>
       <p-colorPicker [inline]="true"
                      formControlName="color"></p-colorPicker>
+      <label>{{i18n.PLATE.FORM.NUMBER}}</label>
+      <p-inputNumber [max]="200"
+                     [min]="0"
+                     [showButtons]="true"
+                     formControlName="number"></p-inputNumber>
       <div id="confirmForm">
         <button (click)="discardForm()"
                 [label]="i18n.COMMON.UNDO"
