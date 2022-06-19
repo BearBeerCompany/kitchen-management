@@ -9,7 +9,8 @@ export const I18N = {
     FORM: {
       TITLE: "Configura Piastra",
       NAME: "Nome Piastra",
-      COLOR: "Colore"
+      COLOR: "Colore",
+      NUMBER: "Numero posti"
     }
   },
   COMMON: {

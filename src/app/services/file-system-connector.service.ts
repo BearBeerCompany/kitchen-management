@@ -9,17 +9,12 @@ import {Plate} from "../modules/plates/plate/plate.model";
 })
 export class FileSystemConnectorService implements ApiConnector {
 
-
-  constructor() {
-
-  }
-
   addPlate(config: Plate): Observable<any> {
-    return fromPromise(fs.fileAdd(config));
+    return fromPromise(fs.plateAdd(config));
   }
 
   getPlates(): Observable<any[]> {
-    return new Observable<any>();
+    return fromPromise(fs.readPlates());
   }
 
   removePlate(): Observable<any> {
