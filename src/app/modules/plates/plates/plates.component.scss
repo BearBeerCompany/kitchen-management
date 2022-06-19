@@ -5,16 +5,62 @@ h3 {
   text-align: center;
 }
 
-.plates-container {
+.plates-carousel {
+  overflow-y: hidden;
+  overflow-x: hidden;
+
   height: 90%;
 
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap;
+
+  position: relative;
 
   plate {
     height: 90%;
-    flex: 1;
+    flex: 1 0 33%;
+  }
+
+  .carousel-button {
+    height: 100%;
+    width: 5%;
+
+    position: absolute;
+    top: 0;
+    z-index: 99;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: none;
+    background-color: rgba(0, 0, 0, 0.0);
+    cursor: pointer;
+    user-select: none;
+
+    i {
+      color: white;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+  }
+
+  .carousel__previous-page {
+    left: 0;
+  }
+
+  .carousel__next-page {
+    right: 0;
   }
 }
