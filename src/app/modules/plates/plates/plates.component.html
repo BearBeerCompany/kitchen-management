@@ -1,7 +1,22 @@
 <h3>{{i18n.PLATE.TITLE}}</h3>
-<div class="plates-container">
+<div class="plates-carousel">
+  <button (click)="onPreviousPage()"
+          (mouseleave)="hidePrevious = true"
+          (mouseover)="hidePrevious = false"
+          [hidden]="hidePrevious"
+          class="carousel-button carousel__previous-page">
+    <i [hidden]="hidePrevious" class="pi pi-angle-left"></i>
+  </button>
   <plate [color]="'#1976D2'" [mode]="plateMode.Off"></plate>
   <plate [color]="'#1976D2'" [mode]="plateMode.On"></plate>
   <plate [mode]="plateMode.Form"></plate>
   <plate [mode]="plateMode.Skeleton"></plate>
+  <button (click)="onNextPage()"
+          (mouseleave)="hideNext = true"
+          (mouseover)="hideNext = false"
+          [hidden]="hideNext"
+          class="carousel-button carousel__next-page">
+    <i [hidden]="hideNext" class="pi pi-angle-right"></i>
+  </button>
 </div>
+
