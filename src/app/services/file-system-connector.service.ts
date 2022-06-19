@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
 import {Observable} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
+import {Plate} from "../modules/plates/plate/plate.model";
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ export class FileSystemConnectorService implements ApiConnector {
 
   }
 
-  addPlate(): Observable<any> {
-    return fromPromise(fs.fileAdd());
+  addPlate(config: Plate): Observable<any> {
+    return fromPromise(fs.fileAdd(config));
   }
 
   getPlates(): Observable<any[]> {

@@ -13,7 +13,6 @@ h3 {
 
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
 
@@ -21,7 +20,7 @@ h3 {
 
   plate {
     height: 90%;
-    flex: 1 0 33%;
+    flex-basis: 33%;
   }
 
   .carousel-button {

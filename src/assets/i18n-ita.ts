@@ -5,8 +5,16 @@ export const I18N = {
     ON: "Accesa",
     OFF: "Spenta",
     FREE: "Disponibile",
+    FULL: "Occupata",
     FORM: {
-      NAME: "Nome Piastra"
+      TITLE: "Configura Piastra",
+      NAME: "Nome Piastra",
+      COLOR: "Colore"
     }
+  },
+  COMMON: {
+    SAVE: "Salva",
+    UNDO: "Annulla",
+    CANCEL: "Cancella"
   }
 }

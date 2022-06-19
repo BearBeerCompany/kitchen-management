@@ -1,18 +1,21 @@
 const fs = require("fs");
 const {Notification} = require('electron');
+const os = require("os");
 
-async function addFiles() {
+async function addFiles(_, config) {
 
-  // fs.writeFile(`${__dirname}/test.txt`, content, err => {
-  //   if (err) {
-  //     console.error(err);
-  //   }
-  //   // file written successfully
-  // });
+  const row = `{name:${config.name}, color:${config.name}}\r\n`;
+
+  fs.appendFile(`${os.homedir()}/Documents/test.txt`, row, err => {
+    if (err) {
+      return Promise.resolve("Error!");
+    }
+    // file written successfully
+  });
 
   // display notification
   filesAdded();
-  return Promise.resolve("Hello");
+  return Promise.resolve("Saved!");
 }
 
 const filesAdded = () => {
