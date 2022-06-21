@@ -4,8 +4,14 @@ export {};
 
 declare global {
   namespace fs {
-    function plateAdd(config: Plate): Promise<any>;
+    function addPlate(config: Plate): Promise<any>;
+
+    function updatePlate(config: Plate): Promise<any>;
 
     function readPlates(): Promise<Plate[]>;
+
+    function readPlate(id: string): Promise<Plate>;
+
+    function deletePlate(id: string): Promise<Plate>;
   }
 }
