@@ -121,6 +121,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
 
   private buildPlate(config: any): Plate {
     return {
+      _id: config?._id ?? undefined,
       color: config?.color,
       name: config?.name,
       mode: config?.mode ?? PlateMode.On,
