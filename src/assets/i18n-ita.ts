@@ -13,6 +13,9 @@ export const I18N = {
       NUMBER: "Numero posti"
     }
   },
+  SETTINGS: {
+    TITLE: "Impostazioni"
+  },
   COMMON: {
     SAVE: "Salva",
     UNDO: "Annulla",

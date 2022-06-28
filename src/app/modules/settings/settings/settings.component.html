@@ -1,1 +1,8 @@
-<span>settings works!</span>
+<h3>{{i18n.SETTINGS.TITLE}}</h3>
+<main>
+  <section id="plate-settings__container">
+    <ng-container *ngFor="let plate of plates$ | async">
+      <plate-info [config]="plate"></plate-info>
+    </ng-container>
+  </section>
+</main>

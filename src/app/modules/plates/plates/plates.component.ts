@@ -107,9 +107,9 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   private _loadPlatesConfig(): void {
     this.plateList = [];
     this._apiConnector.getPlates()
-      .subscribe((plates: any) => {
+      .subscribe((plates: Plate[]) => {
         this.plateList = [
-          ...plates?.map((p: any) => this.buildPlate(p)),
+          ...plates,
           {
             mode: PlateMode.Skeleton
           }
@@ -118,15 +118,4 @@ export class PlatesComponent implements OnInit, AfterViewInit {
         this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
       });
   }
-
-  private buildPlate(config: any): Plate {
-    return {
-      _id: config?._id ?? undefined,
-      color: config?.color,
-      name: config?.name,
-      mode: config?.mode ?? PlateMode.On,
-      slot: config?.slot
-    } as Plate;
-  }
-
 }

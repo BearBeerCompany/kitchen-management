@@ -16,23 +16,13 @@ export class PlateComponent {
   public icon: string = "pi-plus";
   public plateMode: typeof PlateMode = mode();
   public form?: FormGroup | undefined;
-  @Output()
-  public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
+
+  @Input() public config!: Plate;
+
+  @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
 
   constructor(public i18nService: I18nService) {
     this.i18n = i18nService.instance;
-  }
-
-  private _config!: Plate;
-
-  public get config(): Plate {
-    return this._config;
-  }
-
-  @Input()
-  public set config(value: Plate) {
-    this._config = value;
-    this._evaluateStatus();
   }
 
   public onMouseEnter(): void {
@@ -58,29 +48,10 @@ export class PlateComponent {
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
-    this._config.mode = PlateMode.Form;
+    this.config.mode = PlateMode.Form;
   }
 
   public discardForm() {
-    this._config.mode = PlateMode.Skeleton;
-  }
-
-  private _evaluateStatus() {
-    if (!this.config.slot)
-      return;
-
-    const used: number = this.config.slot[0];
-    const total: number = this.config.slot[1];
-    let label: string = `${used}/${total} `;
-
-    if (used < total) {
-      this._config._severity = "success";
-      label = label + this.i18n.PLATE.FREE;
-    } else {
-      this._config._severity = "danger";
-      label = label + this.i18n.PLATE.FULL;
-    }
-
-    this._config._status = label;
+    this.config.mode = PlateMode.Skeleton;
   }
 }
