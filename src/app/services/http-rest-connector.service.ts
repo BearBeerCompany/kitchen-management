@@ -11,23 +11,23 @@ export class HttpRestConnectorService implements ApiConnector {
   constructor() {
   }
 
-  getPlate(id: string): Observable<any> {
+  public getPlate(id: string): Observable<any> {
     return new Observable();
   }
 
-  addPlate(config: Plate): Observable<any> {
+  public addPlate(config: Plate): Observable<any> {
     return new Observable();
   }
 
-  getPlates(): Observable<any[]> {
+  public getPlates(): Observable<any[]> {
     return new Observable();
   }
 
-  removePlate(id: string): Observable<any> {
+  public removePlate(id: string): Observable<any> {
     return new Observable();
   }
 
-  updatePlate(config: Plate): Observable<any> {
+  public updatePlate(config: Plate): Observable<any> {
     return new Observable();
   }
 }

@@ -1,0 +1,32 @@
+@import 'mixins';
+
+h3 {
+  @include title-center;
+}
+
+main {
+  height: 100%;
+  width: 60%;
+
+  display: block;
+  margin: 0 auto;
+
+  #plate-settings__container {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    overflow-y: auto;
+
+    plate-info {
+      height: 15%;
+
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  }
+
+}
+
+

@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {I18N as i18nIta} from "../../assets/i18n-ita";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class I18nService {
 
   private readonly _i18n?: any;

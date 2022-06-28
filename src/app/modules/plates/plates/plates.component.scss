@@ -1,8 +1,7 @@
-h3 {
-  margin: 0;
-  padding-top: 10px;
+@import 'mixins';
 
-  text-align: center;
+h3 {
+  @include title-center;
 }
 
 .plates-carousel {
