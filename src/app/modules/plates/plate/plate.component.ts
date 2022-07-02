@@ -1,6 +1,8 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {mode, PlateMode} from "../plate-mode";
 import {I18nService} from "../../../services/i18n.service";
+import {Plate} from "./plate.model";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'plate',
@@ -9,18 +11,18 @@ import {I18nService} from "../../../services/i18n.service";
 })
 export class PlateComponent {
 
-  public icon: string = "pi-plus";
-  public plateMode: typeof PlateMode = mode();
   public readonly i18n: any;
 
-  @Input() mode?: PlateMode;
+  public icon: string = "pi-plus";
+  public plateMode: typeof PlateMode = mode();
+  public form?: FormGroup | undefined;
+
+  @Input() public config!: Plate;
+
+  @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
 
   constructor(public i18nService: I18nService) {
     this.i18n = i18nService.instance;
-  }
-
-  @Input() set color(value: string) {
-    document.documentElement.style.setProperty('--plate-color', value);
   }
 
   public onMouseEnter(): void {
@@ -31,4 +33,25 @@ export class PlateComponent {
     setTimeout(() => this.icon = "pi-plus", 500);
   }
 
+  public onSubmit(): void {
+    this.onNew.emit({
+      name: this.form?.get("name")?.value,
+      color: this.form?.get("color")?.value,
+      slot: [0, this.form?.get("number")?.value],
+      mode: PlateMode.On
+    } as Plate);
+  }
+
+  public loadForm(): void {
+    this.form = new FormGroup({
+      name: new FormControl("", Validators.required),
+      color: new FormControl("", Validators.required),
+      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
+    });
+    this.config.mode = PlateMode.Form;
+  }
+
+  public discardForm() {
+    this.config.mode = PlateMode.Skeleton;
+  }
 }

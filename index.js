@@ -1,6 +1,7 @@
 const {app, BrowserWindow} = require('electron')
 const url = require("url");
 const path = require("path");
+const handler = require("./api/handler");
 
 let mainWindow;
 
@@ -12,6 +13,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       devTools: false,
+      preload: path.join(__dirname, "/api/preload.js")
     }
   });
 
@@ -35,6 +37,7 @@ app.on('window-all-closed', function () {
 })
 
 app.on('activate', function () {
-  if (mainWindow === null)
-    createWindow();
+  if (mainWindow === null) createWindow();
 })
+
+handler.init();

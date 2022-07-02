@@ -10,12 +10,7 @@ section {
     position: fixed;
     top: 0;
 
-    width: 100%;
-    height: 20%;
-
-    background-color: var(--plate-color);
-    border-radius: 16px;
-    opacity: 0.9;
+    @include info-plate;
   }
 
   #add-plate {
@@ -91,7 +86,9 @@ section {
   @include center-flex;
 }
 
-.form {
+form {
+  height: 100%;
+
   @include light-grey-glass;
 
   @include center-flex;
@@ -101,7 +98,8 @@ section {
     margin: auto;
   }
 
-  input[type], span {
+  input[type],
+  span {
     width: 90%;
   }
 

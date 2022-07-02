@@ -7,6 +7,9 @@ import {TagModule} from 'primeng/tag';
 import {InputTextModule} from 'primeng/inputtext';
 import {ColorPickerModule} from 'primeng/colorpicker';
 import {ButtonModule} from 'primeng/button';
+import {RippleModule} from "primeng/ripple";
+import {ReactiveFormsModule} from "@angular/forms";
+import {InputNumberModule} from "primeng/inputnumber";
 
 const routes: Routes = [
   {
@@ -26,7 +29,10 @@ const routes: Routes = [
     TagModule,
     InputTextModule,
     ColorPickerModule,
-    ButtonModule
+    ButtonModule,
+    RippleModule,
+    ReactiveFormsModule,
+    InputNumberModule
   ]
 })
 export class PlatesModule {
