@@ -8,7 +8,7 @@
     </button>
   </section>
   <section *ngSwitchCase="plateMode.On" class="on">
-    <header [style.backgroundColor]="config.color!">
+    <header (click)="expandTab()" [style.backgroundColor]="config.color!">
       <h3>{{config.name}}</h3>
     </header>
     <p-tag [severity]="config._severity!"

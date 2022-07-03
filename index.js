@@ -2,6 +2,9 @@ const {app, BrowserWindow} = require('electron')
 const url = require("url");
 const path = require("path");
 const handler = require("./api/handler");
+const app_windows = require("./api/lib/window");
+
+global.rootDir = path.resolve(__dirname);
 
 let mainWindow;
 
@@ -12,20 +15,20 @@ function createWindow() {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      devTools: false,
-      preload: path.join(__dirname, "/api/preload.js")
+      preload: path.join(global.rootDir, "/api/preload.js")
     }
   });
 
   mainWindow.loadURL(
     url.format({
-      pathname: path.join(__dirname, `/dist/app/index.html`),
+      pathname: path.join(global.rootDir, `/dist/app/index.html`),
       protocol: "file:",
       slashes: true
     })
   );
 
   mainWindow.on('closed', function () {
+    app_windows.closeWindows();
     mainWindow = null
   });
 }
