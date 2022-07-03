@@ -17,3 +17,9 @@ electron.contextBridge.exposeInMainWorld("fs", {
     return electron.ipcRenderer.invoke("fs::on-plate-update", config);
   }
 });
+
+electron.contextBridge.exposeInMainWorld("app", {
+  openNewTab: (parent, id) => {
+    return electron.ipcRenderer.invoke("window::new-tab", parent, id);
+  }
+});

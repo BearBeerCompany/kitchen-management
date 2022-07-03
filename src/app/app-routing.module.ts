@@ -26,9 +26,9 @@ const routes: Routes = [
     path: Routing.Settings,
     loadChildren: () => import("./modules/settings/settings.module").then(m => m.SettingsModule)
   },
-  { 
+  {
     path: Routing.Orders,
-    loadChildren: () => import('./modules/orders/orders.module').then(m => m.OrdersModule) 
+    loadChildren: () => import('./modules/orders/orders.module').then(m => m.OrdersModule)
   },
   {
     path: '**',
@@ -38,7 +38,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {useHash: true})],
   exports: [RouterModule]
 })
 export class AppRoutingModule {

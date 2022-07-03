@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: '',
     component: PlatesComponent
+  },
+  {
+    path: ':id',
+    component: PlateComponent
   }
 ];
 

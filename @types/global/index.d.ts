@@ -14,4 +14,8 @@ declare global {
 
     function deletePlate(id: string): Promise<Plate>;
   }
+
+  namespace app {
+    function openNewTab(parent: string, id: string): void;
+  }
 }
