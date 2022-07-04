@@ -1,27 +1,24 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {mode, PlateMode} from "../plate-mode";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "./plate.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute} from "@angular/router";
-import {Subscription} from "rxjs";
 import {Routing} from "../../../app-routing.module";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'plate',
   templateUrl: './plate.component.html',
   styleUrls: ['./plate.component.scss']
 })
-export class PlateComponent implements OnInit, OnDestroy {
+export class PlateComponent implements OnInit {
 
   public readonly i18n: any;
 
   public icon: string = "pi-plus";
   public plateMode: typeof PlateMode = mode();
   public form?: FormGroup | undefined;
-
-  private _routeSub: Subscription = new Subscription();
-  private _id?: string;
+  public showExpand: boolean = true;
 
   @Input() public config!: Plate;
 
@@ -33,18 +30,12 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this._routeSub = this._route.params.subscribe(
+    this._route.params.subscribe(
       params => {
-        this._id = params["id"];
-        if (!this._id) {
-          this._id = this.config._id;
-        }
+        console.log(params["id"])
+        this.showExpand = !params["id"];
       }
     );
-  }
-
-  public ngOnDestroy(): void {
-    this._routeSub.unsubscribe();
   }
 
   public onMouseEnter(): void {
@@ -78,7 +69,6 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public expandTab() {
-    console.log("clicked");
-    app.openNewTab(Routing.Plates, this._id!);
+    app.openNewTab(Routing.Plates, this.config._id!);
   }
 }

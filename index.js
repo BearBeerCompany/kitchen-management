@@ -15,6 +15,8 @@ function createWindow() {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
+      // TODO: set false for prod release.
+      //devTools: false,
       preload: path.join(global.rootDir, "/api/preload.js")
     }
   });
