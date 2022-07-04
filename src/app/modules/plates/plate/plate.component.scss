@@ -11,6 +11,22 @@ section {
     top: 0;
 
     @include info-plate;
+
+
+    .expand-button {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+
+      border: none;
+      background: none;
+
+      cursor: pointer;
+
+      i {
+        font-size: 25px;
+      }
+    }
   }
 
   #add-plate {

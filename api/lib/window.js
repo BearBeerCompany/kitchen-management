@@ -1,4 +1,5 @@
 const {BrowserWindow} = require('electron')
+const path = require("path");
 
 const windows = [];
 
@@ -6,7 +7,11 @@ function routeOnNewTab(_, caller, id) {
   let window = new BrowserWindow({
     width: 800,
     height: 600,
-    show: true
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      preload: path.join(global.rootDir, "/api/preload.js")
+    }
   });
   window.loadURL('file://' + global.rootDir + '/dist/app/index.html#/' + caller + '/' + id);
 
@@ -18,7 +23,12 @@ function routeOnNewTab(_, caller, id) {
 }
 
 function closeWindows() {
-  windows.forEach(w => w.close());
+  windows.forEach(w => {
+    try {
+      w.close()
+    } catch (e) {
+    }
+  });
 }
 
 module.exports = {

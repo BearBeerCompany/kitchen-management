@@ -8,8 +8,13 @@
     </button>
   </section>
   <section *ngSwitchCase="plateMode.On" class="on">
-    <header (click)="expandTab()" [style.backgroundColor]="config.color!">
+    <header [style.backgroundColor]="config.color!">
       <h3>{{config.name}}</h3>
+      <button (click)="expandTab()"
+              *ngIf="showExpand"
+              class="expand-button">
+        <i class="pi pi-external-link"></i>
+      </button>
     </header>
     <p-tag [severity]="config._severity!"
            [value]="config._status!"
