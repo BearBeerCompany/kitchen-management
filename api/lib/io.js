@@ -3,7 +3,6 @@ const {Notification} = require('electron');
 const os = require("os");
 const readline = require('readline');
 const {uuidv4, removeElement} = require('./commons');
-
 const filePath = `${os.homedir()}/Documents/plate-config.txt`
 
 async function addPlate(_, config) {
