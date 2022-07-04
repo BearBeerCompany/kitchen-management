@@ -1,1 +1,123 @@
-<span>orders works!</span>
+<h3>{{i18n.ORDERS.TITLE}}</h3>
+
+<p-table #dt
+         [value]="orders" [(selection)]="selectedOrders" dataKey="id" styleClass="p-datatable-customers"
+         [rowHover]="true"
+         [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
+         [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [filterDelay]="0">
+
+  <ng-template pTemplate="caption">
+    <div class="table-header">
+      List of Orders
+      <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded" (click)="addOrder()"></button>
+
+      <!-- <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Global Search" />
+      </span> -->
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem"></th>
+      <th pSortableColumn="id">Number
+        <p-sortIcon field="id"></p-sortIcon>
+      </th>
+      <th pSortableColumn="menuItem.name">Menu Item
+        <p-sortIcon field="menuItem.name"></p-sortIcon>
+      </th>
+      <th pSortableColumn="category.name">Category
+        <p-sortIcon field="category.name"></p-sortIcon>
+      </th>
+      <th pSortableColumn="date">Date
+        <p-sortIcon field="date"></p-sortIcon>
+      </th>
+      <th pSortableColumn="status">Status
+        <p-sortIcon field="status"></p-sortIcon>
+      </th>
+      <th pSortableColumn="">Plate
+        <p-sortIcon field="plate.name"></p-sortIcon>
+      </th>
+      <th style="width: 8rem"></th>
+    </tr>
+
+    <!-- filters -->
+    <!-- <tr>
+        <th>
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th>
+            <input pInputText type="text" (input)="dt.filter($event.target.value, 'name', 'startsWith')" placeholder="Search by Name" class="p-column-filter">
+        </th>
+        <th>
+            <input pInputText type="text" (input)="dt.filter($event.target.value, 'country.name', 'contains')" placeholder="Search by Country" class="p-column-filter">
+        </th>
+        <th>
+            <p-multiSelect [options]="representatives" placeholder="All" (onChange)="onRepresentativeChange($event)" styleClass="p-column-filter" optionLabel="name">
+                <ng-template let-option pTemplate="item">
+                    <div class="p-multiselect-representative-option">
+                        <span class="p-ml-1">{{option.label}}</span>
+                    </div>
+                </ng-template>
+            </p-multiSelect>
+        </th>
+        <th>
+            <p-calendar (onSelect)="onDateSelect($event)" (onClearClick)="dt.filter('', 'date', 'equals')" [showButtonBar]="true" styleClass="p-column-filter" placeholder="Registration Date" [readonlyInput]="true" dateFormat="yy-mm-dd"></p-calendar>
+        </th>
+        <th>
+            <p-dropdown [options]="statuses" (onChange)="dt.filter($event.value, 'status', 'equals')" styleClass="p-column-filter" placeholder="Select a Status" [showClear]="true">
+                <ng-template let-option pTemplate="item">
+                    <span [class]="'customer-badge status-' + option.value">&#123;&#123;option.label&#125;&#125;</span>
+                </ng-template>
+            </p-dropdown>
+        </th>
+        <th>
+            <input pInputText type="text" (input)="onActivityChange($event)" placeholder="Minimum" class="p-column-filter" >
+        </th>
+        <th></th>
+    </tr> -->
+  </ng-template>
+
+  <ng-template pTemplate="body" let-order>
+    <tr class="p-selectable-row">
+      <td>
+        <p-tableCheckbox [value]="order"></p-tableCheckbox>
+      </td>
+      <td>
+        <span class="p-column-title">Number</span>
+        {{order.id}}
+      </td>
+      <td>
+        <span class="p-column-title">Menu Item</span>
+        <span class="image-text">{{order.menuItem.name}}</span>
+      </td>
+      <td>
+        <span class="p-column-title">Category</span>
+        <span class="image-text">{{order.category.name}}</span>
+      </td>
+      <td>
+        <span class="p-column-title">Date</span>
+        {{order.date}}
+      </td>
+      <td>
+        <span class="p-column-title">Status</span>
+        <span [class]="'customer-badge status-' + order.status">{{order.status}}</span>
+      </td>
+      <td>
+        <span class="p-column-title">Plate</span>
+        <span [class]="'customer-badge status-' + order.plate?.name">{{order.plate?.name}}</span>
+      </td>
+      <td style="text-align: center">
+        <button pButton type="button" class="p-button-secondary" icon="pi pi-cog"></button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="8">No orders found.</td>
+    </tr>
+  </ng-template>
+</p-table>

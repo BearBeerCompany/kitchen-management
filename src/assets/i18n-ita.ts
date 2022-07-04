@@ -20,5 +20,8 @@ export const I18N = {
     SAVE: "Salva",
     UNDO: "Annulla",
     CANCEL: "Cancella"
+  },
+  ORDERS: {
+    TITLE: "Gestione Ordini"
   }
 }
