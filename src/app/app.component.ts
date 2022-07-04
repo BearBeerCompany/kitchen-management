@@ -7,7 +7,7 @@ import {PrimeNGConfig} from "primeng/api";
     <div class="app-container">
       <router-outlet></router-outlet>
     </div>
-    <navbar></navbar>
+    <navbar id="navbar-id"></navbar>
   `,
   styles: [`
     .app-container {

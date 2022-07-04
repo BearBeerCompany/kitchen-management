@@ -21,7 +21,7 @@ import {TagModule} from "primeng/tag";
     FormsModule,
     ButtonModule,
     RippleModule,
-    TagModule,
+    TagModule
   ],
   exports: [
     NavbarButtonComponent,

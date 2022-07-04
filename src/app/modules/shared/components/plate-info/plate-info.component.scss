@@ -21,6 +21,12 @@
     h3 {
       text-transform: uppercase;
     }
+
+    @media only screen and (max-height: 700px) {
+      h3 {
+        margin: 0;
+      }
+    }
   }
 
   button {
