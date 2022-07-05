@@ -54,49 +54,4 @@ export class OrdersComponent implements OnInit, OnDestroy {
     }
   }
 
-  filterNumber(event: any) {
-    if (this.table) {
-      this.table.filter(event.target.value, 'name', 'startsWith');
-    }
-  }
-
-  filterMenuItem(event: any) {
-    if (this.table) {
-      this.table.filter(event, 'menuItem.name', 'contains');
-    }
-  }
-
-  filterCategory(event: any) {
-    if (this.table) {
-      this.table.filter(event, 'category.name', 'contains');
-    }
-  }
-
-  filterPlate(event: any) {
-    if (this.table) {
-      this.table.filter(event, 'plate.name', 'contains');
-    }
-  }
-
-  onDateSelect(value: any) {
-    if (this.table) {
-      this.table.filter(this.formatDate(value), 'date', 'equals');
-    }
-  }
-
-  formatDate(date: any) {
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
-
-    if (month < 10) {
-      month = '0' + month;
-    }
-
-    if (day < 10) {
-      day = '0' + day;
-    }
-
-    return date.getFullYear() + '-' + month + '-' + day;
-  }
-
 }
