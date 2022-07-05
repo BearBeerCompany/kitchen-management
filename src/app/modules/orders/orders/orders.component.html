@@ -1,10 +1,10 @@
 <p-table #dt
-         [value]="orders" [(selection)]="selectedOrders" dataKey="id" styleClass="p-datatable-orders"
+         [value]="orders" [(selection)]="selectedOrders" dataKey="orderId" styleClass="p-datatable-orders"
          [rowHover]="true"
          [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
          [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
-         [globalFilterFields]="['id','menuItem.name','category.name','status','plate.name']"
+         [globalFilterFields]="['orderId','menuItem.name','category.name','status','plate.name']"
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
@@ -20,11 +20,11 @@
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 3rem"></th>
-      <th pSortableColumn="id">
+      <th pSortableColumn="orderId">
         <div class="p-d-flex p-jc-between p-ai-center">
           Number
-          <p-sortIcon field="id"></p-sortIcon>
-          <p-columnFilter  type="numeric" field="id" display="menu"></p-columnFilter>
+          <p-sortIcon field="orderId"></p-sortIcon>
+          <p-columnFilter  type="numeric" field="orderId" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="menuItem.name">
@@ -82,7 +82,7 @@
       </td>
       <td>
         <span class="p-column-title">Number</span>
-        {{order.id}}
+        {{order.orderId}}
       </td>
       <td>
         <span class="p-column-title">Menu Item</span>
