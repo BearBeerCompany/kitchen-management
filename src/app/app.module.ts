@@ -9,6 +9,7 @@ import {FileSystemConnectorService} from "./services/file-system-connector.servi
 import {HttpRestConnectorService} from "./services/http-rest-connector.service";
 import {SharedModule} from "./modules/shared/shared.module";
 import {I18nService} from "./services/i18n.service";
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {I18nService} from "./services/i18n.service";
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
+    HttpClientModule,
     SharedModule
   ],
   providers: [

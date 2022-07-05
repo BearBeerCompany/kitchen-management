@@ -26,7 +26,9 @@ import {TagModule} from "primeng/tag";
   exports: [
     NavbarButtonComponent,
     NavbarComponent,
-    PlateInfoComponent
+    PlateInfoComponent,
+    ButtonModule,
+    RippleModule
   ]
 })
 export class SharedModule {
