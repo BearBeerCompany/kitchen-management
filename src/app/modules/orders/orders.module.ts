@@ -9,8 +9,13 @@ import {OrderEditComponent} from './order-edit/order-edit.component';
 import {OrderDetailsComponent} from './order-details/order-details.component';
 
 import {TableModule} from 'primeng/table';
+import {InputTextModule} from "primeng/inputtext";
+
 import {OrdersService} from './orders.service';
 import {SharedModule} from "../shared/shared.module";
+import {CalendarModule} from "primeng/calendar";
+import {DropdownModule} from "primeng/dropdown";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -23,8 +28,12 @@ import {SharedModule} from "../shared/shared.module";
   imports: [
     CommonModule,
     TableModule,
+    InputTextModule,
     SharedModule,
-    OrdersRoutingModule
+    OrdersRoutingModule,
+    CalendarModule,
+    DropdownModule,
+    FormsModule
   ],
   providers: [OrdersService]
 })
