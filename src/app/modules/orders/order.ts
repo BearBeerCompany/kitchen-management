@@ -1,27 +1,28 @@
 export interface Order {
-  _id: number,
+  _id?: string,
   orderId: number,
   menuItem: MenuItem,
-  category: Category,
   plate?: Plate,
   status: Status,
-  date: string
+  date: string,
+  notes?: string
 }
 
 export interface MenuItem {
-  id: number,
+  _id?: string,
   name: string,
   description?: string
+  category?: Category
 }
 
 export interface Category {
-  id: number,
+  _id?: string,
   name: string,
   description?: string
 }
 
 export interface Plate {
-  id: number,
+  _id?: string,
   name: string,
   description?: string
 }

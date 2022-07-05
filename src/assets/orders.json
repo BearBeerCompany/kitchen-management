@@ -3,12 +3,12 @@
     {
       "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e7",
       "menuItem": {
-        "id": 1,
-        "name": "Panino 1"
-      },
-      "category": {
-        "id": 1,
-        "name": "Hamburgher"
+        "_id": 1,
+        "name": "Panino 1",
+        "category": {
+          "_id": 1,
+          "name": "Hamburgher"
+        }
       },
       "orderId": 1,
       "status": "todo",
@@ -17,16 +17,16 @@
     {
       "_id":"1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e8",
       "menuItem": {
-        "id": 1,
-        "name": "Panino 1"
-      },
-      "category": {
-        "id": 1,
-        "name": "Hamburgher"
+        "_id": 1,
+        "name": "Panino 1",
+        "category": {
+          "_id": 1,
+          "name": "Hamburgher"
+        }
       },
       "orderId": 2,
       "plate": {
-        "id": 1,
+        "_id": 1,
         "name": "Piastra 1"
       },
       "status": "progress",
@@ -35,16 +35,16 @@
     {
       "_id":"1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e9",
       "menuItem": {
-        "id": 2,
-        "name": "Panino 2"
-      },
-      "category": {
-        "id": 1,
-        "name": "Hamburgher"
+        "_id": 2,
+        "name": "Panino 2",
+        "category": {
+          "_id": 1,
+          "name": "Hamburgher"
+        }
       },
       "orderId": 3,
       "plate": {
-        "id": 2,
+        "_id": 2,
         "name": "Piastra 2"
       },
       "status": "progress",
@@ -53,12 +53,12 @@
     {
       "_id":"1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e0",
       "menuItem": {
-        "id": 3,
-        "name": "Panino 3"
-      },
-      "category": {
-        "id": 1,
-        "name": "Hamburgher"
+        "_id": 3,
+        "name": "Panino 3",
+        "category": {
+          "_id": 1,
+          "name": "Hamburgher"
+        }
       },
       "orderId": 4,
       "status": "done",

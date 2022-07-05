@@ -1,15 +1,26 @@
+<p-toast></p-toast>
+
+<p-toolbar styleClass="p-mb-4">
+  <ng-template pTemplate="left">
+    <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+    <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
+
+    <!-- New order (version 2)-->
+    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded" (click)="addOrder()"></button>
+  </ng-template>
+</p-toolbar>
+
 <p-table #dt
-         [value]="orders" [(selection)]="selectedOrders" dataKey="orderId" styleClass="p-datatable-orders"
+         [value]="orders" [(selection)]="selectedOrders" dataKey="_id" styleClass="p-datatable-orders"
          [rowHover]="true"
          [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
          [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
-         [globalFilterFields]="['orderId','menuItem.name','category.name','status','plate.name']"
+         [globalFilterFields]="['orderId','menuItem.name','menuItem.category.name','status','plate.name']"
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
       List of Orders
-      <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded" (click)="addOrder()"></button>
       <span class="p-input-icon-left">
           <i class="pi pi-search"></i>
           <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Global Search" />
@@ -34,11 +45,11 @@
           <p-columnFilter type="text" field="menuItem.name" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="category.name">
+      <th pSortableColumn="menuItem.category.name">
         <div class="p-d-flex p-jc-between p-ai-center">
           Category
-          <p-sortIcon field="category.name"></p-sortIcon>
-          <p-columnFilter type="text" field="category.name" display="menu"></p-columnFilter>
+          <p-sortIcon field="menuItem.category.name"></p-sortIcon>
+          <p-columnFilter type="text" field="menuItem.category.name" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="date">
@@ -90,7 +101,7 @@
       </td>
       <td>
         <span class="p-column-title">Category</span>
-        <span class="image-text">{{order.category.name}}</span>
+        <span class="image-text">{{order.menuItem.category.name}}</span>
       </td>
       <td>
         <span class="p-column-title">Date</span>
@@ -116,3 +127,46 @@
     </tr>
   </ng-template>
 </p-table>
+
+<p-dialog [(visible)]="orderDialog" [style]="{width: '450px', height: '700px'}" header="Order Details" [modal]="true" styleClass="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="p-field">
+      <label for="orderId">Number</label>
+      <p-inputNumber [max]="1000"
+                     [min]="0"
+                     [showButtons]="true"
+                     id="orderId"
+                     [(ngModel)]="newOrder.orderId"
+      ></p-inputNumber>
+      <small class="p-invalid" *ngIf="submitted && !newOrder.orderId">Id is required.</small>
+    </div>
+    <div class="p-field">
+      <label for="menuItem">Number</label>
+      <p-treeSelect id="menuItem"
+        [(ngModel)]="newOrder.menuItem"
+        [options]="menuItems"
+        [metaKeySelection]="false"
+        placeholder="Select Menu Item"
+        [filter]="true"
+        [filterInputAutoFocus]="true"
+        scrollHeight="300px"
+      ></p-treeSelect>
+      <small class="p-invalid" *ngIf="submitted && !newOrder.orderId">Id is required.</small>
+    </div>
+    <div class="p-field">
+      <label for="quantity">Quantity</label>
+      <p-inputNumber id="quantity" [(ngModel)]="newOrder.quantity"></p-inputNumber>
+    </div>
+    <div class="p-field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" pInputTextarea [(ngModel)]="newOrder.notes" required rows="3" cols="20"></textarea>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveOrder()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

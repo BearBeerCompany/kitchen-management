@@ -15,7 +15,15 @@ import {OrdersService} from './orders.service';
 import {SharedModule} from "../shared/shared.module";
 import {CalendarModule} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {TreeSelectModule} from "primeng/treeselect";
+import {InputNumberModule} from "primeng/inputnumber";
+import {ToastModule} from "primeng/toast";
+import {ToolbarModule} from "primeng/toolbar";
+import {DialogModule} from "primeng/dialog";
+import {MenuItemsService} from "./menu-items.service";
+import {ConfirmationService, MessageService} from "primeng/api";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
 
 @NgModule({
   declarations: [
@@ -33,8 +41,15 @@ import {FormsModule} from "@angular/forms";
     OrdersRoutingModule,
     CalendarModule,
     DropdownModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    TreeSelectModule,
+    InputNumberModule,
+    ToastModule,
+    ToolbarModule,
+    DialogModule,
+    ConfirmDialogModule
   ],
-  providers: [OrdersService]
+  providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService]
 })
 export class OrdersModule { }
