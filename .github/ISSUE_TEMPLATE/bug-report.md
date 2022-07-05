@@ -7,6 +7,14 @@ assignees: ''
 
 ---
 
+**Module**
+- Dashboard
+- Order
+- Plate
+- Settings
+- Shared
+- Others
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
