@@ -1,1 +1,53 @@
-<p>order-new works!</p>
+<h3>Nuovo ordine</h3>
+
+<div class="flex flex-row justify-content-between">
+  <!-- insertion form -->
+  <div class="flex-column flex-grow-1">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form!">
+      <h3>Insertion form</h3>
+      <div class="flex-row">
+        <label>Order Number</label>
+        <p-inputNumber [max]="1000"
+                       [min]="0"
+                       [showButtons]="true"
+                       formControlName="orderId"
+        ></p-inputNumber>
+      </div>
+      <div class="flex-row">
+        <label>Menu Item</label>
+        <p-treeSelect formControlName="menuItem"
+                      [options]="menuItems"
+                      [metaKeySelection]="false"
+                      placeholder="Select Menu Item"
+                      [filter]="true"
+                      [filterInputAutoFocus]="true"
+        ></p-treeSelect>
+      </div>
+      <div class="flex-row">
+        <label>Quantity</label>
+        <p-inputNumber [max]="1000"
+                       [min]="0"
+                       [showButtons]="true"
+                       formControlName="quantity"
+        ></p-inputNumber>
+      </div>
+      <div class="flex-row">
+        <label>Notes</label>
+        <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea autoResize="autoResize"></textarea>
+      </div>
+      <div class="flex-row">
+        <button [disabled]="form?.valid ? !form?.valid : true"
+                [label]="i18n.COMMON.SAVE"
+                class="p-button-success" pButton pRipple
+                type="submit"
+        ></button>
+      </div>
+    </form>
+  </div>
+
+  <!-- summary -->
+  <div class="flex-column flex-grow-1">
+    <h3>Summary</h3>
+
+  </div>
+</div>

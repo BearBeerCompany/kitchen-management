@@ -1,33 +1,35 @@
 export interface Order {
-    menuItem: MenuItem,
-    category: Category,
-    id: number,
-    plate?: Plate,
-    status: Status,
-    date: string
+  _id?: string,
+  orderId: number,
+  menuItem: MenuItem,
+  plate?: Plate,
+  status: Status,
+  date: string,
+  notes?: string
 }
 
 export interface MenuItem {
-    id: number,
-    name: string,
-    description?: string
+  _id?: string,
+  name: string,
+  description?: string
+  category?: Category
 }
 
 export interface Category {
-    id: number,
-    name: string,
-    description?: string
+  _id?: string,
+  name: string,
+  description?: string
 }
 
 export interface Plate {
-    id: number,
-    name: string,
-    description?: string
+  _id?: string,
+  name: string,
+  description?: string
 }
 
 export enum Status {
-    Todo = "todo",
-    Progress = "progress",
-    Done = "done",
-    Cancelled = "cancelled"
+  Todo = "todo",
+  Progress = "progress",
+  Done = "done",
+  Cancelled = "cancelled"
 }

@@ -1,0 +1,61 @@
+{
+  "data":
+  [
+    {
+      "label": "Panini",
+      "data": {
+        "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
+        "name": "Panini",
+        "description": "Categoria Panini"
+      },
+      "expandedIcon": "pi pi-folder-open",
+      "collapsedIcon": "pi pi-folder",
+      "selectable": false,
+      "children": [{
+        "label": "Hamburgher 1",
+        "data": {
+          "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eAP1",
+          "name": "Hamburgher 1",
+          "description": "Hamburgher 1"
+        },
+        "icon": "pi pi-file"
+      }, {
+        "label": "Hamburgher 2",
+        "data": {
+          "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eAP2",
+          "name": "Hamburgher 2",
+          "description": "Hamburgher 2"
+        },
+        "icon": "pi pi-file"
+      }]
+    },
+    {
+      "label": "Piadine",
+      "data": {
+        "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eB",
+        "name": "Piadine",
+        "description": "Categoria Piadine"
+      },
+      "expandedIcon": "pi pi-folder-open",
+      "collapsedIcon": "pi pi-folder",
+      "selectable": false,
+      "children": [{
+        "label": "Piadina 1",
+        "data": {
+          "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eBP1",
+          "name": "Piadina 1",
+          "description": "Piadina 1"
+        },
+        "icon": "pi pi-file"
+      }, {
+        "label": "Piadina 2",
+        "data": {
+          "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eBP2",
+          "name": "Piadina 2",
+          "description": "Piadina 2"
+        },
+        "icon": "pi pi-file"
+      }]
+    }
+  ]
+}
