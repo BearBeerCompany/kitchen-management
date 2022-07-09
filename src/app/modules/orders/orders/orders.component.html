@@ -165,7 +165,7 @@
       ></p-treeSelect>
       <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
     </div>
-    <div class="p-field">
+    <div class="p-field" *ngIf="!currentOrder._id">
       <label for="quantity">Quantity</label>
       <p-inputNumber id="quantity" [(ngModel)]="currentOrder.quantity"></p-inputNumber>
     </div>

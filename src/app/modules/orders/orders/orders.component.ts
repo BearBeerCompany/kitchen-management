@@ -163,6 +163,12 @@ export class OrdersComponent implements OnInit, OnDestroy {
         menuItemNode = item.children.find((child: any) => {
           return child.data._id === menuItemId;
         });
+        menuItemNode = {
+          ...menuItemNode,
+          parent: {
+            data: order.menuItem.category
+          }
+        };
       }
       return null;
     });

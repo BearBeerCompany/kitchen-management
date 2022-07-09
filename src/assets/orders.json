@@ -5,9 +5,11 @@
       "menuItem": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eAP1",
         "name": "Hamburgher 1",
+        "description": "Hamburgher 1",
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
-          "name": "Panini"
+          "name": "Panini",
+          "description": "Panini"
         }
       },
       "orderId": 1,
@@ -19,9 +21,11 @@
       "menuItem": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eAP1",
         "name": "Hamburgher 1",
+        "description": "Hamburgher 1",
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
-          "name": "Panini"
+          "name": "Panini",
+          "description": "Panini"
         }
       },
       "orderId": 2,
@@ -37,9 +41,11 @@
       "menuItem": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eAP2",
         "name": "Hamburgher 2",
+        "description": "Hamburgher 2",
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
-          "name": "Panini"
+          "name": "Panini",
+          "description": "Panini"
         }
       },
       "orderId": 3,
@@ -55,9 +61,11 @@
       "menuItem": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eBP1",
         "name": "Piadina 1",
+        "description": "Piadina 1",
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eB",
-          "name": "Piadine"
+          "name": "Piadine",
+          "description": "Piadine"
         }
       },
       "orderId": 4,
