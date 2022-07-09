@@ -4,7 +4,7 @@ export interface Order {
   menuItem: MenuItem,
   plate?: Plate | null,
   status: Status,
-  date: string,
+  date: string | null,
   notes?: string
 }
 
