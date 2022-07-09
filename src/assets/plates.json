@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "name": "plate 1",
+      "color": "#6aff00",
+      "slot": [
+        0,
+        1
+      ],
+      "mode": "on",
+      "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e7"
+    },
+    {
+      "name": "plate 2",
+      "color": "#6aff00",
+      "slot": [
+        0,
+        1
+      ],
+      "mode": "on",
+      "_id": "c55ffbb0-e60f-422a-a024-86a5048c5fb4"
+    },
+    {
+      "name": "plate 3",
+      "color": "#6aff00",
+      "slot": [
+        0,
+        1
+      ],
+      "mode": "on",
+      "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e8"
+    },
+    {
+      "name": "plate 4",
+      "color": "#6aff00",
+      "slot": [
+        0,
+        1
+      ],
+      "mode": "on",
+      "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e9"
+    }
+  ]
+}

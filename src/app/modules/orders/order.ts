@@ -2,7 +2,7 @@ export interface Order {
   _id?: string,
   orderId: number,
   menuItem: MenuItem,
-  plate?: Plate,
+  plate?: Plate | null,
   status: Status,
   date: string,
   notes?: string

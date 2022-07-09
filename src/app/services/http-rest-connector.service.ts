@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
-import {Observable} from "rxjs";
+import {map, Observable} from "rxjs";
 import {Plate} from "../modules/plates/plate/plate.model";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpRestConnectorService implements ApiConnector {
 
-  constructor() {
+  constructor(private http: HttpClient) {
   }
 
   public getPlate(id: string): Observable<any> {
@@ -20,7 +21,11 @@ export class HttpRestConnectorService implements ApiConnector {
   }
 
   public getPlates(): Observable<any[]> {
-    return new Observable();
+    // fixme temporary
+    return this.http.get<any>('assets/plates.json')
+      .pipe(
+        map(res => res.data as Plate[])
+      );
   }
 
   public removePlate(id: string): Observable<any> {

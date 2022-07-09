@@ -7,6 +7,7 @@ import {Subscription} from 'rxjs';
 import {Router} from "@angular/router";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {MenuItemsService} from "../menu-items.service";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'orders',
@@ -31,7 +32,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
   @ViewChild('dt') table: Table | undefined;
 
   constructor(public i18nService: I18nService, private ordersService: OrdersService, private menuItemsService: MenuItemsService,
-              private router: Router, private messageService: MessageService, private confirmationService: ConfirmationService) {
+              private router: Router, private messageService: MessageService, private confirmationService: ConfirmationService,
+              private datePipe: DatePipe) {
     this.i18n = i18nService.instance;
   }
 
@@ -91,16 +93,18 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   saveOrder() {
     this.submitted = true;
-    console.log(this.newOrder);
 
     let newOrders: Order[] = [];
     let menuItem: MenuItem = {
       ...this.newOrder.menuItem.data,
       category: this.newOrder.menuItem.parent.data
     };
+    const date = new Date();
+    const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
+
     for (let i = 0; i < this.newOrder.quantity; i++) {
       newOrders.push({
-        _id: this.createId(),
+        _id: this.ordersService.createId(),
         orderId: this.newOrder.orderId,
         menuItem,
         status: Status.Todo,
@@ -113,12 +117,4 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.orderDialog = false;
   }
 
-  private createId(): string {
-    let id = '';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 5; i++ ) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-  }
 }
