@@ -44,7 +44,6 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       plate: new FormControl(null)
     });
 
-    // this.menuItemsSub = this.menuItemsService.getMenuItems().subscribe(data => this.menuItems = data);
     this.menuItemsSub = this.apiConnector.getMenuItems().subscribe(data => this.menuItems = data);
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
@@ -83,8 +82,6 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   }
 
   saveOrders() {
-    // todo save orders
-    console.log(this.orders);
     this.apiConnector.addOrders(this.orders).subscribe(() => {
       this.router.navigate(['/orders']);
     });

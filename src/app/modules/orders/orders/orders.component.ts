@@ -39,7 +39,6 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.ordersSub = this.ordersService.getOrders().subscribe(data => {
     this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
       this.orders = data;
       this.loading = false;
