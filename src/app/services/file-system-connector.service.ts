@@ -5,6 +5,7 @@ import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {Plate} from "../modules/plates/plate/plate.model";
 import {I18nService} from "./i18n.service";
 import {PlateMode} from "../modules/plates/plate-mode";
+import {MenuItem, Order} from "../modules/orders/order";
 
 @Injectable({
   providedIn: 'root'
@@ -64,5 +65,37 @@ export class FileSystemConnectorService implements ApiConnector {
     config.mode = config?.mode ?? PlateMode.On;
 
     return config;
+  }
+
+  addOder(order: Order): Observable<Order | undefined> {
+    return fromPromise(fs.addOrder(order));
+  }
+
+  addOrders(orders: Order[]): Observable<Order | undefined> {
+    return fromPromise(fs.addOrders(orders));
+  }
+
+  getOrder(id: string): Observable<Order | undefined> {
+    return fromPromise(fs.readOrder(id));
+  }
+
+  getOrders(): Observable<Order[]> {
+    return fromPromise(fs.readOrders());
+  }
+
+  removeOrder(id: string): Observable<Order | undefined> {
+    return fromPromise(fs.deleteOrder(id));
+  }
+
+  removeOrders(ids: string[]): Observable<Order[] | undefined> {
+    return fromPromise(fs.deleteOrders(ids));
+  }
+
+  updateOrder(order: Order): Observable<Order | undefined> {
+    return fromPromise(fs.updateOrder(order));
+  }
+
+  getMenuItems(): Observable<MenuItem[]> {
+    return fromPromise(fs.readMenuItems());
   }
 }

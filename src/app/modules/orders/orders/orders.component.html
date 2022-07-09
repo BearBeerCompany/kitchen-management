@@ -82,6 +82,13 @@
           <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
         </div>
       </th>
+      <th pSortableColumn="notes">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Notes
+          <p-sortIcon field="notes"></p-sortIcon>
+          <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
+        </div>
+      </th>
       <th style="width: 8rem"></th>
     </tr>
   </ng-template>
@@ -115,15 +122,20 @@
         <span class="p-column-title">Plate</span>
         <span [class]="'order-badge status-' + order.plate?.name">{{order.plate?.name}}</span>
       </td>
-      <td style="text-align: center">
-        <button pButton type="button" class="p-button-secondary" icon="pi pi-cog"></button>
+      <td>
+        <span class="p-column-title">Notes</span>
+        <span class="image-text">{{order.notes}}</span>
+      </td>
+      <td>
+        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editOrder(order)"></button>
+        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteOrder(order)"></button>
       </td>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="8">No orders found.</td>
+      <td colspan="9">No orders found.</td>
     </tr>
   </ng-template>
 </p-table>
@@ -136,14 +148,14 @@
                      [min]="0"
                      [showButtons]="true"
                      id="orderId"
-                     [(ngModel)]="newOrder.orderId"
+                     [(ngModel)]="currentOrder.orderId"
       ></p-inputNumber>
-      <small class="p-invalid" *ngIf="submitted && !newOrder.orderId">Id is required.</small>
+      <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
     </div>
     <div class="p-field">
-      <label for="menuItem">Number</label>
+      <label for="menuItem">Menu Item</label>
       <p-treeSelect id="menuItem"
-        [(ngModel)]="newOrder.menuItem"
+        [(ngModel)]="currentOrder.menuItem"
         [options]="menuItems"
         [metaKeySelection]="false"
         placeholder="Select Menu Item"
@@ -151,15 +163,19 @@
         [filterInputAutoFocus]="true"
         scrollHeight="300px"
       ></p-treeSelect>
-      <small class="p-invalid" *ngIf="submitted && !newOrder.orderId">Id is required.</small>
+      <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
+    </div>
+    <div class="p-field" *ngIf="!currentOrder._id">
+      <label for="quantity">Quantity</label>
+      <p-inputNumber id="quantity" [(ngModel)]="currentOrder.quantity"></p-inputNumber>
     </div>
     <div class="p-field">
-      <label for="quantity">Quantity</label>
-      <p-inputNumber id="quantity" [(ngModel)]="newOrder.quantity"></p-inputNumber>
+      <label for="plate">Plate</label>
+      <p-dropdown id="plate" [options]="platesOptions" [(ngModel)]="currentOrder.plate" optionLabel="name"></p-dropdown>
     </div>
     <div class="p-field">
       <label for="notes">Notes</label>
-      <textarea id="notes" pInputTextarea [(ngModel)]="newOrder.notes" required rows="3" cols="20"></textarea>
+      <textarea id="notes" pInputTextarea [(ngModel)]="currentOrder.notes" required rows="3" cols="20"></textarea>
     </div>
   </ng-template>
 

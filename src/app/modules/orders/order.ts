@@ -2,9 +2,9 @@ export interface Order {
   _id?: string,
   orderId: number,
   menuItem: MenuItem,
-  plate?: Plate,
+  plate?: Plate | null,
   status: Status,
-  date: string,
+  date: string | null,
   notes?: string
 }
 

@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 
 import {OrdersRoutingModule} from './orders-routing.module';
 import {OrdersComponent} from './orders/orders.component';
@@ -50,6 +50,6 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
     DialogModule,
     ConfirmDialogModule
   ],
-  providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService]
+  providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService, DatePipe]
 })
 export class OrdersModule { }

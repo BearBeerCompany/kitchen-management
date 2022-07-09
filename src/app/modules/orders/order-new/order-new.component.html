@@ -36,6 +36,10 @@
         <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea autoResize="autoResize"></textarea>
       </div>
       <div class="flex-row">
+        <label>Plate</label>
+        <p-dropdown [options]="platesOptions" formControlName="plate" optionLabel="name"></p-dropdown>
+      </div>
+      <div class="flex-row">
         <button [disabled]="form?.valid ? !form?.valid : true"
                 [label]="i18n.COMMON.SAVE"
                 class="p-button-success" pButton pRipple
@@ -47,7 +51,97 @@
 
   <!-- summary -->
   <div class="flex-column flex-grow-1">
-    <h3>Summary</h3>
+    <h3>Summary - List of added orders</h3>
+
+    <p-toolbar styleClass="p-mb-4">
+      <ng-template pTemplate="left">
+        <button pButton pRipple label="Save" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="saveOrders()"></button>
+        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
+      </ng-template>
+    </p-toolbar>
+
+    <p-table #dt
+             [value]="orders" [(selection)]="selectedOrders" dataKey="_id" styleClass="p-datatable-orders"
+             [rowHover]="true"
+             [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
+             [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+             [filterDelay]="0"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 3rem"></th>
+          <th pSortableColumn="orderId">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              Number
+              <p-sortIcon field="orderId"></p-sortIcon>
+              <p-columnFilter  type="numeric" field="orderId" display="menu"></p-columnFilter>
+            </div>
+          </th>
+          <th pSortableColumn="menuItem.name">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              Menu Item
+              <p-sortIcon field="menuItem.name"></p-sortIcon>
+              <p-columnFilter type="text" field="menuItem.name" display="menu"></p-columnFilter>
+            </div>
+          </th>
+          <th pSortableColumn="menuItem.category.name">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              Category
+              <p-sortIcon field="menuItem.category.name"></p-sortIcon>
+              <p-columnFilter type="text" field="menuItem.category.name" display="menu"></p-columnFilter>
+            </div>
+          </th>
+          <th pSortableColumn="plate.name">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              Plate
+              <p-sortIcon field="plate.name"></p-sortIcon>
+              <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
+            </div>
+          </th>
+          <th pSortableColumn="notes">
+            <div class="p-d-flex p-jc-between p-ai-center">
+              Notes
+              <p-sortIcon field="notes"></p-sortIcon>
+              <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
+            </div>
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-order>
+        <tr class="p-selectable-row">
+          <td>
+            <p-tableCheckbox [value]="order"></p-tableCheckbox>
+          </td>
+          <td>
+            <span class="p-column-title">Number</span>
+            {{order.orderId}}
+          </td>
+          <td>
+            <span class="p-column-title">Menu Item</span>
+            <span class="image-text">{{order.menuItem.name}}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Category</span>
+            <span class="image-text">{{order.menuItem.category.name}}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Plate</span>
+            <span [class]="'order-badge status-' + order.plate?.name">{{order.plate?.name}}</span>
+          </td>
+          <td>
+            <span class="p-column-title">Notes</span>
+            <span class="image-text">{{order.notes}}</span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6">No orders added.</td>
+        </tr>
+      </ng-template>
+    </p-table>
 
   </div>
 </div>

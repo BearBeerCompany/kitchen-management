@@ -15,6 +15,30 @@ electron.contextBridge.exposeInMainWorld("fs", {
   },
   updatePlate: (config) => {
     return electron.ipcRenderer.invoke("fs::on-plate-update", config);
+  },
+  addOrder: (order) => {
+    return electron.ipcRenderer.invoke("fs::on-order-add", order);
+  },
+  addOrders: (orders) => {
+    return electron.ipcRenderer.invoke("fs::on-orders-add", orders);
+  },
+  readOrders: () => {
+    return electron.ipcRenderer.invoke("fs::on-order-get-all");
+  },
+  readOrder: (id) => {
+    return electron.ipcRenderer.invoke("fs::on-order-get-by-id", id);
+  },
+  deleteOrder: (id) => {
+    return electron.ipcRenderer.invoke("fs::on-order-delete-by-id", id);
+  },
+  deleteOrders: (ids) => {
+    return electron.ipcRenderer.invoke("fs::on-orders-delete-by-ids", ids);
+  },
+  updateOrder: (order) => {
+    return electron.ipcRenderer.invoke("fs::on-order-update", order);
+  },
+  readMenuItems: () => {
+    return electron.ipcRenderer.invoke("fs::on-menuitem-get-all");
   }
 });
 
