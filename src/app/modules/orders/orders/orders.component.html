@@ -82,6 +82,13 @@
           <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
         </div>
       </th>
+      <th pSortableColumn="notes">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Notes
+          <p-sortIcon field="notes"></p-sortIcon>
+          <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
+        </div>
+      </th>
       <th style="width: 8rem"></th>
     </tr>
   </ng-template>
@@ -115,6 +122,10 @@
         <span class="p-column-title">Plate</span>
         <span [class]="'order-badge status-' + order.plate?.name">{{order.plate?.name}}</span>
       </td>
+      <td>
+        <span class="p-column-title">Notes</span>
+        <span class="image-text">{{order.notes}}</span>
+      </td>
       <td style="text-align: center">
         <button pButton type="button" class="p-button-secondary" icon="pi pi-cog"></button>
       </td>
@@ -123,7 +134,7 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="8">No orders found.</td>
+      <td colspan="9">No orders found.</td>
     </tr>
   </ng-template>
 </p-table>
