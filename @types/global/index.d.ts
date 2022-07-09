@@ -1,4 +1,5 @@
 import {Plate} from "../../src/app/modules/plates/plate/plate.model";
+import {Order, MenuItem} from "../../src/app/modules/orders/order";
 
 export {};
 
@@ -13,6 +14,22 @@ declare global {
     function readPlate(id: string): Promise<Plate>;
 
     function deletePlate(id: string): Promise<Plate>;
+
+    function addOrder(order: Order): Promise<any>;
+
+    function addOrders(orders: Order[]): Promise<any>;
+
+    function updateOrder(order: Order): Promise<Order>;
+
+    function readOrders(): Promise<Order[]>;
+
+    function readOrder(id: string): Promise<Order>;
+
+    function deleteOrder(id: string): Promise<Order>;
+
+    function deleteOrders(ids: string[]): Promise<Order[]>;
+
+    function readMenuItems(): Promise<MenuItem[]>;
   }
 
   namespace app {

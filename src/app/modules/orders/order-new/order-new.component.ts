@@ -9,6 +9,7 @@ import {MenuItem, Status} from "../order";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
 import {DatePipe} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'order-new',
@@ -30,7 +31,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
 
   constructor(private i18nService: I18nService, private ordersService: OrdersService,
               private menuItemsService: MenuItemsService, @Inject('ApiConnector') private apiConnector: ApiConnector,
-              private datePipe: DatePipe) {
+              private datePipe: DatePipe, private router: Router) {
     this.i18n = i18nService.instance;
   }
 
@@ -43,7 +44,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       plate: new FormControl(null)
     });
 
-    this.menuItemsSub = this.menuItemsService.getMenuItems().subscribe(data => this.menuItems = data);
+    // this.menuItemsSub = this.menuItemsService.getMenuItems().subscribe(data => this.menuItems = data);
+    this.menuItemsSub = this.apiConnector.getMenuItems().subscribe(data => this.menuItems = data);
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = data.map(item => {
@@ -83,6 +85,9 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   saveOrders() {
     // todo save orders
     console.log(this.orders);
+    this.apiConnector.addOrders(this.orders).subscribe(() => {
+      this.router.navigate(['/orders']);
+    });
   }
 
   deleteSelectedProducts() {

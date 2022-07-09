@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {I18nService} from 'src/app/services/i18n.service';
 import {OrdersService} from '../orders.service';
 import {Table} from 'primeng/table';
@@ -8,6 +8,7 @@ import {Router} from "@angular/router";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {MenuItemsService} from "../menu-items.service";
 import {DatePipe} from "@angular/common";
+import {ApiConnector} from "../../../services/api-connector";
 
 @Component({
   selector: 'orders',
@@ -33,12 +34,13 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   constructor(public i18nService: I18nService, private ordersService: OrdersService, private menuItemsService: MenuItemsService,
               private router: Router, private messageService: MessageService, private confirmationService: ConfirmationService,
-              private datePipe: DatePipe) {
+              private datePipe: DatePipe, @Inject('ApiConnector') private apiConnector: ApiConnector) {
     this.i18n = i18nService.instance;
   }
 
   ngOnInit(): void {
-    this.ordersSub = this.ordersService.getOrders().subscribe(data => {
+    // this.ordersSub = this.ordersService.getOrders().subscribe(data => {
+    this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
       this.orders = data;
       this.loading = false;
     });
