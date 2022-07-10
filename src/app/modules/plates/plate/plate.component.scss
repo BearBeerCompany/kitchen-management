@@ -12,7 +12,6 @@ section {
 
     @include info-plate;
 
-
     .expand-button {
       position: absolute;
       right: 5px;
@@ -93,6 +92,30 @@ section {
     i#empty {
       font-size: 100px;
     }
+  }
+}
+
+.item-list_container {
+  height: 80%;
+  width: 100%;
+
+  position: fixed;
+  bottom: 0;
+  top: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  item {
+    height: 20%;
+    min-height: 20%;
+
+    margin: 10px
   }
 }
 
