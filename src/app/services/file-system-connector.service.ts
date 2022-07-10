@@ -83,11 +83,11 @@ export class FileSystemConnectorService implements ApiConnector {
     return fromPromise(fs.readOrders());
   }
 
-  removeOrder(id: string): Observable<Order | undefined> {
+  removeOrder(id: string): Observable<boolean> {
     return fromPromise(fs.deleteOrder(id));
   }
 
-  removeOrders(ids: string[]): Observable<Order[] | undefined> {
+  removeOrders(ids: string[]): Observable<boolean> {
     return fromPromise(fs.deleteOrders(ids));
   }
 

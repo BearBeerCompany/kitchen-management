@@ -91,9 +91,12 @@ export class OrdersComponent implements OnInit, OnDestroy {
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.orders = this.orders.filter(val => !this.selectedOrders.includes(val));
-        this.selectedOrders = [];
-        this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        const ids = this.selectedOrders.map(item => item._id!);
+        this.apiConnector.removeOrders(ids).subscribe(() => {
+          this.orders = this.orders.filter(val => !this.selectedOrders.includes(val));
+          this.selectedOrders = [];
+          this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        })
       }
     });
   }
@@ -191,6 +194,16 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   deleteOrder(order: Order) {
-    // todo
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete the selected order?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.apiConnector.removeOrder(order._id!).subscribe(() => {
+          this.orders = this.orders.filter(val => val != order);
+          this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        })
+      }
+    });
   }
 }
