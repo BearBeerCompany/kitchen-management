@@ -2,7 +2,7 @@ const fs = require("fs");
 const {Notification} = require('electron');
 const os = require("os");
 const readline = require('readline');
-const {uuidv4, removeElement} = require('./commons');
+const {uuidv4, removeElement, updateElement} = require('./commons');
 const platesFilePath = `${os.homedir()}/Documents/plate-config.txt`;
 const ordersFilePath = `${os.homedir()}/Documents/orders.txt`;
 const menuItemsFilePath = `${os.homedir()}/Documents/menu-items.txt`;
@@ -137,7 +137,7 @@ async function addOrders(_, orders) {
 
   // display notification
   // filesAdded();
-  return Promise.resolve("Saved!");
+  return Promise.resolve(orders);
 }
 
 async function readOrders(_) {
@@ -190,7 +190,7 @@ async function deleteOrderById(_, id) {
       }
 
       if (foundIndex !== undefined) {
-        removeElement(lines, foundIndex)
+        removeElement(lines, foundIndex);
         fs.writeFile(ordersFilePath, lines,
           function (err, data) {
             if (err) {
@@ -215,8 +215,42 @@ async function deleteOrdersByIds(_, ids) {
   return Promise.resolve("Deleted!");
 }
 
-function updateOrder(_, order) {
- // todo
+async function updateOrder(_, order) {
+  try {
+    let foundIndex = undefined;
+
+    await fs.readFile(ordersFilePath, 'utf8', function (err, data) {
+      if (err) {
+        return Promise.reject(err);
+      }
+
+      let lines = data.split('\r\n');
+      for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+        if (line !== "" && line.includes(`"_id":"${order._id}"`)) {
+          foundIndex = index;
+          break;
+        }
+      }
+
+      if (foundIndex !== undefined) {
+        lines[foundIndex] = `${JSON.stringify(order)}`;
+        let linesAsString = lines.join("\r\n");
+        fs.writeFile(ordersFilePath, linesAsString,
+          function (err, data) {
+            if (err) {
+              return Promise.reject("Fail to write config file: " + err);
+            }
+
+            return Promise.resolve(order);
+          });
+      } else {
+        return Promise.resolve("Plate configuration not found");
+      }
+    });
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
 
 async function readMenuItems(_) {

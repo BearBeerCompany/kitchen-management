@@ -111,7 +111,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
         category: this.currentOrder.menuItem.parent.data
       };
       const currentOrderIdx = this.orders.findIndex(order => order._id === this.currentOrder._id);
-      this.orders[currentOrderIdx] = {
+
+      const editOrder = {
         ... this.orders[currentOrderIdx],
         orderId: this.currentOrder.orderId,
         menuItem,
@@ -120,9 +121,17 @@ export class OrdersComponent implements OnInit, OnDestroy {
         date: this.currentOrder.date,
         plate: this.currentOrder.plate
       };
-
-      // todo call update
-
+      this.apiConnector.updateOrder(editOrder).subscribe(order => {
+        this.orders[currentOrderIdx] = {
+          ... this.orders[currentOrderIdx],
+          orderId: this.currentOrder.orderId,
+          menuItem,
+          status: this.currentOrder.status,
+          notes: this.currentOrder.notes,
+          date: this.currentOrder.date,
+          plate: this.currentOrder.plate
+        };
+      });
     } else {
       // new orders
       let newOrders: Order[] = [];
@@ -145,9 +154,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
         });
       }
 
-      // todo call save
+      this.apiConnector.addOrders(newOrders).subscribe(orders => {
+        this.orders = this.orders.concat(orders);
+      })
 
-      this.orders = this.orders.concat(newOrders);
+      // this.orders = this.orders.concat(newOrders);
     }
 
     this.orderDialog = false;
