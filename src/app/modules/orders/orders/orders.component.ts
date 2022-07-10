@@ -122,14 +122,16 @@ export class OrdersComponent implements OnInit, OnDestroy {
         plate: this.currentOrder.plate
       };
       this.apiConnector.updateOrder(editOrder).subscribe(order => {
+        console.log("order" + order);
+
         this.orders[currentOrderIdx] = {
           ... this.orders[currentOrderIdx],
-          orderId: this.currentOrder.orderId,
+          orderId: order.orderId,
           menuItem,
-          status: this.currentOrder.status,
-          notes: this.currentOrder.notes,
-          date: this.currentOrder.date,
-          plate: this.currentOrder.plate
+          status: order.status,
+          notes: order.notes,
+          date: order.date,
+          plate: order.plate
         };
       });
     } else {
@@ -147,7 +149,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
           _id: this.ordersService.createId(),
           orderId: this.currentOrder.orderId,
           menuItem,
-          status: Status.Todo,
+          status: this.statuses[0],
           notes: this.currentOrder.notes,
           date: dateFormatted,
           plate: this.currentOrder.plate
@@ -157,8 +159,6 @@ export class OrdersComponent implements OnInit, OnDestroy {
       this.apiConnector.addOrders(newOrders).subscribe(orders => {
         this.orders = this.orders.concat(orders);
       })
-
-      // this.orders = this.orders.concat(newOrders);
     }
 
     this.orderDialog = false;

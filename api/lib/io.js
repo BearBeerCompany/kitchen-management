@@ -115,8 +115,6 @@ const filesAdded = () => {
 async function addOrder(_, order) {
   order._id = uuidv4();
   const row = `${JSON.stringify(order)}\r\n`;
-  console.log(row);
-
   await fs.appendFile(ordersFilePath, row, err => {
     if (err) {
       return Promise.resolve("Error!");
@@ -194,11 +192,11 @@ async function deleteOrderById(_, id) {
         fs.writeFile(ordersFilePath, lines,
           function (err, data) {
             if (err) {
-              return Promise.reject("Fail to write config file: " + err);
+              return Promise.reject("Fail to write order file: " + err);
             }
           });
       } else {
-        return Promise.resolve("Plate configuration not found");
+        return Promise.resolve("Order not found");
       }
     });
   } catch (e) {
@@ -239,15 +237,16 @@ async function updateOrder(_, order) {
         fs.writeFile(ordersFilePath, linesAsString,
           function (err, data) {
             if (err) {
-              return Promise.reject("Fail to write config file: " + err);
+              return Promise.reject("Fail to write order file: " + err);
             }
 
-            return Promise.resolve(order);
           });
       } else {
-        return Promise.resolve("Plate configuration not found");
+        return Promise.resolve("Order not found");
       }
     });
+
+    return Promise.resolve(order);
   } catch (e) {
     return Promise.reject(e);
   }
