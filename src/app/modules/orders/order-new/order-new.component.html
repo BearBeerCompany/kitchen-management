@@ -32,12 +32,12 @@
         ></p-inputNumber>
       </div>
       <div class="flex-row">
-        <label>Notes</label>
-        <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea autoResize="autoResize"></textarea>
-      </div>
-      <div class="flex-row">
         <label>Plate</label>
         <p-dropdown [options]="platesOptions" formControlName="plate" optionLabel="name"></p-dropdown>
+      </div>
+      <div class="flex-row">
+        <label>Notes</label>
+        <textarea [rows]="5" [cols]="30" formControlName="notes" pInputTextarea autoResize="autoResize"></textarea>
       </div>
       <div class="flex-row">
         <button [disabled]="form?.valid ? !form?.valid : true"

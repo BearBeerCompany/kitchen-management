@@ -116,7 +116,7 @@
       </td>
       <td>
         <span class="p-column-title">Status</span>
-        <span [class]="'order-badge status-' + order.status">{{order.status}}</span>
+        <span [class]="'order-badge status-' + order.status">{{order.status?.label}}</span>
       </td>
       <td>
         <span class="p-column-title">Plate</span>
@@ -168,6 +168,10 @@
     <div class="p-field" *ngIf="!currentOrder._id">
       <label for="quantity">Quantity</label>
       <p-inputNumber id="quantity" [(ngModel)]="currentOrder.quantity"></p-inputNumber>
+    </div>
+    <div class="p-field" *ngIf="currentOrder._id">
+      <label for="status">Status</label>
+      <p-dropdown id="status" [options]="statuses" [(ngModel)]="currentOrder.status" optionLabel="label"></p-dropdown>
     </div>
     <div class="p-field">
       <label for="plate">Plate</label>

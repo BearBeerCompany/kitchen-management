@@ -2,7 +2,7 @@ const fs = require("fs");
 const {Notification} = require('electron');
 const os = require("os");
 const readline = require('readline');
-const {uuidv4, removeElement} = require('./commons');
+const {uuidv4, removeElement, updateElement} = require('./commons');
 const platesFilePath = `${os.homedir()}/Documents/plate-config.txt`;
 const ordersFilePath = `${os.homedir()}/Documents/orders.txt`;
 const menuItemsFilePath = `${os.homedir()}/Documents/menu-items.txt`;
@@ -74,8 +74,9 @@ async function deletePlateById(_, id) {
       }
 
       if (foundIndex !== undefined) {
-        removeElement(lines, foundIndex)
-        fs.writeFile(platesFilePath, lines,
+        lines.splice(foundIndex, 1);
+        let linesAsString = lines.join("\r\n");
+        fs.writeFile(platesFilePath, linesAsString,
           function (err, data) {
             if (err) {
               return Promise.reject("Fail to write config file: " + err);
@@ -90,8 +91,43 @@ async function deletePlateById(_, id) {
   }
 }
 
-function updatePlate(_, config) {
-  // todo
+async function updatePlate(_, config) {
+  try {
+    let foundIndex = undefined;
+
+    await fs.readFile(platesFilePath, 'utf8', function (err, data) {
+      if (err) {
+        return Promise.reject(err);
+      }
+
+      let lines = data.split('\r\n');
+      for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+        if (line !== "" && line.includes(`"_id":"${config._id}"`)) {
+          foundIndex = index;
+          break;
+        }
+      }
+
+      if (foundIndex !== undefined) {
+        lines[foundIndex] = `${JSON.stringify(config)}`;
+        let linesAsString = lines.join("\r\n");
+        fs.writeFile(platesFilePath, linesAsString,
+          function (err, data) {
+            if (err) {
+              return Promise.reject("Fail to write config file: " + err);
+            }
+
+          });
+      } else {
+        return Promise.resolve("Config not found");
+      }
+    });
+
+    return Promise.resolve(config);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
 
 function _getReaderInterface(filePath) {
@@ -115,8 +151,6 @@ const filesAdded = () => {
 async function addOrder(_, order) {
   order._id = uuidv4();
   const row = `${JSON.stringify(order)}\r\n`;
-  console.log(row);
-
   await fs.appendFile(ordersFilePath, row, err => {
     if (err) {
       return Promise.resolve("Error!");
@@ -136,8 +170,7 @@ async function addOrders(_, orders) {
   }
 
   // display notification
-  // filesAdded();
-  return Promise.resolve("Saved!");
+  return Promise.resolve(orders);
 }
 
 async function readOrders(_) {
@@ -190,33 +223,101 @@ async function deleteOrderById(_, id) {
       }
 
       if (foundIndex !== undefined) {
-        removeElement(lines, foundIndex)
-        fs.writeFile(ordersFilePath, lines,
+        lines.splice(foundIndex, 1);
+        let linesAsString = lines.join("\r\n");
+        fs.writeFile(ordersFilePath, linesAsString,
           function (err, data) {
             if (err) {
-              return Promise.reject("Fail to write config file: " + err);
+              return Promise.reject("Fail to write order file: " + err);
             }
           });
       } else {
-        return Promise.resolve("Plate configuration not found");
+        return Promise.resolve("Order not found");
       }
     });
+
+    return Promise.resolve(true);
   } catch (e) {
     return Promise.reject(e);
   }
 }
 
 async function deleteOrdersByIds(_, ids) {
-  for (const idKey in ids) {
-    const id = ids[idKey];
-    await deleteOrderById(_, id);
-  }
+  try {
+    await fs.readFile(ordersFilePath, 'utf8', function (err, data) {
+      if (err) {
+        return Promise.reject(err);
+      }
+      let foundIndex = undefined;
+      let lines = data.split('\r\n');
 
-  return Promise.resolve("Deleted!");
+      for (let j = 0; j < ids.length; j++) {
+        const id = ids[j];
+
+        for (let index = 0; index < lines.length; index++) {
+          const line = lines[index];
+          if (line !== "" && line.includes(`"_id":"${id}"`)) {
+            foundIndex = index;
+            break;
+          }
+        }
+        if (foundIndex !== undefined) {
+          lines.splice(foundIndex, 1);
+        }
+      }
+
+      let linesAsString = lines.join("\r\n");
+      fs.writeFile(ordersFilePath, linesAsString,
+        function (err, data) {
+          if (err) {
+            return Promise.reject("Fail to write order file: " + err);
+          }
+        });
+    });
+
+    return Promise.resolve(true);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
 
-function updateOrder(_, order) {
- // todo
+async function updateOrder(_, order) {
+  try {
+    let foundIndex = undefined;
+
+    await fs.readFile(ordersFilePath, 'utf8', function (err, data) {
+      if (err) {
+        return Promise.reject(err);
+      }
+
+      let lines = data.split('\r\n');
+      for (let index = 0; index < lines.length; index++) {
+        const line = lines[index];
+        if (line !== "" && line.includes(`"_id":"${order._id}"`)) {
+          foundIndex = index;
+          break;
+        }
+      }
+
+      if (foundIndex !== undefined) {
+        lines[foundIndex] = `${JSON.stringify(order)}`;
+        let linesAsString = lines.join("\r\n");
+        fs.writeFile(ordersFilePath, linesAsString,
+          function (err, data) {
+            if (err) {
+              return Promise.reject("Fail to write order file: " + err);
+            }
+
+          });
+      } else {
+        return Promise.resolve("Order not found");
+      }
+    });
+
+    return Promise.resolve(order);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
 
 async function readMenuItems(_) {

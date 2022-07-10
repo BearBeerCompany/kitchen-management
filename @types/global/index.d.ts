@@ -25,9 +25,9 @@ declare global {
 
     function readOrder(id: string): Promise<Order>;
 
-    function deleteOrder(id: string): Promise<Order>;
+    function deleteOrder(id: string): Promise<boolean>;
 
-    function deleteOrders(ids: string[]): Promise<Order[]>;
+    function deleteOrders(ids: string[]): Promise<boolean>;
 
     function readMenuItems(): Promise<MenuItem[]>;
   }

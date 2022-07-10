@@ -13,7 +13,7 @@
         }
       },
       "orderId": 1,
-      "status": "todo",
+      "status": {"label":"Todo","value":"todo"},
       "date": "2022-07-04 11:00:00"
     },
     {
@@ -29,11 +29,8 @@
         }
       },
       "orderId": 2,
-      "plate": {
-        "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2e7",
-        "name": "plate 1"
-      },
-      "status": "progress",
+      "plate": {"name":"piastra 2","code":"c55ffbb0-e60f-422a-a024-86a5048c5fb4"},
+      "status": {"label":"Todo","value":"todo"},
       "date": "2022-07-04 11:01:00"
     },
     {
@@ -49,11 +46,8 @@
         }
       },
       "orderId": 3,
-      "plate": {
-        "_id": "c55ffbb0-e60f-422a-a024-86a5048c5fb4",
-        "name": "plate 2"
-      },
-      "status": "progress",
+      "plate": {"name":"piastra 2","code":"c55ffbb0-e60f-422a-a024-86a5048c5fb4"},
+      "status": {"label":"Progress","value":"progress"},
       "date": "2022-07-04 11:02:00"
     },
     {
@@ -69,7 +63,7 @@
         }
       },
       "orderId": 4,
-      "status": "done",
+      "status": {"label":"Done","value":"done"},
       "date": "2022-07-04 10:55:00"
     }
   ]

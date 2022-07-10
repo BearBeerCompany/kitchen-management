@@ -91,9 +91,12 @@ export class OrdersComponent implements OnInit, OnDestroy {
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.orders = this.orders.filter(val => !this.selectedOrders.includes(val));
-        this.selectedOrders = [];
-        this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        const ids = this.selectedOrders.map(item => item._id!);
+        this.apiConnector.removeOrders(ids).subscribe(() => {
+          this.orders = this.orders.filter(val => !this.selectedOrders.includes(val));
+          this.selectedOrders = [];
+          this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        })
       }
     });
   }
@@ -111,7 +114,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
         category: this.currentOrder.menuItem.parent.data
       };
       const currentOrderIdx = this.orders.findIndex(order => order._id === this.currentOrder._id);
-      this.orders[currentOrderIdx] = {
+
+      const editOrder = {
         ... this.orders[currentOrderIdx],
         orderId: this.currentOrder.orderId,
         menuItem,
@@ -120,9 +124,19 @@ export class OrdersComponent implements OnInit, OnDestroy {
         date: this.currentOrder.date,
         plate: this.currentOrder.plate
       };
+      this.apiConnector.updateOrder(editOrder).subscribe(order => {
+        console.log("order" + order);
 
-      // todo call update
-
+        this.orders[currentOrderIdx] = {
+          ... this.orders[currentOrderIdx],
+          orderId: order.orderId,
+          menuItem,
+          status: order.status,
+          notes: order.notes,
+          date: order.date,
+          plate: order.plate
+        };
+      });
     } else {
       // new orders
       let newOrders: Order[] = [];
@@ -138,16 +152,16 @@ export class OrdersComponent implements OnInit, OnDestroy {
           _id: this.ordersService.createId(),
           orderId: this.currentOrder.orderId,
           menuItem,
-          status: Status.Todo,
+          status: this.statuses[0],
           notes: this.currentOrder.notes,
           date: dateFormatted,
           plate: this.currentOrder.plate
         });
       }
 
-      // todo call save
-
-      this.orders = this.orders.concat(newOrders);
+      this.apiConnector.addOrders(newOrders).subscribe(orders => {
+        this.orders = this.orders.concat(orders);
+      })
     }
 
     this.orderDialog = false;
@@ -180,6 +194,16 @@ export class OrdersComponent implements OnInit, OnDestroy {
   }
 
   deleteOrder(order: Order) {
-    // todo
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete the selected order?',
+      header: 'Confirm',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.apiConnector.removeOrder(order._id!).subscribe(() => {
+          this.orders = this.orders.filter(val => val != order);
+          this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
+        })
+      }
+    });
   }
 }

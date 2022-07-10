@@ -43,10 +43,11 @@ export class HttpRestConnectorService implements ApiConnector {
   }
 
   addOrders(orders: Order[]): Observable<any> {
+    // todo temporary, used for mocked data
     return of(true);
   }
 
-  getOrder(id: string): Observable<any> {
+  getOrder(id: string): Observable<Order> {
     return new Observable();
   }
 
@@ -58,19 +59,22 @@ export class HttpRestConnectorService implements ApiConnector {
       );
   }
 
-  removeOrder(id: string): Observable<any> {
-    return new Observable();
+  removeOrder(id: string): Observable<boolean> {
+    // todo temporary, used for mocked data
+    return of(true);
   }
 
-  removeOrders(ids: string[]): Observable<any> {
-    return new Observable();
+  removeOrders(ids: string[]): Observable<boolean> {
+    // todo temporary, used for mocked data
+    return of(true);
   }
 
-  updateOrder(order: Order): Observable<any> {
-    return new Observable();
+  updateOrder(order: Order): Observable<Order> {
+    // todo temporary, used for mocked data
+    return of(order);
   }
 
-  getMenuItems(): Observable<any[]> {
+  getMenuItems(): Observable<TreeNode[]> {
     // todo temporary, used for mocked data
     return this.http.get<any>('assets/menu-items.json')
       .pipe(

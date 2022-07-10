@@ -28,11 +28,18 @@ export class OrderNewComponent implements OnInit, OnDestroy {
 
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
+  private readonly statuses: any[] = [];
 
   constructor(private i18nService: I18nService, private ordersService: OrdersService,
               private menuItemsService: MenuItemsService, @Inject('ApiConnector') private apiConnector: ApiConnector,
               private datePipe: DatePipe, private router: Router) {
     this.i18n = i18nService.instance;
+    this.statuses = [
+      {label: 'Todo', value: 'todo'},
+      {label: 'Progress', value: 'progress'},
+      {label: 'Done', value: 'done'},
+      {label: 'Cancelled', value: 'cancelled'}
+    ];
   }
 
   ngOnInit(): void {
@@ -68,7 +75,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
         _id: this.ordersService.createId(),
         orderId: newOrder.orderId,
         menuItem,
-        status: Status.Todo,
+        status: this.statuses[0],
         notes: newOrder.notes,
         date: dateFormatted,
         plate: newOrder.plate
