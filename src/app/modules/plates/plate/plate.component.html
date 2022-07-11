@@ -15,14 +15,23 @@
               class="expand-button">
         <i class="pi pi-external-link"></i>
       </button>
+      <p-tag [severity]="config._severity!"
+             [value]="config._status!"
+             styleClass="mr-2"></p-tag>
     </header>
-    <p-tag [severity]="config._severity!"
-           [value]="config._status!"
-           styleClass="mr-2"></p-tag>
-    <span *ngIf="config._severity !== 'danger'" id="empty-container">
-      <h3>{{i18n.PLATE.EMPTY}}</h3>
-      <i class="pi pi-inbox" id="empty"></i>
-    </span>
+    <!--    <span *ngIf="config._severity !== 'danger'" id="empty-container">-->
+    <!--      <h3>{{i18n.PLATE.EMPTY}}</h3>-->
+    <!--      <i class="pi pi-inbox" id="empty"></i>-->
+    <!--    </span>-->
+    <div class="item-list_container">
+      <item></item>
+      <item></item>
+      <item></item>
+      <item></item>
+      <item></item>
+      <item></item>
+      <item></item>
+    </div>
   </section>
   <section *ngSwitchCase="plateMode.Off" class="off">
     <header>

@@ -11,6 +11,7 @@ import {RippleModule} from "primeng/ripple";
 import {ReactiveFormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {PlatePageComponent} from "./page/plate-page.component";
+import {ItemComponent} from './item/item.component';
 
 const routes: Routes = [
   {
@@ -27,7 +28,8 @@ const routes: Routes = [
   declarations: [
     PlatesComponent,
     PlateComponent,
-    PlatePageComponent
+    PlatePageComponent,
+    ItemComponent
   ],
   exports: [
     PlateComponent
