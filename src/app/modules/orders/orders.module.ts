@@ -24,6 +24,8 @@ import {DialogModule} from "primeng/dialog";
 import {MenuItemsService} from "./menu-items.service";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {CardModule} from "primeng/card";
+import {TabViewModule} from "primeng/tabview";
 
 @NgModule({
   declarations: [
@@ -33,23 +35,25 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
     OrderEditComponent,
     OrderDetailsComponent
   ],
-  imports: [
-    CommonModule,
-    TableModule,
-    InputTextModule,
-    SharedModule,
-    OrdersRoutingModule,
-    CalendarModule,
-    DropdownModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TreeSelectModule,
-    InputNumberModule,
-    ToastModule,
-    ToolbarModule,
-    DialogModule,
-    ConfirmDialogModule
-  ],
+    imports: [
+        CommonModule,
+        TableModule,
+        InputTextModule,
+        SharedModule,
+        OrdersRoutingModule,
+        CalendarModule,
+        DropdownModule,
+        FormsModule,
+        ReactiveFormsModule,
+        TreeSelectModule,
+        InputNumberModule,
+        ToastModule,
+        ToolbarModule,
+        DialogModule,
+        ConfirmDialogModule,
+        CardModule,
+        TabViewModule
+    ],
   providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService, DatePipe]
 })
 export class OrdersModule { }
