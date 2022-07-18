@@ -15,10 +15,16 @@ export interface MenuItem {
   category?: Category
 }
 
+export interface MenuItemExtended extends MenuItem {
+  selected?: boolean,
+  quantity: number
+}
+
 export interface Category {
   _id?: string,
   name: string,
   description?: string
+  menuItems?: MenuItemExtended[]
 }
 
 export interface Plate {

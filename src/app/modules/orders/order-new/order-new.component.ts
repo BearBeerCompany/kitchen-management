@@ -5,7 +5,7 @@ import {MenuItemsService} from "../menu-items.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {I18nService} from "../../../services/i18n.service";
-import {MenuItem, Status} from "../order";
+import {Category, MenuItem, MenuItemExtended} from "../order";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
 import {DatePipe} from "@angular/common";
@@ -20,7 +20,9 @@ export class OrderNewComponent implements OnInit, OnDestroy {
 
   public readonly i18n: any;
   public form: FormGroup | undefined;
-  public menuItems: TreeNode[] = [];
+  public menuItemsNodes: TreeNode[] = [];
+  public menuItems: MenuItemExtended[] = [];
+  public categories: Category[] = [];
   public orders: any[] = [];
   public selectedOrders: any[] = [];
   public plates: Plate[] = [];
@@ -29,6 +31,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
+  private clonedOrders: any[] = [];
 
   constructor(private i18nService: I18nService, private ordersService: OrdersService,
               private menuItemsService: MenuItemsService, @Inject('ApiConnector') private apiConnector: ApiConnector,
@@ -51,11 +54,54 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       plate: new FormControl(null)
     });
 
-    this.menuItemsSub = this.apiConnector.getMenuItems().subscribe(data => this.menuItems = data);
+    this.menuItemsSub = this.apiConnector.getMenuItems().subscribe(data => {
+      this.menuItemsNodes = data;
+      this.categories = data.map(node => {
+        return {
+          _id: node.data._id,
+          name: node.data.name,
+          description: node.data.description,
+          menuItems: node.children.map((child: any) => {
+            return {
+              _id: child.data._id,
+              name: child.data.name,
+              description: child.data.description,
+              category: {
+                _id: node.data._id,
+                name: node.data.name,
+                description: node.data.description
+              },
+              quantity: 0
+            }
+          })
+        }
+      });
+
+      this.menuItems = data.map(node => {
+        return node.children.map((child: any) => {
+          return {
+            _id: child.data._id,
+            name: child.data.name,
+            description: child.data.description,
+            category: {
+              _id: node.data._id,
+              name: node.data.name,
+              description: node.data.description
+            },
+            quantity: 0
+          }
+        });
+      }).flat();
+    });
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = data.map(item => {
-        return { name: item.name, code: item._id };
+        return {
+          name: item.name,
+          label: item.name,
+          code: item._id,
+          value: item.name
+        };
       });
     });
   }
@@ -89,6 +135,13 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   }
 
   saveOrders() {
+    this.orders.forEach(order => {
+      const orderPlate = this.platesOptions.find(plate => plate.name === order.plate);
+      order.plate = {
+        name: orderPlate.name,
+        code: orderPlate.code
+      };
+    });
     this.apiConnector.addOrders(this.orders).subscribe(() => {
       this.router.navigate(['/orders']);
     });
@@ -98,4 +151,49 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     this.orders = this.orders.filter(val => !this.selectedOrders.includes(val));
     this.selectedOrders = [];
   }
+
+  selectMenuItem(event: Event, item: MenuItemExtended) {
+    event.stopPropagation();
+    event.preventDefault();
+    item.selected = true;
+
+    this.categories.forEach(category => {
+      category.menuItems?.forEach(mi => {
+        if (mi._id !== item._id) {
+          mi.selected = false;
+        }
+      });
+    });
+
+    const newOrder = this.form?.value;
+    const date = new Date();
+    const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
+    this.orders.push({
+      _id: this.ordersService.createId(),
+      orderId: newOrder.orderId,
+      menuItem: item,
+      status: this.statuses[0],
+      date: dateFormatted
+    });
+  }
+
+  onRowEditInit(order: any) {
+    this.clonedOrders[order._id] = {...order};
+  }
+
+  onRowEditSave(order: any) {
+    // if (product.price > 0) {
+      delete this.clonedOrders[order._id];
+      // this.messageService.add({severity:'success', summary: 'Success', detail:'Product is updated'});
+    // }
+    // else {
+      // this.messageService.add({severity:'error', summary: 'Error', detail:'Invalid Price'});
+    // }
+  }
+
+  onRowEditCancel(order: any, index: number) {
+    this.orders[index] = this.clonedOrders[order._id];
+    delete this.clonedOrders[order._id];
+  }
+
 }

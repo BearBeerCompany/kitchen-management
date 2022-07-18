@@ -1,0 +1,24 @@
+@import 'mixins';
+
+h3 {
+  @include title-center;
+}
+
+.menu-item-choice {
+  width: 66%;
+}
+
+.menu-item-card {
+  ::ng-deep .p-card {
+    :hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.menu-item-selection {
+  ::ng-deep .p-card {
+    background-color: blue;
+    color: white;
+  }
+}
