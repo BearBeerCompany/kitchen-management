@@ -13,6 +13,8 @@ import {PrimeNGConfig} from "primeng/api";
     .app-container {
       height: 90vh;
       max-height: 90vh;
+
+      overflow-y: auto;
     }
   `]
 })

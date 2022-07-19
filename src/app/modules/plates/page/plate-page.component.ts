@@ -27,8 +27,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
 
   public config!: Plate;
 
-  private _routeSub: Subscription = new Subscription();
-  private _plateSub: Subscription = new Subscription();
+  private _subs: Subscription = new Subscription();
   private _id?: string;
 
   constructor(private _route: ActivatedRoute,
@@ -40,21 +39,20 @@ export class PlatePageComponent implements OnInit, OnDestroy {
     if (rootComponent)
       rootComponent.remove();
 
-    this._routeSub = this._route.params.subscribe(
+    this._subs.add(this._route.params.subscribe(
       params => {
         this._id = params["id"];
       }
-    );
+    ));
 
-    this._plateSub = this._apiConnector.getPlate(this._id!)
+    this._subs.add(this._apiConnector.getPlate(this._id!)
       .subscribe((plate: Plate) => {
         this.config = plate;
-      });
+      }));
   }
 
   public ngOnDestroy(): void {
-    this._routeSub.unsubscribe();
-    this._plateSub.unsubscribe();
+    this._subs.unsubscribe();
   }
 
 }
