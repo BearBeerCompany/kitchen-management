@@ -10,6 +10,7 @@ import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
 import {DatePipe} from "@angular/common";
 import {Router} from "@angular/router";
+import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 
 @Component({
   selector: 'order-new',
@@ -33,9 +34,13 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   private readonly statuses: any[] = [];
   private clonedOrders: any[] = [];
 
-  constructor(private i18nService: I18nService, private ordersService: OrdersService,
-              private menuItemsService: MenuItemsService, @Inject('ApiConnector') private apiConnector: ApiConnector,
-              private datePipe: DatePipe, private router: Router) {
+  constructor(private i18nService: I18nService,
+              private ordersService: OrdersService,
+              private menuItemsService: MenuItemsService,
+              @Inject('ApiConnector') private apiConnector: ApiConnector,
+              private datePipe: DatePipe,
+              private router: Router,
+              private _plateQueueManagerService: PlateQueueManagerService) {
     this.i18n = i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: 'todo'},
@@ -143,6 +148,9 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       };
     });
     this.apiConnector.addOrders(this.orders).subscribe(() => {
+      this.orders.forEach(order => {
+        this._plateQueueManagerService.sendToQueue(order.plate.code, order.menuItem);
+      });
       this.router.navigate(['/orders']);
     });
   }
@@ -183,11 +191,11 @@ export class OrderNewComponent implements OnInit, OnDestroy {
 
   onRowEditSave(order: any) {
     // if (product.price > 0) {
-      delete this.clonedOrders[order._id];
-      // this.messageService.add({severity:'success', summary: 'Success', detail:'Product is updated'});
+    delete this.clonedOrders[order._id];
+    // this.messageService.add({severity:'success', summary: 'Success', detail:'Product is updated'});
     // }
     // else {
-      // this.messageService.add({severity:'error', summary: 'Error', detail:'Invalid Price'});
+    // this.messageService.add({severity:'error', summary: 'Error', detail:'Invalid Price'});
     // }
   }
 

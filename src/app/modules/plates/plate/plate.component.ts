@@ -5,6 +5,8 @@ import {Plate} from "./plate.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";
+import {ReactiveQueue} from "../../shared/class/reactive-queue";
+import {MenuItem} from "../../orders/order";
 
 @Component({
   selector: 'plate',
@@ -21,6 +23,7 @@ export class PlateComponent implements OnInit {
   public showExpand: boolean = true;
 
   @Input() public config!: Plate;
+  @Input() public queue!: ReactiveQueue<MenuItem>;
 
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
 
@@ -32,7 +35,6 @@ export class PlateComponent implements OnInit {
   public ngOnInit(): void {
     this._route.params.subscribe(
       params => {
-        console.log(params["id"])
         this.showExpand = !params["id"];
       }
     );

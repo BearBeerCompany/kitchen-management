@@ -19,18 +19,14 @@
              [value]="config._status!"
              styleClass="mr-2"></p-tag>
     </header>
-    <!--    <span *ngIf="config._severity !== 'danger'" id="empty-container">-->
-    <!--      <h3>{{i18n.PLATE.EMPTY}}</h3>-->
-    <!--      <i class="pi pi-inbox" id="empty"></i>-->
-    <!--    </span>-->
-    <div class="item-list_container">
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
-      <item></item>
+    <span *ngIf="config._severity !== 'danger' && (queue.isEmpty | async)" id="empty-container">
+      <h3>{{i18n.PLATE.EMPTY}}</h3>
+      <i class="pi pi-inbox" id="empty"></i>
+    </span>
+    <div *ngIf="!(queue.isEmpty | async)" class="item-list_container">
+      <ng-container *ngFor="let item of queue.values$ | async">
+        <item></item>
+      </ng-container>
     </div>
   </section>
   <section *ngSwitchCase="plateMode.Off" class="off">

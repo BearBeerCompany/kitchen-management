@@ -11,7 +11,8 @@
   <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
                                                      currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
     <plate (onNew)="onNewPlate($event)"
-           [config]="plate">
+           [config]="plate"
+           [queue]="plateQueueManagerService.getQueue(plate._id!)">
     </plate>
   </ng-container>
   <button (click)="onNextPage()"

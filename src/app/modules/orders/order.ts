@@ -27,6 +27,7 @@ export interface Category {
   menuItems?: MenuItemExtended[]
 }
 
+// TODO: Replace with the original interface Plate in plate/plate.model
 export interface Plate {
   _id?: string,
   name: string,

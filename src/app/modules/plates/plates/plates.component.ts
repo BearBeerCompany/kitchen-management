@@ -3,6 +3,7 @@ import {mode, PlateMode} from "../plate-mode";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "../plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
+import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
 
 @Component({
   selector: 'plates',
@@ -12,6 +13,7 @@ import {ApiConnector} from "../../../services/api-connector";
 export class PlatesComponent implements OnInit, AfterViewInit {
 
   public readonly i18n: any;
+  public readonly DISPLAY_CHUNK = 3;
 
   public plateMode: typeof PlateMode = mode();
   public hidePrevious: boolean = true;
@@ -21,7 +23,6 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   public totalPages: number = 0;
 
   private readonly _MIN_DELTA_SWIPE = 90;
-  public readonly DISPLAY_CHUNK = 3;
 
   private _start: number = 0;
   private _end: number = 0;
@@ -29,6 +30,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
 
 
   constructor(public i18nService: I18nService,
+              public plateQueueManagerService: PlateQueueManagerService,
               private _elementRef: ElementRef,
               @Inject('ApiConnector') private _apiConnector: ApiConnector) {
     this.i18n = i18nService.instance;

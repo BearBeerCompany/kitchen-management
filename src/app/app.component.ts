@@ -1,5 +1,9 @@
-import {Component} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {PrimeNGConfig} from "primeng/api";
+import {PlateQueueManagerService} from "./modules/plates/services/plate-queue-manager.service";
+import {ApiConnector} from "./services/api-connector";
+import {Plate} from "./modules/plates/plate/plate.model";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -18,9 +22,25 @@ import {PrimeNGConfig} from "primeng/api";
     }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
 
-  constructor(private _primengConfig: PrimeNGConfig) {
+  private _bootstrap$: Subscription = new Subscription();
+
+  constructor(private _primengConfig: PrimeNGConfig,
+              @Inject('ApiConnector') private _apiConnector: ApiConnector,
+              private _plateQueueManagerService: PlateQueueManagerService) {
     this._primengConfig.ripple = true;
+  }
+
+  public ngOnInit(): void {
+    this._bootstrap$.add(this._apiConnector.getPlates()
+      .subscribe((plates: Plate[]) => {
+        this._plateQueueManagerService.load(plates);
+      })
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this._bootstrap$.unsubscribe();
   }
 }

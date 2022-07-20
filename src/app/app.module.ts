@@ -9,7 +9,7 @@ import {FileSystemConnectorService} from "./services/file-system-connector.servi
 import {HttpRestConnectorService} from "./services/http-rest-connector.service";
 import {SharedModule} from "./modules/shared/shared.module";
 import {I18nService} from "./services/i18n.service";
-import { HttpClientModule } from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
     I18nService,
     {
       provide: 'ApiConnector',
-      useClass: environment.connector === "fs" ? FileSystemConnectorService : HttpRestConnectorService
+      useClass: environment.connector === "api" ? FileSystemConnectorService : HttpRestConnectorService
     }
   ],
   bootstrap: [AppComponent]
