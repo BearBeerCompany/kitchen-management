@@ -141,14 +141,16 @@ export class OrderNewComponent implements OnInit, OnDestroy {
 
   saveOrders() {
     this.orders.forEach(order => {
-      const orderPlate = this.platesOptions.find(plate => plate.name === order.plate);
-      order.plate = {
-        name: orderPlate.name,
-        code: orderPlate.code
-      };
+      if (!!order.plate) {
+        const orderPlate = this.platesOptions.find(plate => plate.name === order.plate);
+        order.plate = {
+          name: orderPlate.name,
+          code: orderPlate.code
+        };
+      }
     });
     this.apiConnector.addOrders(this.orders).subscribe(() => {
-      this.orders.forEach(order => {
+      this.orders.filter(order => !!order.plate).forEach(order => {
         this._plateQueueManagerService.sendToQueue(order.plate.code, order.menuItem);
       });
       this.router.navigate(['/orders']);
