@@ -26,7 +26,7 @@ import {HttpClientModule} from '@angular/common/http';
     I18nService,
     {
       provide: 'ApiConnector',
-      useClass: environment.connector === "api" ? FileSystemConnectorService : HttpRestConnectorService
+      useClass: environment.connector === "fs" ? FileSystemConnectorService : HttpRestConnectorService
     }
   ],
   bootstrap: [AppComponent]
