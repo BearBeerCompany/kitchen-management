@@ -2,11 +2,8 @@
 
 <p-toolbar styleClass="p-mb-4">
   <ng-template pTemplate="left">
-    <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="openNew()"></button>
+    <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addOrder()"></button>
     <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
-
-    <!-- New order (version 2)-->
-    <button pButton pRipple type="button" icon="pi pi-plus" class="p-button-rounded" (click)="addOrder()"></button>
   </ng-template>
 </p-toolbar>
 
@@ -33,7 +30,7 @@
       <th style="width: 3rem"></th>
       <th pSortableColumn="orderId">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Number
+          Order Id
           <p-sortIcon field="orderId"></p-sortIcon>
           <p-columnFilter  type="numeric" field="orderId" display="menu"></p-columnFilter>
         </div>
@@ -99,7 +96,7 @@
         <p-tableCheckbox [value]="order"></p-tableCheckbox>
       </td>
       <td>
-        <span class="p-column-title">Number</span>
+        <span class="p-column-title">Order Id</span>
         {{order.orderId}}
       </td>
       <td>
