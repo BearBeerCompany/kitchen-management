@@ -192,13 +192,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   }
 
   onRowEditSave(order: any) {
-    // if (product.price > 0) {
     delete this.clonedOrders[order._id];
-    // this.messageService.add({severity:'success', summary: 'Success', detail:'Product is updated'});
-    // }
-    // else {
-    // this.messageService.add({severity:'error', summary: 'Error', detail:'Invalid Price'});
-    // }
   }
 
   onRowEditCancel(order: any, index: number) {
