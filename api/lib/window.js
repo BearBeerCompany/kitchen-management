@@ -10,7 +10,8 @@ function routeOnNewTab(_, caller, id) {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      preload: path.join(global.rootDir, "/api/preload.js")
+      preload: path.join(global.rootDir, "/api/preload.js"),
+      devTools: false
     }
   });
   window.loadURL('file://' + global.rootDir + '/dist/app/index.html#/' + caller + '/' + id);
@@ -18,7 +19,7 @@ function routeOnNewTab(_, caller, id) {
   window.on("closed", () => {
     window = null;
   });
-
+  window.webContents.openDevTools()
   windows.push(window);
 }
 

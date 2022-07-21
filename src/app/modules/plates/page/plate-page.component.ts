@@ -39,6 +39,12 @@ export class PlatePageComponent implements OnInit, OnDestroy {
     if (rootComponent)
       rootComponent.remove();
 
+    const appContainerList: HTMLCollectionOf<Element> = document.getElementsByClassName("app-container");
+    for (const container of appContainerList) {
+      (container as HTMLElement).classList.remove("app-container");
+    }
+
+
     this._subs.add(this._route.params.subscribe(
       params => {
         this._id = params["id"];
