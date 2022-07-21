@@ -1,3 +1,5 @@
+import {Plate} from "../plates/plate/plate.model";
+
 export interface Order {
   _id?: string,
   orderId: number,
@@ -27,16 +29,9 @@ export interface Category {
   menuItems?: MenuItemExtended[]
 }
 
-// TODO: Replace with the original interface Plate in plate/plate.model
-export interface Plate {
-  _id?: string,
-  name: string,
-  description?: string
-}
-
 export enum Status {
-  Todo = "todo",
-  Progress = "progress",
-  Done = "done",
-  Cancelled = "cancelled"
+  Todo = "TODO",
+  Progress = "PROGRESS",
+  Done = "DONE",
+  Cancelled = "CANCELLED"
 }

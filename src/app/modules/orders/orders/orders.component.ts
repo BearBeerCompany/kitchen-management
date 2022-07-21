@@ -21,9 +21,11 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private ordersSub: Subscription = new Subscription();
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
+  private clonedOrders: Order[] = [];
 
   public readonly i18n: any;
   orders: Order[] = [];
+  ordersRows: any[] = [];
   selectedOrders: Order[] = [];
   loading: boolean = true;
   statuses: any[] = [];
@@ -41,24 +43,42 @@ export class OrdersComponent implements OnInit, OnDestroy {
               private datePipe: DatePipe, @Inject('ApiConnector') private apiConnector: ApiConnector) {
     this.i18n = i18nService.instance;
     this.statuses = [
-      {label: 'Todo', value: 'todo'},
-      {label: 'Progress', value: 'progress'},
-      {label: 'Done', value: 'done'},
-      {label: 'Cancelled', value: 'cancelled'}
+      {label: 'Todo', value: Status.Todo},
+      {label: 'Progress', value: Status.Progress},
+      {label: 'Done', value: Status.Done},
+      {label: 'Cancelled', value: Status.Cancelled}
     ];
   }
 
   ngOnInit(): void {
-    this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
-      this.orders = data;
-      this.loading = false;
-    });
+    this.menuItemsSub = this.menuItemsService.getMenuItems().subscribe(data => {
+      this.menuItems = data;
 
-    this.menuItemsSub = this.menuItemsService.getMenuItems().subscribe(data => this.menuItems = data);
+      this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
+        this.orders = data;
+        this.ordersRows = this.orders.map((order: Order) => {
+          const menuItem = this._getMenuItemNode(order);
+          return {
+            _id: order._id,
+            orderId: order.orderId,
+            menuItem,
+            date: order.date,
+            status: order.status,
+            plate: order.plate?.name,
+            notes: order.notes
+          };
+        });
+        this.loading = false;
+      });
+    });
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = data.map(item => {
-        return {name: item.name, code: item._id};
+        return {
+          code: item._id,
+          label: item.name,
+          value: item.name
+        };
       });
     });
   }
@@ -169,23 +189,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   editOrder(order: Order) {
     this.currentOrder = {...order};
-    const menuItemId = order.menuItem._id;
-    const categoryId = order.menuItem.category?._id;
-    let menuItemNode = null;
-    this.menuItems.forEach(item => {
-      if (item.data._id === categoryId) {
-        menuItemNode = item.children.find((child: any) => {
-          return child.data._id === menuItemId;
-        });
-        menuItemNode = {
-          ...menuItemNode,
-          parent: {
-            data: order.menuItem.category
-          }
-        };
-      }
-      return null;
-    });
+    let menuItemNode = this._getMenuItemNode(order);
     if (menuItemNode) {
       this.currentOrder.menuItem = menuItemNode;
     }
@@ -205,5 +209,58 @@ export class OrdersComponent implements OnInit, OnDestroy {
         })
       }
     });
+  }
+
+  onRowEditInit(order: any) {
+    this.clonedOrders[order._id] = {...order};
+  }
+
+  onRowEditSave(orderRow: any) {
+    let order = this.orders.find(item => item._id === orderRow._id);
+    if (order) {
+      const menuItem: MenuItem = {
+        ...orderRow.menuItem.data,
+        category: orderRow.menuItem.parent.data
+      };
+      const plate = this.plates.find(item => item.name === orderRow.plate) as Plate;
+
+      order = {
+        ...order,
+        orderId: orderRow.orderId,
+        menuItem,
+        date: orderRow.date,
+        status: orderRow.status,
+        notes: orderRow.notes,
+        plate
+      };
+      this.apiConnector.updateOrder(order).subscribe(order => {
+        delete this.clonedOrders[order._id];
+      });
+    }
+  }
+
+  onRowEditCancel(order: any, index: number) {
+    this.orders[index] = this.clonedOrders[order._id];
+    delete this.clonedOrders[order._id];
+  }
+
+  private _getMenuItemNode(order: Order) {
+    const menuItemId = order.menuItem._id;
+    const categoryId = order.menuItem.category?._id;
+    let menuItemNode = null;
+    this.menuItems.forEach(item => {
+      if (item.data._id === categoryId) {
+        menuItemNode = item.children.find((child: any) => {
+          return child.data._id === menuItemId;
+        });
+        menuItemNode = {
+          ...menuItemNode,
+          parent: {
+            data: order.menuItem.category
+          }
+        };
+      }
+    });
+    return menuItemNode;
   }
 }

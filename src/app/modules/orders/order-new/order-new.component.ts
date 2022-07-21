@@ -5,7 +5,7 @@ import {MenuItemsService} from "../menu-items.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {I18nService} from "../../../services/i18n.service";
-import {Category, MenuItem, MenuItemExtended} from "../order";
+import {Category, MenuItem, MenuItemExtended, Order, Status} from "../order";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
 import {DatePipe} from "@angular/common";
@@ -24,15 +24,15 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   public menuItemsNodes: TreeNode[] = [];
   public menuItems: MenuItemExtended[] = [];
   public categories: Category[] = [];
-  public orders: any[] = [];
-  public selectedOrders: any[] = [];
+  public orders: Order[] = [];
+  public selectedOrders: Order[] = [];
   public plates: Plate[] = [];
   public platesOptions: any[] = [];
 
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
-  private clonedOrders: any[] = [];
+  private clonedOrders: Order[] = [];
 
   constructor(private i18nService: I18nService,
               private ordersService: OrdersService,
@@ -43,10 +43,10 @@ export class OrderNewComponent implements OnInit, OnDestroy {
               private _plateQueueManagerService: PlateQueueManagerService) {
     this.i18n = i18nService.instance;
     this.statuses = [
-      {label: 'Todo', value: 'todo'},
-      {label: 'Progress', value: 'progress'},
-      {label: 'Done', value: 'done'},
-      {label: 'Cancelled', value: 'cancelled'}
+      {label: 'Todo', value: Status.Todo},
+      {label: 'Progress', value: Status.Progress},
+      {label: 'Done', value: Status.Done},
+      {label: 'Cancelled', value: Status.Cancelled}
     ];
   }
 
@@ -102,9 +102,9 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       this.plates = data;
       this.platesOptions = data.map(item => {
         return {
+          code: item._id,
           name: item.name,
           label: item.name,
-          code: item._id,
           value: item.name
         };
       });
@@ -143,15 +143,16 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     this.orders.forEach(order => {
       if (!!order.plate) {
         const orderPlate = this.platesOptions.find(plate => plate.name === order.plate);
+        // override order.plate
         order.plate = {
-          name: orderPlate.name,
-          code: orderPlate.code
-        };
+          _id: orderPlate.code,
+          name: orderPlate.name
+        } as Plate;
       }
     });
     this.apiConnector.addOrders(this.orders).subscribe(() => {
       this.orders.filter(order => !!order.plate).forEach(order => {
-        this._plateQueueManagerService.sendToQueue(order.plate.code, order.menuItem);
+        this._plateQueueManagerService.sendToQueue(order.plate?._id!, order.menuItem);
       });
       this.router.navigate(['/orders']);
     });
@@ -182,7 +183,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       _id: this.ordersService.createId(),
       orderId: newOrder.orderId,
       menuItem: item,
-      status: this.statuses[0],
+      status: this.statuses[0].value,
       date: dateFormatted
     });
   }

@@ -8,16 +8,24 @@
 </p-toolbar>
 
 <p-table #dt
-         [value]="orders" [(selection)]="selectedOrders" dataKey="_id" styleClass="p-datatable-orders"
+         [value]="ordersRows"
+         [(selection)]="selectedOrders"
+         dataKey="_id"
+         styleClass="p-datatable-orders"
          [rowHover]="true"
-         [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [loading]="loading"
-         [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [rows]="10"
+         [showCurrentPageReport]="true"
+         [rowsPerPageOptions]="[10,25,50]"
+         [loading]="loading"
+         [paginator]="true"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
          [globalFilterFields]="['orderId','menuItem.name','menuItem.category.name','status','plate.name']"
+         editMode="row"
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
-      List of Orders
+      List of Burgers
       <span class="p-input-icon-left">
           <i class="pi pi-search"></i>
           <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Global Search" />
@@ -27,7 +35,9 @@
 
   <ng-template pTemplate="header">
     <tr>
-      <th style="width: 3rem"></th>
+      <th style="width: 3rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
       <th pSortableColumn="orderId">
         <div class="p-d-flex p-jc-between p-ai-center">
           Order Id
@@ -90,42 +100,86 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-order>
-    <tr class="p-selectable-row">
+  <ng-template pTemplate="body" let-order let-editing="editing" let-ri="rowIndex">
+    <tr [pEditableRow]="order" class="p-selectable-row">
       <td>
         <p-tableCheckbox [value]="order"></p-tableCheckbox>
       </td>
       <td>
-        <span class="p-column-title">Order Id</span>
-        {{order.orderId}}
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="number" [(ngModel)]="order.orderId">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{order.orderId}}
+          </ng-template>
+        </p-cellEditor>
       </td>
       <td>
-        <span class="p-column-title">Menu Item</span>
-        <span class="image-text">{{order.menuItem.name}}</span>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <p-treeSelect [(ngModel)]="order.menuItem"
+                          [options]="menuItems"
+                          [metaKeySelection]="false"
+                          placeholder="Select Menu Item"
+                          [filter]="true"
+                          [filterInputAutoFocus]="true"
+                          scrollHeight="300px"
+            ></p-treeSelect>
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{order.menuItem.data.name}}
+          </ng-template>
+        </p-cellEditor>
+
       </td>
       <td>
         <span class="p-column-title">Category</span>
-        <span class="image-text">{{order.menuItem.category.name}}</span>
       </td>
       <td>
         <span class="p-column-title">Date</span>
         {{order.date}}
       </td>
       <td>
-        <span class="p-column-title">Status</span>
-        <span [class]="'order-badge status-' + order.status">{{order.status?.label}}</span>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <p-dropdown [options]="statuses" [(ngModel)]="order.status" [style]="{'width':'100%'}"></p-dropdown>
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{order.status}}
+          </ng-template>
+        </p-cellEditor>
       </td>
       <td>
-        <span class="p-column-title">Plate</span>
-        <span [class]="'order-badge status-' + order.plate?.name">{{order.plate?.name}}</span>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <p-dropdown [options]="platesOptions" [(ngModel)]="order.plate" [style]="{'width':'100%'}"></p-dropdown>
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{order.plate}}
+          </ng-template>
+        </p-cellEditor>
       </td>
       <td>
-        <span class="p-column-title">Notes</span>
-        <span class="image-text">{{order.notes}}</span>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="text" [(ngModel)]="order.notes">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{order.notes}}
+          </ng-template>
+        </p-cellEditor>
       </td>
-      <td>
-        <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success p-mr-2" (click)="editOrder(order)"></button>
-        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="deleteOrder(order)"></button>
+      <td style="text-align:center">
+        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
+                (click)="onRowEditInit(order)" class="p-button-rounded p-button-text"
+        ></button>
+        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
+                (click)="onRowEditSave(order)" class="p-button-rounded p-button-text p-button-success p-mr-2"
+        ></button>
+        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
+                (click)="onRowEditCancel(order, ri)" class="p-button-rounded p-button-text p-button-danger"
+        ></button>
       </td>
     </tr>
   </ng-template>
@@ -140,7 +194,7 @@
 <p-dialog [(visible)]="orderDialog" [style]="{width: '450px', height: '700px'}" header="Order Details" [modal]="true" styleClass="p-fluid">
   <ng-template pTemplate="content">
     <div class="p-field">
-      <label for="orderId">Number</label>
+      <label for="orderId">Order Id</label>
       <p-inputNumber [max]="1000"
                      [min]="0"
                      [showButtons]="true"
@@ -150,7 +204,7 @@
       <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
     </div>
     <div class="p-field">
-      <label for="menuItem">Menu Item</label>
+      <label for="menuItem">Burger</label>
       <p-treeSelect id="menuItem"
         [(ngModel)]="currentOrder.menuItem"
         [options]="menuItems"
