@@ -19,9 +19,7 @@ async function addPlate(_, config) {
     // file written successfully
   });
 
-  // display notification
-  filesAdded();
-  return Promise.resolve("Saved!");
+   return Promise.resolve("Saved!");
 }
 
 async function readPlates(_) {
@@ -158,8 +156,6 @@ async function addOrder(_, order) {
     // file written successfully
   });
 
-  // display notification
-  filesAdded();
   return Promise.resolve("Saved!");
 }
 

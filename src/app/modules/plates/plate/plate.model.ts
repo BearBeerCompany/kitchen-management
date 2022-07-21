@@ -1,8 +1,8 @@
-import {PlateMode} from "../plate-mode";
+import {PlateInterface} from "../plate.interface";
 
 export interface Plate {
   _id?: string;
-  mode?: PlateMode;
+  mode?: PlateInterface;
   color?: string;
   name?: string;
   description?: string;

@@ -4,7 +4,7 @@ import {map, Observable} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {Plate} from "../modules/plates/plate/plate.model";
 import {I18nService} from "./i18n.service";
-import {PlateMode} from "../modules/plates/plate-mode";
+import {PlateInterface} from "../modules/plates/plate.interface";
 import {MenuItem, Order} from "../modules/orders/order";
 
 @Injectable({
@@ -62,7 +62,7 @@ export class FileSystemConnectorService implements ApiConnector {
     config._status = label;
 
     config._id = config?._id ?? undefined;
-    config.mode = config?.mode ?? PlateMode.On;
+    config.mode = config?.mode ?? PlateInterface.On;
 
     return config;
   }
