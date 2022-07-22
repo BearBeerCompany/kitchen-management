@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {mode, PlateMode} from "../plate-mode";
+import {mode, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "./plate.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
@@ -18,7 +18,7 @@ export class PlateComponent implements OnInit {
   public readonly i18n: any;
 
   public icon: string = "pi-plus";
-  public plateMode: typeof PlateMode = mode();
+  public plateMode: typeof PlateInterface = mode();
   public form?: FormGroup | undefined;
   public showExpand: boolean = true;
 
@@ -53,7 +53,7 @@ export class PlateComponent implements OnInit {
       name: this.form?.get("name")?.value,
       color: this.form?.get("color")?.value,
       slot: [0, this.form?.get("number")?.value],
-      mode: PlateMode.On
+      mode: PlateInterface.On
     } as Plate);
   }
 
@@ -63,11 +63,11 @@ export class PlateComponent implements OnInit {
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
-    this.config.mode = PlateMode.Form;
+    this.config.mode = PlateInterface.Form;
   }
 
   public discardForm() {
-    this.config.mode = PlateMode.Skeleton;
+    this.config.mode = PlateInterface.Skeleton;
   }
 
   public expandTab() {

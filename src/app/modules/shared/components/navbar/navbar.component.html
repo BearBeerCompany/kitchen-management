@@ -5,6 +5,8 @@
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Plates)"
                  [active]="selectedRoute === routing.Plates"
+                 [badgeCounter]="plateQueueManagerService.notify | async"
+                 [badged]="plateQueueManagerService.haveNotify"
                  icon="pi-inbox">
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Orders)"

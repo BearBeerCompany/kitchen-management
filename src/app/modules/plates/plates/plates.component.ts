@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, Inject, OnInit} from '@angular/core';
-import {mode, PlateMode} from "../plate-mode";
+import {mode, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "../plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
@@ -15,7 +15,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   public readonly i18n: any;
   public readonly DISPLAY_CHUNK = 3;
 
-  public plateMode: typeof PlateMode = mode();
+  public plateMode: typeof PlateInterface = mode();
   public hidePrevious: boolean = true;
   public hideNext: boolean = true;
   public plateList!: Plate[];
@@ -113,7 +113,7 @@ export class PlatesComponent implements OnInit, AfterViewInit {
         this.plateList = [
           ...plates,
           {
-            mode: PlateMode.Skeleton
+            mode: PlateInterface.Skeleton
           }
         ];
         this._total = this.plateList.length;
