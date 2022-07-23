@@ -24,10 +24,19 @@
       <i class="pi pi-inbox" id="empty"></i>
     </span>
     <div *ngIf="!(queue.isEmpty$ | async)" class="item-list_container">
-      <ng-container *ngFor="let item of queue.values$ | async">
-        <item></item>
+      <ng-container *ngFor="let item of progressItems">
+        <item [config]="item"></item>
       </ng-container>
     </div>
+    <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
+    <p-badge (click)="onBadgeMouseClick()"
+             (mouseenter)="onBadgeMouseEnter()"
+             (mouseleave)="onBadgeMouseLeave()"
+             (mouseover)="onMouseEnter()"
+             *ngIf="todoItems.length > 0"
+             [severity]="badgeColor"
+             [size]="badgeSize"
+             [value]="todoItems.length + ''"></p-badge>
   </section>
   <section *ngSwitchCase="plateMode.Off" class="off">
     <header>
@@ -65,3 +74,8 @@
     </form>
   </section>
 </ng-container>
+<ng-template #overlay>
+  <items-overlay (onClose)="onBadgeMouseClick()"
+                 (onRun)="onItemStart($event)"
+                 [items]="todoItems"></items-overlay>
+</ng-template>

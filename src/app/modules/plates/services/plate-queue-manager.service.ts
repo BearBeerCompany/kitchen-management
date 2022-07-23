@@ -38,6 +38,7 @@ export class PlateQueueManagerService {
 
   public sendToQueue(id: string, item: MenuItem): void {
     this._validateItem(item);
+    item.status = Status.Todo;
     this._getQueue(id).enqueue(item);
     this._changes$.next(this._changes$.value + 1);
   }
@@ -67,14 +68,23 @@ export class PlateQueueManagerService {
         this.removeFromQueue(id, item);
         //TODO: Invoke order service
         break;
+      case Status.Progress:
+        this._runItemProgress(id, item);
+        break;
       default:
         console.warn("[QueueManager] Action not found");
         break;
     }
   }
 
+  private _runItemProgress(plateId: string, item: MenuItem): void {
+    const queue: ReactiveQueue<MenuItem> = this._getQueue(plateId);
+    queue.values.find(i => item._id === i._id)!.status = Status.Progress;
+    queue.refresh();
+  }
+
   private _validateItem(item: MenuItem): void {
-    if (!item || !item._id || !item.name) {
+    if (!item || !item._id) {
       throw new Error("Selected item is invalid!");
     }
   }

@@ -25,7 +25,7 @@ export class ItemComponent {
     const event: ItemEvent = {
       action: Status.Cancelled,
       item: this.config
-    };
+    } as ItemEvent;
 
     //TODO: Handle moved or re-queued reasons
 

@@ -1,19 +1,20 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {mode, PlateInterface} from "../plate.interface";
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {ItemEvent, mode, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "./plate.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {MenuItem} from "../../orders/order";
+import {MenuItem, Status} from "../../orders/order";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'plate',
   templateUrl: './plate.component.html',
   styleUrls: ['./plate.component.scss']
 })
-export class PlateComponent implements OnInit {
+export class PlateComponent implements OnInit, OnDestroy {
 
   public readonly i18n: any;
 
@@ -21,11 +22,18 @@ export class PlateComponent implements OnInit {
   public plateMode: typeof PlateInterface = mode();
   public form?: FormGroup | undefined;
   public showExpand: boolean = true;
+  public badgeSize: string = "large";
+  public badgeColor: string = "info";
+  public showOverlay: boolean = false;
+  public progressItems: MenuItem[] = [];
+  public todoItems: MenuItem[] = [];
+  @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
 
   @Input() public config!: Plate;
   @Input() public queue!: ReactiveQueue<MenuItem>;
 
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
+  private queue$: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,
               private _route: ActivatedRoute) {
@@ -38,6 +46,25 @@ export class PlateComponent implements OnInit {
         this.showExpand = !params["id"];
       }
     );
+
+    this.queue$.add(this.queue.values$.subscribe((items: MenuItem[] = []) => {
+        this.progressItems = [];
+        this.todoItems = [];
+        for (const i of items) {
+          if (i.status === Status.Progress)
+            this.progressItems.push(i);
+          else
+            this.todoItems.push(i);
+        }
+        if (this.todoItems.length == 0) {
+          this.showOverlay = false;
+        }
+      })
+    );
+  }
+
+  public ngOnDestroy(): void {
+    this.queue$.unsubscribe();
   }
 
   public onMouseEnter(): void {
@@ -66,11 +93,43 @@ export class PlateComponent implements OnInit {
     this.config.mode = PlateInterface.Form;
   }
 
-  public discardForm() {
+  public discardForm(): void {
     this.config.mode = PlateInterface.Skeleton;
   }
 
-  public expandTab() {
+  public expandTab(): void {
     app.openNewTab(Routing.Plates, this.config._id!);
+  }
+
+  public onBadgeMouseEnter(): void {
+    this.badgeSize = "xlarge";
+    this.badgeColor = "danger";
+  }
+
+  public onBadgeMouseLeave(): void {
+    if (!this.showOverlay) {
+      this.badgeSize = "large";
+      this.badgeColor = "info";
+    }
+  }
+
+  public onBadgeMouseClick(): void {
+    this.showOverlay = !this.showOverlay;
+    if (this.showOverlay)
+      this.onBadgeMouseEnter();
+    else
+      this.onBadgeMouseLeave();
+  }
+
+  public onItemStart(id: string) {
+    const event: ItemEvent = {
+      action: Status.Progress,
+      item: {
+        _id: id
+      },
+      plateId: this.config._id!
+    }
+
+    this.onItemEvent.emit(event);
   }
 }

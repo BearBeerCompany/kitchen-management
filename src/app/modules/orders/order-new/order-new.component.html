@@ -16,7 +16,7 @@
         <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
           <div class="grid">
             <ng-container *ngFor="let item of category.menuItems">
-              <p-card [header]="item.name"
+              <p-card [header]="item.name!"
                       [ngClass]="{'menu-item-selection': item.selected}"
                       (click)="selectMenuItem($event, item)"
                       class="m-2 menu-item-card"

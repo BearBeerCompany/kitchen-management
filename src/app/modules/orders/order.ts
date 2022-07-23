@@ -1,4 +1,5 @@
 import {Plate} from "../plates/plate/plate.model";
+import {PlateItemAction} from "../plates/plate.interface";
 
 export interface Order {
   _id?: string,
@@ -12,9 +13,10 @@ export interface Order {
 
 export interface MenuItem {
   _id?: string,
-  name: string,
+  name?: string,
   description?: string
   category?: Category
+  status?: PlateItemAction;
 }
 
 export interface MenuItemExtended extends MenuItem {

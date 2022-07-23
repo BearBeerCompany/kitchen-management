@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, Inject, OnInit} from '@angular/core';
-import {mode, PlateInterface} from "../plate.interface";
+import {ItemEvent, mode, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "../plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
@@ -119,5 +119,9 @@ export class PlatesComponent implements OnInit, AfterViewInit {
         this._total = this.plateList.length;
         this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
       });
+  }
+
+  public handleItemEvent(event: ItemEvent): void {
+    this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action);
   }
 }

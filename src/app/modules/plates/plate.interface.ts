@@ -19,6 +19,7 @@ export enum PlateItemStatus {
 export type PlateItemAction = PlateItemStatus | Status;
 
 export interface ItemEvent {
+  plateId: string;
   action: PlateItemAction;
   item: MenuItem;
   nextId?: string;
