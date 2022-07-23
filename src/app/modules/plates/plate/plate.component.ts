@@ -16,6 +16,13 @@ import {Subscription} from "rxjs";
 })
 export class PlateComponent implements OnInit, OnDestroy {
 
+  @Input() public config!: Plate;
+  @Input() public plateList: Plate[] = [];
+  @Input() public queue!: ReactiveQueue<MenuItem>;
+
+  @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
+  @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
+
   public readonly i18n: any;
 
   public icon: string = "pi-plus";
@@ -27,12 +34,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   public showOverlay: boolean = false;
   public progressItems: MenuItem[] = [];
   public todoItems: MenuItem[] = [];
-  @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
 
-  @Input() public config!: Plate;
-  @Input() public queue!: ReactiveQueue<MenuItem>;
-
-  @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
   private queue$: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,
@@ -119,6 +121,12 @@ export class PlateComponent implements OnInit, OnDestroy {
       this.onBadgeMouseEnter();
     else
       this.onBadgeMouseLeave();
+  }
+
+  public handleItemEvent(event: ItemEvent) {
+    event.plateId = this.config._id!;
+
+    this.onItemEvent.emit(event);
   }
 
   public onItemStart(id: string) {

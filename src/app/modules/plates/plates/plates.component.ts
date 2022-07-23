@@ -122,6 +122,6 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   }
 
   public handleItemEvent(event: ItemEvent): void {
-    this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action);
+    this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
   }
 }

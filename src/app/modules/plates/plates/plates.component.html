@@ -13,6 +13,7 @@
     <plate (onNew)="onNewPlate($event)"
            (onItemEvent)="handleItemEvent($event)"
            [config]="plate"
+           [plateList]="plateList"
            [queue]="plateQueueManagerService.getQueue(plate._id!)">
     </plate>
   </ng-container>

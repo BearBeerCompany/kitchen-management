@@ -13,7 +13,6 @@ export function mode(): typeof PlateInterface {
 
 export enum PlateItemStatus {
   Moved = "MOVED",
-  ReQueued = "RE_QUEUED"
 }
 
 export type PlateItemAction = PlateItemStatus | Status;

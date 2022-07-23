@@ -41,6 +41,7 @@ export class PlateQueueManagerService {
     item.status = Status.Todo;
     this._getQueue(id).enqueue(item);
     this._changes$.next(this._changes$.value + 1);
+    this._getQueue(id).refresh();
   }
 
   public removeFromQueue(id: string, item: MenuItem): void {
@@ -59,12 +60,13 @@ export class PlateQueueManagerService {
       case PlateItemStatus.Moved:
         if (!nextId) throw new Error("No queue selected to move the item");
         this.sendToQueue(nextId, item);
-        this.onItemAction(nextId, item, Status.Cancelled);
+        this.onItemAction(id, item, Status.Cancelled);
         break;
-      case PlateItemStatus.ReQueued:
-        this.sendToQueue(id, item);
+      case Status.Todo:
+        this._resetItem(id, item);
         break;
-      case Status.Cancelled || Status.Done:
+      case Status.Cancelled:
+      case Status.Done:
         this.removeFromQueue(id, item);
         //TODO: Invoke order service
         break;
@@ -75,6 +77,12 @@ export class PlateQueueManagerService {
         console.warn("[QueueManager] Action not found");
         break;
     }
+  }
+
+  private _resetItem(plateId: string, item: MenuItem) {
+    const queue: ReactiveQueue<MenuItem> = this._getQueue(plateId);
+    queue.values.find(i => item._id === i._id)!.status = Status.Todo;
+    queue.refresh();
   }
 
   private _runItemProgress(plateId: string, item: MenuItem): void {
