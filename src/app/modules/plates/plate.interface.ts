@@ -1,4 +1,4 @@
-import {MenuItem, Status} from "../orders/order";
+import {Order, Status} from "../orders/order";
 
 export enum PlateInterface {
   Skeleton = "skeleton",
@@ -13,13 +13,13 @@ export function mode(): typeof PlateInterface {
 
 export enum PlateItemStatus {
   Moved = "MOVED",
-  ReQueued = "RE_QUEUED"
 }
 
 export type PlateItemAction = PlateItemStatus | Status;
 
 export interface ItemEvent {
+  plateId: string;
   action: PlateItemAction;
-  item: MenuItem;
+  item: Order;
   nextId?: string;
 }

@@ -1,10 +1,12 @@
-import {Observable, of} from "rxjs";
+import {BehaviorSubject, Observable, of} from "rxjs";
 
 export class ReactiveQueue<T> {
   private readonly items: T[];
+  private readonly items$: BehaviorSubject<T[]>;
 
   constructor(items?: T[]) {
     this.items = items ?? [];
+    this.items$ = new BehaviorSubject<T[]>(this.items);
   }
 
   get dequeue(): T | undefined {
@@ -25,7 +27,7 @@ export class ReactiveQueue<T> {
   }
 
   get values$(): Observable<T[]> {
-    return of(this.items);
+    return this.items$
   }
 
   get isEmpty$(): Observable<boolean> {
@@ -34,5 +36,9 @@ export class ReactiveQueue<T> {
 
   public enqueue(value: T): void {
     this.values.push(value);
+  }
+
+  public refresh() {
+    this.items$.next(this.items);
   }
 }

@@ -1,20 +1,24 @@
 <footer>
   <navbar-button (onClick)="onNavClick(routing.Dashboard)"
                  [active]="selectedRoute === routing.Dashboard"
+                 [title]="i18n.DASHBOARD.TITLE"
                  icon="pi-home">
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Plates)"
                  [active]="selectedRoute === routing.Plates"
                  [badgeCounter]="plateQueueManagerService.notify | async"
                  [badged]="plateQueueManagerService.haveNotify"
+                 [title]="i18n.PLATE.TITLE"
                  icon="pi-inbox">
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Orders)"
                  [active]="selectedRoute === routing.Orders"
+                 [title]="i18n.ORDERS.TITLE"
                  icon="pi-shopping-cart">
   </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Settings)"
                  [active]="selectedRoute === routing.Settings"
+                 [title]="i18n.SETTINGS.TITLE"
                  icon="pi-cog">
   </navbar-button>
 </footer>

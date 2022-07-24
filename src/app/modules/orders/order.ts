@@ -1,18 +1,19 @@
 import {Plate} from "../plates/plate/plate.model";
+import {PlateItemAction} from "../plates/plate.interface";
 
 export interface Order {
   _id?: string,
   orderId: number,
   menuItem: MenuItem,
   plate?: Plate | null,
-  status: Status,
+  status: PlateItemAction,
   date: string | null,
   notes?: string
 }
 
 export interface MenuItem {
   _id?: string,
-  name: string,
+  name?: string,
   description?: string
   category?: Category
 }

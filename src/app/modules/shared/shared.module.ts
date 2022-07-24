@@ -9,6 +9,7 @@ import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {TagModule} from "primeng/tag";
 import {BadgeModule} from "primeng/badge";
+import {TooltipModule} from 'primeng/tooltip';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {BadgeModule} from "primeng/badge";
     ButtonModule,
     RippleModule,
     TagModule,
-    BadgeModule
+    BadgeModule,
+    TooltipModule
   ],
   exports: [
     NavbarButtonComponent,
