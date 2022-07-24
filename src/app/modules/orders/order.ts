@@ -6,7 +6,7 @@ export interface Order {
   orderId: number,
   menuItem: MenuItem,
   plate?: Plate | null,
-  status: Status,
+  status: PlateItemAction,
   date: string | null,
   notes?: string
 }
@@ -16,7 +16,6 @@ export interface MenuItem {
   name?: string,
   description?: string
   category?: Category
-  status?: PlateItemAction;
 }
 
 export interface MenuItemExtended extends MenuItem {

@@ -1,16 +1,18 @@
-import {AfterViewInit, Component, ElementRef, Inject, OnInit} from '@angular/core';
-import {ItemEvent, mode, PlateInterface} from "../plate.interface";
+import {AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit} from '@angular/core';
+import {ItemEvent, mode, PlateInterface, PlateItemStatus} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {Plate} from "../plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
+import {Subscription} from "rxjs";
+import {Order} from "../../orders/order";
 
 @Component({
   selector: 'plates',
   templateUrl: './plates.component.html',
   styleUrls: ['./plates.component.scss']
 })
-export class PlatesComponent implements OnInit, AfterViewInit {
+export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public readonly i18n: any;
   public readonly DISPLAY_CHUNK = 3;
@@ -21,13 +23,17 @@ export class PlatesComponent implements OnInit, AfterViewInit {
   public plateList!: Plate[];
   public currentPage: number = 0;
   public totalPages: number = 0;
+  public showOverlay: boolean = false;
+  public showPlateList: boolean = false;
+  public unassignedItems: Order[] = [];
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
   private _start: number = 0;
   private _end: number = 0;
   private _total: number = 0;
-
+  private _queue$: Subscription = new Subscription();
+  private _currentItem?: Order;
 
   constructor(public i18nService: I18nService,
               public plateQueueManagerService: PlateQueueManagerService,
@@ -38,6 +44,12 @@ export class PlatesComponent implements OnInit, AfterViewInit {
 
   public ngOnInit(): void {
     this._loadPlatesConfig();
+    this._queue$.add(
+      this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
+        .values$?.subscribe((items: Order[]) => {
+        this.unassignedItems = items;
+      })
+    );
   }
 
   public ngAfterViewInit(): void {
@@ -62,6 +74,10 @@ export class PlatesComponent implements OnInit, AfterViewInit {
       .addEventListener('mouseup', () => this._swipeEnd());
   }
 
+  public ngOnDestroy(): void {
+    this._queue$.unsubscribe();
+  }
+
   public onNextPage(): void {
     if ((this.currentPage + 1) === this.totalPages) {
       return
@@ -83,6 +99,29 @@ export class PlatesComponent implements OnInit, AfterViewInit {
 
   public onNewPlate(config: Plate) {
     this._apiConnector.addPlate(config).subscribe(() => this._loadPlatesConfig());
+  }
+
+  public handleItemEvent(event: ItemEvent): void {
+    this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
+  }
+
+  public onUnassignedRun(item: Order): void {
+    this.showPlateList = true;
+    this._currentItem = item;
+  }
+
+  public onUnassignedExecuteRun(plate: Plate): void {
+    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate._id);
+    this.showPlateList = false;
+  }
+
+  public toggleNoQueuedItemsOverlay() {
+    this.showOverlay = !this.showOverlay;
+    this.showPlateList = false;
+  }
+
+  public getEnabledPlateList(skip: Plate | null): Plate[] {
+    return this.plateList.filter(p => p.mode === PlateInterface.On && p._id !== skip?._id);
   }
 
   private _swipeStart(event: Touch) {
@@ -119,9 +158,5 @@ export class PlatesComponent implements OnInit, AfterViewInit {
         this._total = this.plateList.length;
         this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
       });
-  }
-
-  public handleItemEvent(event: ItemEvent): void {
-    this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
   }
 }

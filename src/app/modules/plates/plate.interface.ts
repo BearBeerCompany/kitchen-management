@@ -1,4 +1,4 @@
-import {MenuItem, Status} from "../orders/order";
+import {Order, Status} from "../orders/order";
 
 export enum PlateInterface {
   Skeleton = "skeleton",
@@ -20,6 +20,6 @@ export type PlateItemAction = PlateItemStatus | Status;
 export interface ItemEvent {
   plateId: string;
   action: PlateItemAction;
-  item: MenuItem;
+  item: Order;
   nextId?: string;
 }

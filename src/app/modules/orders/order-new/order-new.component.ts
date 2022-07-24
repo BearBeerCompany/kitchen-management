@@ -151,8 +151,11 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       }
     });
     this.apiConnector.addOrders(this.orders).subscribe(() => {
-      this.orders.filter(order => !!order.plate).forEach(order => {
-        this._plateQueueManagerService.sendToQueue(order.plate?._id!, order.menuItem);
+      this.orders.forEach(order => {
+        if (order.plate)
+          this._plateQueueManagerService.sendToQueue(order.plate?._id!, order);
+        else
+          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
       });
       this.router.navigate(['/orders']);
     });

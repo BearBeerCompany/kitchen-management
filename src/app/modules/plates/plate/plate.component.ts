@@ -6,7 +6,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {MenuItem, Status} from "../../orders/order";
+import {Order, Status} from "../../orders/order";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -18,7 +18,7 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   @Input() public config!: Plate;
   @Input() public plateList: Plate[] = [];
-  @Input() public queue!: ReactiveQueue<MenuItem>;
+  @Input() public queue!: ReactiveQueue<Order>;
 
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
   @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -32,8 +32,8 @@ export class PlateComponent implements OnInit, OnDestroy {
   public badgeSize: string = "large";
   public badgeColor: string = "info";
   public showOverlay: boolean = false;
-  public progressItems: MenuItem[] = [];
-  public todoItems: MenuItem[] = [];
+  public progressItems: Order[] = [];
+  public todoItems: Order[] = [];
 
   private queue$: Subscription = new Subscription();
 
@@ -49,17 +49,17 @@ export class PlateComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.queue$.add(this.queue.values$.subscribe((items: MenuItem[] = []) => {
-        this.progressItems = [];
-        this.todoItems = [];
-        for (const i of items) {
-          if (i.status === Status.Progress)
-            this.progressItems.push(i);
-          else
-            this.todoItems.push(i);
-        }
-        if (this.todoItems.length == 0) {
-          this.showOverlay = false;
+    this.queue$.add(this.queue.values$.subscribe((items: Order[] = []) => {
+      this.progressItems = [];
+      this.todoItems = [];
+      for (const i of items) {
+        if (i.status === Status.Progress)
+          this.progressItems.push(i);
+        else
+          this.todoItems.push(i);
+      }
+      if (this.todoItems.length == 0) {
+        this.showOverlay = false;
         }
       })
     );
@@ -129,12 +129,10 @@ export class PlateComponent implements OnInit, OnDestroy {
     this.onItemEvent.emit(event);
   }
 
-  public onItemStart(id: string) {
+  public onItemStart(item: Order) {
     const event: ItemEvent = {
       action: Status.Progress,
-      item: {
-        _id: id
-      },
+      item: item,
       plateId: this.config._id!
     }
 

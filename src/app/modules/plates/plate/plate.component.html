@@ -12,6 +12,9 @@
       <h3>{{config.name}}</h3>
       <button (click)="expandTab()"
               *ngIf="showExpand"
+              [pTooltip]="'Espandi ' + config.name"
+              [showDelay]="500"
+              tooltipPosition="bottom"
               class="expand-button">
         <i class="pi pi-external-link"></i>
       </button>
@@ -35,7 +38,6 @@
     <p-badge (click)="onBadgeMouseClick()"
              (mouseenter)="onBadgeMouseEnter()"
              (mouseleave)="onBadgeMouseLeave()"
-             (mouseover)="onMouseEnter()"
              *ngIf="todoItems.length > 0"
              [severity]="badgeColor"
              [size]="badgeSize"

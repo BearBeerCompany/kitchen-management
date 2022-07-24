@@ -3,8 +3,8 @@
     <div class="ellipse"></div>
     <i class="pi pi-apple"></i>
   </div>
-  <span class="item_title">{{config.name}}</span>
-  <span class="item_order">ordine 10</span>
+  <span class="item_title">{{config.menuItem.name}}</span>
+  <span class="item_order">ORDINE {{config.orderId}}</span>
   <span class="item_note">
     <ul>
       <li>+ ketchup</li>
@@ -34,7 +34,7 @@
       </span>
     </ng-container>
     <ng-container *ngIf="showPlateList">
-      <span (click)="onPlateMoved(p)" *ngFor="let p of getPlateList()">
+      <span (click)="onPlateMoved(p)" *ngFor="let p of plateList">
         <label>{{p.name}}</label>
       </span>
     </ng-container>

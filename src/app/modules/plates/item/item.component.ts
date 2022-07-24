@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ItemEvent, PlateInterface, PlateItemAction, PlateItemStatus} from "../plate.interface";
-import {MenuItem, Status} from "../../orders/order";
+import {ItemEvent, PlateItemAction, PlateItemStatus} from "../plate.interface";
+import {Order, Status} from "../../orders/order";
 import {MenuItem as PrimeMenuItem} from 'primeng/api';
 import {Plate} from "../plate/plate.model";
 
@@ -11,7 +11,7 @@ import {Plate} from "../plate/plate.model";
 })
 export class ItemComponent implements OnInit {
 
-  @Input() public config!: MenuItem;
+  @Input() public config!: Order;
   @Input() public plateList: Plate[] = [];
 
   @Output() public onDoneEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -74,10 +74,6 @@ export class ItemComponent implements OnInit {
   public toggleOverlay(): void {
     this.deleteOverlay = !this.deleteOverlay;
     this.showPlateList = false;
-  }
-
-  public getPlateList(): Plate[] {
-    return this.plateList.filter(p => p.mode === PlateInterface.On);
   }
 
   public onPlateMoved(plate: Plate): void {
