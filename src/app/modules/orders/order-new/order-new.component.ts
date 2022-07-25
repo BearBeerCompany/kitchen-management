@@ -100,14 +100,20 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     });
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
-      this.platesOptions = data.map(item => {
+      this.platesOptions = [{
+        code: null,
+        name: '',
+        label: '',
+        value: null
+      }];
+      this.platesOptions.push(...data.map(item => {
         return {
           code: item._id,
           name: item.name,
           label: item.name,
           value: item.name
         };
-      });
+      }));
     });
   }
 

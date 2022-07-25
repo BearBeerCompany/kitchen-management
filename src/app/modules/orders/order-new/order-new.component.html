@@ -1,14 +1,16 @@
 <div class="flex flex-row justify-content-between column-gap-5">
   <!-- insertion form -->
   <div class="flex-column menu-item-choice">
-    <form (ngSubmit)="onSubmit()" [formGroup]="form!">
-      <div class="field col">
+    <h3>Add Burgers</h3>
+    <form (ngSubmit)="onSubmit()" [formGroup]="form!" class="mt-4 ml-2 mr-2">
+      <div class="field col ml-3">
         <label for="orderNumber">Order Number</label>
         <p-inputNumber [max]="1000"
                        [min]="0"
                        [showButtons]="true"
                        formControlName="orderId"
                        id="orderNumber"
+                       class="ml-4"
         ></p-inputNumber>
       </div>
 
@@ -53,39 +55,29 @@
           <th style="width: 3rem">
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
           </th>
-          <th pSortableColumn="orderId">
+          <th>
             <div class="p-d-flex p-jc-between p-ai-center">
               #
-              <p-sortIcon field="orderId"></p-sortIcon>
-              <p-columnFilter  type="numeric" field="orderId" display="menu"></p-columnFilter>
             </div>
           </th>
-          <th pSortableColumn="menuItem.name">
+          <th>
             <div class="p-d-flex p-jc-between p-ai-center">
               Menu Item
-              <p-sortIcon field="menuItem.name"></p-sortIcon>
-              <p-columnFilter type="text" field="menuItem.name" display="menu"></p-columnFilter>
             </div>
           </th>
-          <th pSortableColumn="menuItem.category.name">
+          <th>
             <div class="p-d-flex p-jc-between p-ai-center">
               Category
-              <p-sortIcon field="menuItem.category.name"></p-sortIcon>
-              <p-columnFilter type="text" field="menuItem.category.name" display="menu"></p-columnFilter>
             </div>
           </th>
-          <th pSortableColumn="plate.name">
+          <th>
             <div class="p-d-flex p-jc-between p-ai-center">
               Plate
-              <p-sortIcon field="plate.name"></p-sortIcon>
-              <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
             </div>
           </th>
-          <th pSortableColumn="notes">
+          <th>
             <div class="p-d-flex p-jc-between p-ai-center">
               Notes
-              <p-sortIcon field="notes"></p-sortIcon>
-              <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
             </div>
           </th>
           <th style="width:8rem"></th>
@@ -100,7 +92,7 @@
           <td pEditableColumn>
             <p-cellEditor>
               <ng-template pTemplate="input">
-                <input pInputText type="number" [(ngModel)]="order.orderId">
+                <input pInputText type="number" [(ngModel)]="order.orderId" [style]="{'width': '100px'}">
               </ng-template>
               <ng-template pTemplate="output">
                 {{order.orderId}}
