@@ -7,6 +7,8 @@ section {
   margin: 10px;
   position: relative;
 
+  user-select: none;
+
   header {
     position: fixed;
     top: 0;
