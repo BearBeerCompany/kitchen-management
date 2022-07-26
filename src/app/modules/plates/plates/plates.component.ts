@@ -26,6 +26,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public showOverlay: boolean = false;
   public showPlateList: boolean = false;
   public unassignedItems: Order[] = [];
+  public pages: number[] = [];
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
@@ -190,6 +191,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         this._total = this.plateList.length;
         this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+        this.pages = Array.from(Array(this.totalPages).keys())
       });
   }
 }

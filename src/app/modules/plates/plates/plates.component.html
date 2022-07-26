@@ -37,6 +37,9 @@
     <i [hidden]="hideNext" class="pi pi-angle-right"></i>
   </button>
 </div>
+<div *ngIf="totalPages > 0" id="paginator">
+  <span *ngFor="let p of pages" [ngClass]="p == currentPage ? 'active' : ''" class="circle"></span>
+</div>
 <ng-template #overlay>
   <items-overlay (onRun)="onUnassignedRun($event)"
                  [hideCloseButton]="true"
