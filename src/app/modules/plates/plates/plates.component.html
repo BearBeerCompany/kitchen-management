@@ -14,7 +14,8 @@
           (mouseover)="hidePrevious = false"
           [hidden]="hidePrevious"
           *ngIf="currentPage !== 0"
-          class="carousel-button carousel__previous-page">
+          class="carousel-button"
+          id="carousel__previous-page">
     <i [hidden]="hidePrevious" class="pi pi-angle-left"></i>
   </button>
   <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
@@ -31,9 +32,13 @@
           (mouseover)="hideNext = false"
           [hidden]="hideNext"
           *ngIf="(currentPage + 1) !== totalPages"
-          class="carousel-button carousel__next-page">
+          class="carousel-button"
+          id="carousel__next-page">
     <i [hidden]="hideNext" class="pi pi-angle-right"></i>
   </button>
+</div>
+<div *ngIf="totalPages > 0" id="paginator">
+  <span *ngFor="let p of pages" [ngClass]="p == currentPage ? 'active' : ''" class="circle"></span>
 </div>
 <ng-template #overlay>
   <items-overlay (onRun)="onUnassignedRun($event)"

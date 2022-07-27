@@ -49,7 +49,7 @@ export class PlateComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.queue$.add(this.queue.values$.subscribe((items: Order[] = []) => {
+    this.queue$.add(this.queue?.values$?.subscribe((items: Order[] = []) => {
       this.progressItems = [];
       this.todoItems = [];
       for (const i of items) {
