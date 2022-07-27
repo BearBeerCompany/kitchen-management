@@ -4,6 +4,7 @@ import {Plate} from "../plate/plate.model";
 import {PlateItemAction, PlateItemStatus} from "../plate.interface";
 import {BehaviorSubject} from "rxjs";
 import {Order, Status} from "../../orders/order";
+import {PlateIndexDbService} from "../../../services/plate-index-db.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,20 +16,27 @@ export class PlateQueueManagerService {
   private _plates: Map<string, ReactiveQueue<Order>> = new Map<string, ReactiveQueue<Order>>();
   private _changes$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-  constructor() {
+  constructor(private _dbService: PlateIndexDbService) {
   }
 
   public load(plates: Plate[]) {
-    for (const plate of plates) this.addQueue(plate);
-    this._plates.set(PlateQueueManagerService.UNASSIGNED_QUEUE, new ReactiveQueue());
+    for (const plate of plates) this.addQueue(plate.name!);
+    this.addQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
   }
 
-  public getQueue(id: string): ReactiveQueue<Order> {
-    return this._plates.get(id)!;
+  public getQueue(name: string): ReactiveQueue<Order> {
+    return this._plates.get(name)!;
   }
 
-  public addQueue(plate: Plate): void {
-    this._plates.set(plate._id!, new ReactiveQueue());
+  public addQueue(name: string): void {
+    this._dbService.count(name).then((result: number) => {
+      if (result == 0) {
+        this._dbService.insert(name, []);
+        this._plates.set(name, new ReactiveQueue());
+      } else {
+        this._dbService.findByKey(name).then(data => this._plates.set(name, new ReactiveQueue(data)));
+      }
+    });
   }
 
   get notify(): BehaviorSubject<number> {
@@ -39,43 +47,43 @@ export class PlateQueueManagerService {
     return this._changes$.value > 0;
   }
 
-  public sendToQueue(id: string, item: Order): void {
+  public sendToQueue(name: string, item: Order): void {
     this._validateItem(item);
     item.status = Status.Todo;
-    this._getQueue(id).enqueue(item);
+    this._getQueue(name).enqueue(item);
     this._changes$.next(this._changes$.value + 1);
-    this._getQueue(id).refresh();
+    this._dbService.insert(name, this._getQueue(name).values).then(_ => this._getQueue(name).refresh());
   }
 
-  public removeFromQueue(id: string, item: Order): void {
+  public removeFromQueue(name: string, item: Order): void {
     this._validateItem(item);
-    const queue: ReactiveQueue<Order> = this._getQueue(id);
+    const queue: ReactiveQueue<Order> = this._getQueue(name);
     queue.values = queue.values.filter((i: Order) => {
       return i._id != item._id;
     });
     this._changes$.next(this._changes$.value - 1);
-    queue.refresh();
+    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
   }
 
-  public onItemAction(id: string, item: Order, action: PlateItemAction, nextId?: string): void {
+  public onItemAction(name: string, item: Order, action: PlateItemAction, nextId?: string): void {
     this._validateItem(item);
 
     switch (action) {
       case PlateItemStatus.Moved:
         if (!nextId) throw new Error("No queue selected to move the item");
         this.sendToQueue(nextId, item);
-        this.onItemAction(id, item, Status.Cancelled);
+        this.onItemAction(name, item, Status.Cancelled);
         break;
       case Status.Todo:
-        this._resetItem(id, item);
+        this._resetItem(name, item);
         break;
       case Status.Cancelled:
       case Status.Done:
-        this.removeFromQueue(id, item);
+        this.removeFromQueue(name, item);
         //TODO: Invoke order service
         break;
       case Status.Progress:
-        this._runItemProgress(id, item);
+        this._runItemProgress(name, item);
         break;
       default:
         console.warn("[QueueManager] Action not found");
@@ -83,21 +91,21 @@ export class PlateQueueManagerService {
     }
   }
 
-  private _resetItem(plateId: string, item: Order) {
-    const queue: ReactiveQueue<Order> = this._getQueue(plateId);
+  private _resetItem(name: string, item: Order) {
+    const queue: ReactiveQueue<Order> = this._getQueue(name);
     const foundItem: Order | undefined = queue.values.find(i => item._id === i._id);
     if (foundItem) {
       foundItem.status = Status.Todo
     } else {
       queue.enqueue(item);
     }
-    queue.refresh();
+    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
   }
 
-  private _runItemProgress(plateId: string, item: Order): void {
-    const queue: ReactiveQueue<Order> = this._getQueue(plateId);
+  private _runItemProgress(name: string, item: Order): void {
+    const queue: ReactiveQueue<Order> = this._getQueue(name);
     queue.values.find(i => item._id === i._id)!.status = Status.Progress;
-    queue.refresh();
+    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
   }
 
   private _validateItem(item: Order): void {
@@ -106,12 +114,12 @@ export class PlateQueueManagerService {
     }
   }
 
-  private _getQueue(id: string): ReactiveQueue<Order> {
-    if (!id) {
-      throw new Error("Plate Id is undefined!");
+  private _getQueue(name: string): ReactiveQueue<Order> {
+    if (!name) {
+      throw new Error("Plate Name is undefined!");
     }
 
-    const queue: ReactiveQueue<Order> = this.getQueue(id);
+    const queue: ReactiveQueue<Order> = this.getQueue(name);
 
     if (!queue) {
       throw new Error("No queue found!");

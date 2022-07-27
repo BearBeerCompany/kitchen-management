@@ -100,7 +100,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public expandTab(): void {
-    app.openNewTab(Routing.Plates, this.config._id!);
+    app.openNewTab(Routing.Plates, this.config.name!);
   }
 
   public onBadgeMouseEnter(): void {
@@ -124,7 +124,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public handleItemEvent(event: ItemEvent) {
-    event.plateId = this.config._id!;
+    event.plateId = this.config.name!;
 
     this.onItemEvent.emit(event);
   }
@@ -133,7 +133,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     const event: ItemEvent = {
       action: Status.Progress,
       item: item,
-      plateId: this.config._id!
+      plateId: this.config.name!
     }
 
     this.onItemEvent.emit(event);
