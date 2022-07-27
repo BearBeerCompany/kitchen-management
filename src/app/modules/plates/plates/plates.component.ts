@@ -112,7 +112,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onUnassignedExecuteRun(plate: Plate): void {
-    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate._id);
+    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate.name);
     this.showPlateList = false;
   }
 
@@ -122,7 +122,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getEnabledPlateList(skip: Plate | null): Plate[] {
-    return this.plateList.filter(p => p.mode === PlateInterface.On && p._id !== skip?._id);
+    return this.plateList.filter(p => p.mode === PlateInterface.On && p.name !== skip?.name);
   }
 
   private _swipeStart(event: Touch) {
