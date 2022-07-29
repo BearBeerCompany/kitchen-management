@@ -16,7 +16,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron .",
-    "build-electron": "ng build --base-href ./ && electron ."
+    "build-electron": "ng build --source-map --base-href ./ && electron ."
   },
   "repository": {
     "type": "git",
