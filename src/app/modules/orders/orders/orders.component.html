@@ -76,7 +76,7 @@
               <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
                           placeholder="Any">
                 <ng-template let-option pTemplate="item">
-                  <span class="customer-badge" [style]="{'background-color': option.color}">{{option.label}}</span>
+                  <span class="plate-badge" [style]="{'background-color': option.color}">{{option.label}}</span>
                 </ng-template>
               </p-dropdown>
             </ng-template>
@@ -132,10 +132,11 @@
             {{order.menuItem.data.name}}
           </ng-template>
         </p-cellEditor>
-
       </td>
       <td>
-        <span class="p-column-title">Category</span>
+        <span class="category-badge" [style]="{'border-color': getCategoryColor(order.menuItem)}">
+          {{getCategory(order.menuItem)}}
+        </span>
       </td>
       <td>
         <span class="p-column-title">Date</span>
@@ -160,7 +161,7 @@
             <p-dropdown [options]="platesOptions" [(ngModel)]="order.plate" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span class="customer-badge" [style]="{'background-color': getPlateColor(order.plate)}">{{order.plate}}</span>
+            <span class="plate-badge" [style]="{'background-color': getPlateColor(order.plate)}">{{order.plate}}</span>
           </ng-template>
         </p-cellEditor>
       </td>

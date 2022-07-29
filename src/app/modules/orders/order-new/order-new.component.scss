@@ -5,7 +5,7 @@ h3 {
 }
 
 .menu-item-choice {
-  width: 66%;
+  width: 60%;
 }
 
 .menu-item-card {
@@ -21,4 +21,20 @@ h3 {
     background-color: blue;
     color: white;
   }
+}
+
+.plate-badge {
+  @include badge;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.category-badge {
+  @include badge;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 14px;
+  border: 2px solid;
 }

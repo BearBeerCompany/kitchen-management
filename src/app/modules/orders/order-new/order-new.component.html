@@ -100,12 +100,12 @@
             </p-cellEditor>
           </td>
           <td>
-            <span class="p-column-title">Menu Item</span>
             <span class="image-text">{{order.menuItem.name}}</span>
           </td>
           <td>
-            <span class="p-column-title">Category</span>
-            <span class="image-text">{{order.menuItem.category.name}}</span>
+            <span class="category-badge" [style]="{'border-color': getCategoryColor(order.menuItem.category)}">
+              {{order.menuItem.category.name}}
+            </span>
           </td>
           <td pEditableColumn>
             <p-cellEditor>
@@ -113,8 +113,7 @@
                 <p-dropdown [options]="platesOptions" [(ngModel)]="order.plate" [style]="{'width':'100%'}"></p-dropdown>
               </ng-template>
               <ng-template pTemplate="output">
-<!--                <p-button [label]="order.plate" styleClass="mr-2"></p-button>-->
-                {{order.plate}}
+                <span class="plate-badge" [style]="{'background-color': getPlateColor(order.plate)}">{{order.plate}}</span>
               </ng-template>
             </p-cellEditor>
           </td>

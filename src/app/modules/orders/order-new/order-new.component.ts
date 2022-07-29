@@ -74,7 +74,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
               category: {
                 _id: node.data._id,
                 name: node.data.name,
-                description: node.data.description
+                description: node.data.description,
+                color: node.data.color
               },
               quantity: 0
             }
@@ -91,7 +92,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
             category: {
               _id: node.data._id,
               name: node.data.name,
-              description: node.data.description
+              description: node.data.description,
+              color: node.data.color
             },
             quantity: 0
           }
@@ -104,14 +106,16 @@ export class OrderNewComponent implements OnInit, OnDestroy {
         code: null,
         name: '',
         label: '',
-        value: null
+        value: null,
+        color: 'transparent'
       }];
       this.platesOptions.push(...data.map(item => {
         return {
           code: item.name,
           name: item.name,
           label: item.name,
-          value: item.name
+          value: item.name,
+          color: item.color
         };
       }));
     });
@@ -208,6 +212,19 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   onRowEditCancel(order: any, index: number) {
     this.orders[index] = this.clonedOrders[order._id];
     delete this.clonedOrders[order._id];
+  }
+
+  getCategoryColor(category: any): string {
+    let color = 'transparent';
+    if (category) {
+      color = category.color;
+    }
+    return color;
+  }
+
+  getPlateColor(orderPlate: string): string {
+    const plate = this.plates.find((item => item.name === orderPlate));
+    return (plate && plate.color) ? plate.color : 'transparent';
   }
 
 }

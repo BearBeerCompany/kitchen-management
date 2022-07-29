@@ -6,7 +6,8 @@
       "data": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
         "name": "Panini",
-        "description": "Categoria Panini"
+        "description": "Categoria Panini",
+        "color": "#e7615d"
       },
       "expandedIcon": "pi pi-folder-open",
       "collapsedIcon": "pi pi-folder",
@@ -66,7 +67,8 @@
       "data": {
         "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eB",
         "name": "Piadine",
-        "description": "Categoria Piadine"
+        "description": "Categoria Piadine",
+        "color": "#ffbc4f"
       },
       "expandedIcon": "pi pi-folder-open",
       "collapsedIcon": "pi pi-folder",

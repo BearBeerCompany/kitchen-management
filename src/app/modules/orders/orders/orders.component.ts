@@ -78,7 +78,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         name: '',
         label: '',
         value: null,
-        color: '#FFFFFF'
+        color: 'transparent'
       }];
       this.platesOptions.push(...data.map(item => {
         return {
@@ -275,8 +275,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   getPlateColor(orderPlate: string): string {
     const plate = this.plates.find((item => item.name === orderPlate));
-    const color = (plate && plate.color) ? plate.color : 'transparent';
-    return color;
+    return (plate && plate.color) ? plate.color : 'transparent';
   }
 
   getStatusIcon(orderStatus: string): string {
@@ -287,5 +286,22 @@ export class OrdersComponent implements OnInit, OnDestroy {
   getStatusLabelColor(orderStatus: string): string {
     const status = this.statuses.find(item => item.value === orderStatus);
     return status.color;
+  }
+
+  getCategory(menuItem: any): string {
+    let category = '';
+    if (menuItem.parent && menuItem.parent.data) {
+      category = menuItem.parent.data.name;
+    }
+    return category;
+  }
+
+  getCategoryColor(menuItem: any): string {
+    let color = 'transparent';
+    if (menuItem.parent && menuItem.parent.data) {
+      const category = menuItem.parent.data;
+      color = category.color;
+    }
+    return color;
   }
 }
