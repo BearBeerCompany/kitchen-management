@@ -1,12 +1,5 @@
 <p-toast></p-toast>
 
-<p-toolbar styleClass="p-mb-4">
-  <ng-template pTemplate="left">
-    <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addOrder()"></button>
-    <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
-  </ng-template>
-</p-toolbar>
-
 <p-table #dt
          [value]="ordersRows"
          [(selection)]="selectedOrders"
@@ -26,10 +19,18 @@
   <ng-template pTemplate="caption">
     <div class="table-header">
       List of Burgers
-      <span class="p-input-icon-left">
-          <i class="pi pi-search"></i>
-          <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Global Search" />
-      </span>
+      <div class="table-header-buttons">
+        <div>
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addOrder()"></button>
+          <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
+        </div>
+        <div class="ml-4">
+          <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Global Search" />
+          </span>
+        </div>
+      </div>
     </div>
   </ng-template>
 
@@ -75,7 +76,7 @@
               <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
                           placeholder="Any">
                 <ng-template let-option pTemplate="item">
-                  <span [class]="'customer-badge status-' + option.value">{{option.label}}</span>
+                  <span class="customer-badge" [style]="{'background-color': option.color}">{{option.label}}</span>
                 </ng-template>
               </p-dropdown>
             </ng-template>
@@ -146,7 +147,10 @@
             <p-dropdown [options]="statuses" [(ngModel)]="order.status" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            {{order.status}}
+            <span [style]="{'color': getStatusLabelColor(order.status)}">
+              <i [class]="getStatusIcon(order.status)"></i>
+              <label class="ml-2">{{order.status}}</label>
+            </span>
           </ng-template>
         </p-cellEditor>
       </td>
@@ -156,7 +160,7 @@
             <p-dropdown [options]="platesOptions" [(ngModel)]="order.plate" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            {{order.plate}}
+            <span class="customer-badge" [style]="{'background-color': getPlateColor(order.plate)}">{{order.plate}}</span>
           </ng-template>
         </p-cellEditor>
       </td>

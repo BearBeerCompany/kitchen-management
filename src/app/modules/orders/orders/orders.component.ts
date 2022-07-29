@@ -43,10 +43,10 @@ export class OrdersComponent implements OnInit, OnDestroy {
               private datePipe: DatePipe, @Inject('ApiConnector') private apiConnector: ApiConnector) {
     this.i18n = i18nService.instance;
     this.statuses = [
-      {label: 'Todo', value: Status.Todo},
-      {label: 'Progress', value: Status.Progress},
-      {label: 'Done', value: Status.Done},
-      {label: 'Cancelled', value: Status.Cancelled}
+      {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
+      {label: 'Progress', value: Status.Progress, icon: 'pi-spinner', color: 'blue'},
+      {label: 'Done', value: Status.Done, icon: 'pi-check', color: 'green'},
+      {label: 'Cancelled', value: Status.Cancelled, icon: 'pi-times', color: 'red'}
     ];
   }
 
@@ -77,13 +77,15 @@ export class OrdersComponent implements OnInit, OnDestroy {
         code: null,
         name: '',
         label: '',
-        value: null
+        value: null,
+        color: '#FFFFFF'
       }];
       this.platesOptions.push(...data.map(item => {
         return {
           code: item.name,
           label: item.name,
-          value: item.name
+          value: item.name,
+          color: item.color
         };
       }));
     });
@@ -211,6 +213,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       accept: () => {
         this.apiConnector.removeOrder(order._id!).subscribe(() => {
           this.orders = this.orders.filter(val => val != order);
+          this.ordersRows = this.ordersRows.filter(val => val != order);
           this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
         })
       }
@@ -268,5 +271,21 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }
     });
     return menuItemNode;
+  }
+
+  getPlateColor(orderPlate: string): string {
+    const plate = this.plates.find((item => item.name === orderPlate));
+    const color = (plate && plate.color) ? plate.color : 'transparent';
+    return color;
+  }
+
+  getStatusIcon(orderStatus: string): string {
+    const status = this.statuses.find(item => item.value === orderStatus);
+    return 'pi ' + status.icon;
+  }
+
+  getStatusLabelColor(orderStatus: string): string {
+    const status = this.statuses.find(item => item.value === orderStatus);
+    return status.color;
   }
 }
