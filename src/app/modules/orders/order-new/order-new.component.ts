@@ -34,6 +34,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   private platesSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
   private clonedOrders: Order[] = [];
+  private draggedMenuItem: MenuItemExtended | null = null;
 
   constructor(private i18nService: I18nService,
               private ordersService: OrdersService,
@@ -242,6 +243,30 @@ export class OrderNewComponent implements OnInit, OnDestroy {
         const plate = this.plates.find(item => item.name === orderPlate.name);
         order.plate = (plate) ? plate.name : null;
       });
+    }
+  }
+
+  dragStart(item: MenuItemExtended) {
+    this.draggedMenuItem = item;
+  }
+
+  dragEnd() {
+    this.draggedMenuItem = null;
+  }
+
+  drop() {
+    if (this.draggedMenuItem) {
+      const newOrder = this.form?.value;
+      const date = new Date();
+      const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
+      this.orders.push({
+        _id: this.ordersService.createId(),
+        orderId: newOrder.orderId,
+        menuItem: this.draggedMenuItem,
+        status: this.statuses[0].value,
+        date: dateFormatted
+      });
+      this.draggedMenuItem = null;
     }
   }
 }

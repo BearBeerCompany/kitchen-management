@@ -22,6 +22,9 @@
                       [ngClass]="{'menu-item-selection': item.selected}"
                       (click)="selectMenuItem($event, item)"
                       class="m-2 menu-item-card"
+                      pDraggable="ddOrders"
+                      (onDragStart)="dragStart(item)"
+                      (onDragEnd)="dragEnd()"
               >
                 <p>{{item.description}}</p>
               </p-card>
@@ -33,7 +36,7 @@
   </div>
 
   <!-- summary -->
-  <div class="flex-column">
+  <div class="flex-column" pDroppable="ddOrders" (onDrop)="drop()">
     <p-toolbar styleClass="p-mb-4">
       <ng-template pTemplate="left">
         <button pButton pRipple label="Save" icon="pi pi-plus" class="p-mr-2 mr-2" (click)="saveOrders()"></button>
