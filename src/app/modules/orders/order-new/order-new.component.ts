@@ -28,11 +28,13 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   public selectedOrders: Order[] = [];
   public plates: Plate[] = [];
   public platesOptions: any[] = [];
+  public platesAction: any[] = [];
 
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
   private clonedOrders: Order[] = [];
+  private draggedMenuItem: MenuItemExtended | null = null;
 
   constructor(private i18nService: I18nService,
               private ordersService: OrdersService,
@@ -74,7 +76,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
               category: {
                 _id: node.data._id,
                 name: node.data.name,
-                description: node.data.description
+                description: node.data.description,
+                color: node.data.color
               },
               quantity: 0
             }
@@ -91,7 +94,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
             category: {
               _id: node.data._id,
               name: node.data.name,
-              description: node.data.description
+              description: node.data.description,
+              color: node.data.color
             },
             quantity: 0
           }
@@ -100,12 +104,28 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     });
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
-      this.platesOptions = data.map(item => {
+      this.platesOptions = [{
+        code: null,
+        name: 'Azzera',
+        label: 'Azzera',
+        value: null,
+        color: 'transparent'
+      }];
+      this.platesOptions.push(...data.map(item => {
         return {
           code: item.name,
           name: item.name,
           label: item.name,
-          value: item.name
+          value: item.name,
+          color: item.color
+        };
+      }));
+      this.platesAction = this.platesOptions.map(item => {
+        return {
+          label: item.name,
+          command: () => {
+            this.setPlate(item, this.selectedOrders)
+          }
         };
       });
     });
@@ -204,4 +224,49 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     delete this.clonedOrders[order._id];
   }
 
+  getCategoryColor(category: any): string {
+    let color = 'transparent';
+    if (category) {
+      color = category.color;
+    }
+    return color;
+  }
+
+  getPlateColor(orderPlate: string): string {
+    const plate = this.plates.find((item => item.name === orderPlate));
+    return (plate && plate.color) ? plate.color : 'transparent';
+  }
+
+  setPlate(orderPlate: Plate, selectedOrders: any[]) {
+    if (selectedOrders && selectedOrders.length) {
+      selectedOrders.forEach(order => {
+        const plate = this.plates.find(item => item.name === orderPlate.name);
+        order.plate = (plate) ? plate.name : null;
+      });
+    }
+  }
+
+  dragStart(item: MenuItemExtended) {
+    this.draggedMenuItem = item;
+  }
+
+  dragEnd() {
+    this.draggedMenuItem = null;
+  }
+
+  drop() {
+    if (this.draggedMenuItem) {
+      const newOrder = this.form?.value;
+      const date = new Date();
+      const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
+      this.orders.push({
+        _id: this.ordersService.createId(),
+        orderId: newOrder.orderId,
+        menuItem: this.draggedMenuItem,
+        status: this.statuses[0].value,
+        date: dateFormatted
+      });
+      this.draggedMenuItem = null;
+    }
+  }
 }

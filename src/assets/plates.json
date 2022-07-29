@@ -2,7 +2,7 @@
   "data": [
     {
       "name": "plate 1",
-      "color": "#6aff00",
+      "color": "#a0090d",
       "slot": [
         0,
         1
@@ -12,7 +12,7 @@
     },
     {
       "name": "plate 2",
-      "color": "#6aff00",
+      "color": "#ffbc4f",
       "slot": [
         0,
         1
@@ -22,7 +22,7 @@
     },
     {
       "name": "plate 3",
-      "color": "#6aff00",
+      "color": "#8ac040",
       "slot": [
         0,
         1
@@ -32,7 +32,7 @@
     },
     {
       "name": "plate 4",
-      "color": "#6aff00",
+      "color": "#4dc1bf",
       "slot": [
         0,
         1

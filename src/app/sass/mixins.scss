@@ -57,3 +57,10 @@
     margin-left: 2%;
   }
 }
+
+// Order Mixins
+
+@mixin badge {
+  padding: 0.25em 0.5rem;
+  letter-spacing: .3px;
+}

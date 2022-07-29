@@ -10,6 +10,7 @@ import {MenuItemsService} from "../menu-items.service";
 import {DatePipe} from "@angular/common";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
+import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 
 @Component({
   selector: 'orders',
@@ -38,15 +39,21 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   @ViewChild('dt') table: Table | undefined;
 
-  constructor(public i18nService: I18nService, private ordersService: OrdersService, private menuItemsService: MenuItemsService,
-              private router: Router, private messageService: MessageService, private confirmationService: ConfirmationService,
-              private datePipe: DatePipe, @Inject('ApiConnector') private apiConnector: ApiConnector) {
+  constructor(public i18nService: I18nService,
+              private ordersService: OrdersService,
+              private menuItemsService: MenuItemsService,
+              private router: Router,
+              private messageService: MessageService,
+              private confirmationService: ConfirmationService,
+              private datePipe: DatePipe,
+              @Inject('ApiConnector') private apiConnector: ApiConnector,
+              private _plateQueueManagerService: PlateQueueManagerService) {
     this.i18n = i18nService.instance;
     this.statuses = [
-      {label: 'Todo', value: Status.Todo},
-      {label: 'Progress', value: Status.Progress},
-      {label: 'Done', value: Status.Done},
-      {label: 'Cancelled', value: Status.Cancelled}
+      {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
+      {label: 'Progress', value: Status.Progress, icon: 'pi-spinner', color: 'blue'},
+      {label: 'Done', value: Status.Done, icon: 'pi-check', color: 'green'},
+      {label: 'Cancelled', value: Status.Cancelled, icon: 'pi-times', color: 'red'}
     ];
   }
 
@@ -73,13 +80,21 @@ export class OrdersComponent implements OnInit, OnDestroy {
     });
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
-      this.platesOptions = data.map(item => {
+      this.platesOptions = [{
+        code: null,
+        name: '',
+        label: '',
+        value: null,
+        color: 'transparent'
+      }];
+      this.platesOptions.push(...data.map(item => {
         return {
           code: item.name,
           label: item.name,
-          value: item.name
+          value: item.name,
+          color: item.color
         };
-      });
+      }));
     });
   }
 
@@ -205,6 +220,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       accept: () => {
         this.apiConnector.removeOrder(order._id!).subscribe(() => {
           this.orders = this.orders.filter(val => val != order);
+          this.ordersRows = this.ordersRows.filter(val => val != order);
           this.messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
         })
       }
@@ -217,7 +233,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   onRowEditSave(orderRow: any) {
     let order = this.orders.find(item => item._id === orderRow._id);
+
     if (order) {
+      const previousPlate = order.plate;
       const menuItem: MenuItem = {
         ...orderRow.menuItem.data,
         category: orderRow.menuItem.parent.data
@@ -235,12 +253,26 @@ export class OrdersComponent implements OnInit, OnDestroy {
       };
       this.apiConnector.updateOrder(order).subscribe(order => {
         delete this.clonedOrders[order._id];
+
+        if (order.plate) {
+          if (!previousPlate || (previousPlate && order.plate.name !== previousPlate.name)) {
+            const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+            // remove the order from previous plate
+            this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
+            this._plateQueueManagerService.sendToQueue(order.plate?.name!, order);
+          }
+        } else {
+          const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+          // remove the order from previous plate
+          this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
+          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
+        }
       });
     }
   }
 
   onRowEditCancel(order: any, index: number) {
-    this.orders[index] = this.clonedOrders[order._id];
+    this.ordersRows[index] = this.clonedOrders[order._id];
     delete this.clonedOrders[order._id];
   }
 
@@ -262,5 +294,37 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }
     });
     return menuItemNode;
+  }
+
+  getPlateColor(orderPlate: string): string {
+    const plate = this.plates.find((item => item.name === orderPlate));
+    return (plate && plate.color) ? plate.color : 'transparent';
+  }
+
+  getStatusIcon(orderStatus: string): string {
+    const status = this.statuses.find(item => item.value === orderStatus);
+    return 'pi ' + status.icon;
+  }
+
+  getStatusLabelColor(orderStatus: string): string {
+    const status = this.statuses.find(item => item.value === orderStatus);
+    return status.color;
+  }
+
+  getCategory(menuItem: any): string {
+    let category = '';
+    if (menuItem.parent && menuItem.parent.data) {
+      category = menuItem.parent.data.name;
+    }
+    return category;
+  }
+
+  getCategoryColor(menuItem: any): string {
+    let color = 'transparent';
+    if (menuItem.parent && menuItem.parent.data) {
+      const category = menuItem.parent.data;
+      color = category.color;
+    }
+    return color;
   }
 }
