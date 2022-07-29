@@ -4,9 +4,6 @@ import {CommonModule, DatePipe} from '@angular/common';
 import {OrdersRoutingModule} from './orders-routing.module';
 import {OrdersComponent} from './orders/orders.component';
 import {OrderNewComponent} from './order-new/order-new.component';
-import {MenuItemsComponent} from './menu-items/menu-items.component';
-import {OrderEditComponent} from './order-edit/order-edit.component';
-import {OrderDetailsComponent} from './order-details/order-details.component';
 
 import {TableModule} from 'primeng/table';
 import {InputTextModule} from "primeng/inputtext";
@@ -27,35 +24,34 @@ import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {CardModule} from "primeng/card";
 import {TabViewModule} from "primeng/tabview";
 import {SplitButtonModule} from "primeng/splitbutton";
+import {DragDropModule} from "primeng/dragdrop";
 
 @NgModule({
   declarations: [
     OrdersComponent,
-    OrderNewComponent,
-    MenuItemsComponent,
-    OrderEditComponent,
-    OrderDetailsComponent
+    OrderNewComponent
   ],
-    imports: [
-        CommonModule,
-        TableModule,
-        InputTextModule,
-        SharedModule,
-        OrdersRoutingModule,
-        CalendarModule,
-        DropdownModule,
-        FormsModule,
-        ReactiveFormsModule,
-        TreeSelectModule,
-        InputNumberModule,
-        ToastModule,
-        ToolbarModule,
-        DialogModule,
-        ConfirmDialogModule,
-        CardModule,
-        TabViewModule,
-        SplitButtonModule
-    ],
+  imports: [
+    CommonModule,
+    TableModule,
+    InputTextModule,
+    SharedModule,
+    OrdersRoutingModule,
+    CalendarModule,
+    DropdownModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TreeSelectModule,
+    InputNumberModule,
+    ToastModule,
+    ToolbarModule,
+    DialogModule,
+    ConfirmDialogModule,
+    CardModule,
+    TabViewModule,
+    SplitButtonModule,
+    DragDropModule
+  ],
   providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService, DatePipe]
 })
 export class OrdersModule { }
