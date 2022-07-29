@@ -26,10 +26,11 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public showOverlay: boolean = false;
   public showPlateList: boolean = false;
   public unassignedItems: Order[] = [];
+  public pages: number[] = [];
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
-  private _start: number = 0;
+  private _start: number | null = 0;
   private _end: number = 0;
   private _total: number = 0;
   private _queue$: Subscription = new Subscription();
@@ -111,7 +112,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onUnassignedExecuteRun(plate: Plate): void {
-    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate._id);
+    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate.name);
     this.showPlateList = false;
   }
 
@@ -121,7 +122,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getEnabledPlateList(skip: Plate | null): Plate[] {
-    return this.plateList.filter(p => p.mode === PlateInterface.On && p._id !== skip?._id);
+    return this.plateList.filter(p => p.mode === PlateInterface.On && p.name !== skip?.name);
   }
 
   private _swipeStart(event: Touch) {
@@ -130,15 +131,48 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _swipeMove(event: Touch) {
     this._end = event.screenX;
+
+    const delta = this._getDeltaSwipe();
+
+    if (this._start != null) {
+      if (delta != null && delta < 0) {
+        this.hideNext = false;
+        document.getElementById("carousel__next-page")?.classList.add("carousel__next-page-event");
+      } else {
+        this.hidePrevious = false;
+        document.getElementById("carousel__previous-page")?.classList.add("carousel__left-page-event");
+      }
+    }
   }
 
   private _swipeEnd(): void {
-    const delta: number = this._end - this._start;
+    const delta: number | null = this._getDeltaSwipe();
 
-    if (Math.abs(delta) < this._MIN_DELTA_SWIPE)
+    if (!this.hideNext) {
+      document.getElementById("carousel__next-page")?.classList.remove("carousel__next-page-event");
+      this.hideNext = true;
+    }
+
+    if (!this.hidePrevious) {
+      document.getElementById("carousel__previous-page")?.classList.remove("carousel__left-page-event");
+      this.hidePrevious = true;
+    }
+
+    this._start = null;
+
+    if (!delta)
       return;
 
     delta < 0 ? this.onNextPage() : this.onPreviousPage();
+  }
+
+  private _getDeltaSwipe(): number | null {
+    const delta: number = this._end - this._start!;
+
+    if (Math.abs(delta) < this._MIN_DELTA_SWIPE)
+      return null;
+    else
+      return delta;
   }
 
   private _normalizeEvent(event: any): any {
@@ -157,6 +191,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
         ];
         this._total = this.plateList.length;
         this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+        this.pages = Array.from(Array(this.totalPages).keys())
       });
   }
 }

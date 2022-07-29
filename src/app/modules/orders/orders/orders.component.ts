@@ -81,7 +81,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       }];
       this.platesOptions.push(...data.map(item => {
         return {
-          code: item._id,
+          code: item.name,
           label: item.name,
           value: item.name
         };

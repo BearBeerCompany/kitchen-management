@@ -108,7 +108,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       }];
       this.platesOptions.push(...data.map(item => {
         return {
-          code: item._id,
+          code: item.name,
           name: item.name,
           label: item.name,
           value: item.name
@@ -159,7 +159,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     this.apiConnector.addOrders(this.orders).subscribe(() => {
       this.orders.forEach(order => {
         if (order.plate)
-          this._plateQueueManagerService.sendToQueue(order.plate?._id!, order);
+          this._plateQueueManagerService.sendToQueue(order.plate?.name!, order);
         else
           this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
       });

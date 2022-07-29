@@ -114,29 +114,25 @@ h3 {
   }
 
   .carousel-button {
-    height: 100%;
-    width: 5%;
+    height: 50px;
+    width: 50px;
 
     position: absolute;
-    top: 0;
-    z-index: 99;
+    z-index: 1000;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    border: none;
+    border: 1px transparent;
+    border-radius: 50%;
     background-color: rgba(0, 0, 0, 0.0);
     cursor: pointer;
     user-select: none;
+    transition: all 0.5s ease;
 
     i {
       color: white;
-    }
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.7);
-      cursor: pointer;
     }
 
     [hidden] {
@@ -145,13 +141,35 @@ h3 {
 
   }
 
-  .carousel__previous-page {
+  #carousel__previous-page {
     left: 0;
+
+    &:hover {
+      left: 10px;
+      background-color: var(--primary-500);
+      cursor: pointer;
+    }
   }
 
-  .carousel__next-page {
+  #carousel__next-page {
     right: 0;
+
+    &:hover {
+      right: 10px;
+      background-color: var(--primary-500);
+      cursor: pointer;
+    }
   }
+}
+
+.carousel__next-page-event {
+  right: 10px !important;
+  background-color: var(--primary-500) !important;
+}
+
+.carousel__left-page-event {
+  left: 10px !important;
+  background-color: var(--primary-500) !important;
 }
 
 .plates-options__container {
@@ -189,5 +207,29 @@ h3 {
       border: 1px solid black;
       border-radius: 5px;
     }
+  }
+}
+
+#paginator {
+  width: 100%;
+  height: 20px;
+
+  @include center-flex();
+  flex-direction: row;
+
+  .circle {
+    width: 10px;
+    height: 10px;
+
+    background-color: var(--gray-400);
+    border: 1px solid transparent;
+    border-radius: 50%;
+
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .active {
+    background-color: var(--primary-500);
   }
 }

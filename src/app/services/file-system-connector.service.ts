@@ -61,7 +61,6 @@ export class FileSystemConnectorService implements ApiConnector {
 
     config._status = label;
 
-    config._id = config?._id ?? undefined;
     config.mode = config?.mode ?? PlateInterface.On;
 
     return config;

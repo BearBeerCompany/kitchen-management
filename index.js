@@ -15,7 +15,7 @@ function createWindow() {
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
-      devTools: false,
+      devTools: true,
       preload: path.join(global.rootDir, "/api/preload.js")
     }
   });
@@ -32,6 +32,8 @@ function createWindow() {
     app_windows.closeWindows();
     mainWindow = null
   });
+
+  mainWindow.webContents.openDevTools();
 }
 
 app.on('ready', createWindow);

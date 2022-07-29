@@ -80,7 +80,7 @@ export class ItemComponent implements OnInit {
     const event: ItemEvent = {
       action: PlateItemStatus.Moved,
       item: this.config,
-      nextId: plate._id
+      nextId: plate.name
     } as ItemEvent;
 
     this.onCancelEvent.emit(event);
