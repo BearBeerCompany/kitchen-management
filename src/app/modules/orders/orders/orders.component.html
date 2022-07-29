@@ -175,7 +175,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td style="text-align:center">
+      <td style="text-align:center" *ngIf="order.status === 'TODO'; else noEdit">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(order)" class="p-button-rounded p-button-text"
         ></button>
@@ -193,6 +193,10 @@
     <tr>
       <td colspan="9">No orders found.</td>
     </tr>
+  </ng-template>
+
+  <ng-template #noEdit>
+    <td></td>
   </ng-template>
 </p-table>
 
