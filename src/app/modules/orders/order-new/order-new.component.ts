@@ -28,6 +28,7 @@ export class OrderNewComponent implements OnInit, OnDestroy {
   public selectedOrders: Order[] = [];
   public plates: Plate[] = [];
   public platesOptions: any[] = [];
+  public platesAction: any[] = [];
 
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
@@ -104,8 +105,8 @@ export class OrderNewComponent implements OnInit, OnDestroy {
       this.plates = data;
       this.platesOptions = [{
         code: null,
-        name: '',
-        label: '',
+        name: 'Azzera',
+        label: 'Azzera',
         value: null,
         color: 'transparent'
       }];
@@ -118,6 +119,14 @@ export class OrderNewComponent implements OnInit, OnDestroy {
           color: item.color
         };
       }));
+      this.platesAction = this.platesOptions.map(item => {
+        return {
+          label: item.name,
+          command: () => {
+            this.setPlate(item, this.selectedOrders)
+          }
+        };
+      });
     });
   }
 
@@ -227,4 +236,12 @@ export class OrderNewComponent implements OnInit, OnDestroy {
     return (plate && plate.color) ? plate.color : 'transparent';
   }
 
+  setPlate(orderPlate: Plate, selectedOrders: any[]) {
+    if (selectedOrders && selectedOrders.length) {
+      selectedOrders.forEach(order => {
+        const plate = this.plates.find(item => item.name === orderPlate.name);
+        order.plate = (plate) ? plate.name : null;
+      });
+    }
+  }
 }

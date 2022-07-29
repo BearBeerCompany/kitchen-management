@@ -26,6 +26,7 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {CardModule} from "primeng/card";
 import {TabViewModule} from "primeng/tabview";
+import {SplitButtonModule} from "primeng/splitbutton";
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import {TabViewModule} from "primeng/tabview";
         DialogModule,
         ConfirmDialogModule,
         CardModule,
-        TabViewModule
+        TabViewModule,
+        SplitButtonModule
     ],
   providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService, DatePipe]
 })

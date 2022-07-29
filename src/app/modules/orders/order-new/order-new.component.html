@@ -1,4 +1,4 @@
-<div class="flex flex-row justify-content-between column-gap-5">
+<div class="flex flex-row justify-content-between column-gap-3">
   <!-- insertion form -->
   <div class="flex-column menu-item-choice">
     <h3>Add Burgers</h3>
@@ -36,9 +36,10 @@
   <div class="flex-column">
     <p-toolbar styleClass="p-mb-4">
       <ng-template pTemplate="left">
-        <button pButton pRipple label="Save" icon="pi pi-plus" class="p-mr-2" (click)="saveOrders()"></button>
-        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()"
+        <button pButton pRipple label="Save" icon="pi pi-plus" class="p-mr-2 mr-2" (click)="saveOrders()"></button>
+        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger mr-2" (click)="deleteSelectedProducts()"
                 [disabled]="!selectedOrders || !selectedOrders.length"></button>
+        <p-splitButton label="Plate" icon="pi pi-plus" [model]="platesAction" [disabled]="!selectedOrders || !selectedOrders.length"></p-splitButton>
       </ng-template>
     </p-toolbar>
 
