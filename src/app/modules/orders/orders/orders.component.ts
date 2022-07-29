@@ -10,6 +10,7 @@ import {MenuItemsService} from "../menu-items.service";
 import {DatePipe} from "@angular/common";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
+import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 
 @Component({
   selector: 'orders',
@@ -38,9 +39,15 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   @ViewChild('dt') table: Table | undefined;
 
-  constructor(public i18nService: I18nService, private ordersService: OrdersService, private menuItemsService: MenuItemsService,
-              private router: Router, private messageService: MessageService, private confirmationService: ConfirmationService,
-              private datePipe: DatePipe, @Inject('ApiConnector') private apiConnector: ApiConnector) {
+  constructor(public i18nService: I18nService,
+              private ordersService: OrdersService,
+              private menuItemsService: MenuItemsService,
+              private router: Router,
+              private messageService: MessageService,
+              private confirmationService: ConfirmationService,
+              private datePipe: DatePipe,
+              @Inject('ApiConnector') private apiConnector: ApiConnector,
+              private _plateQueueManagerService: PlateQueueManagerService) {
     this.i18n = i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
@@ -226,7 +233,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
 
   onRowEditSave(orderRow: any) {
     let order = this.orders.find(item => item._id === orderRow._id);
+
     if (order) {
+      const previousPlate = order.plate;
       const menuItem: MenuItem = {
         ...orderRow.menuItem.data,
         category: orderRow.menuItem.parent.data
@@ -244,6 +253,20 @@ export class OrdersComponent implements OnInit, OnDestroy {
       };
       this.apiConnector.updateOrder(order).subscribe(order => {
         delete this.clonedOrders[order._id];
+
+        if (order.plate) {
+          if (!previousPlate || (previousPlate && order.plate.name !== previousPlate.name)) {
+            const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+            // remove the order from previous plate
+            this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
+            this._plateQueueManagerService.sendToQueue(order.plate?.name!, order);
+          }
+        } else {
+          const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+          // remove the order from previous plate
+          this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
+          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
+        }
       });
     }
   }
