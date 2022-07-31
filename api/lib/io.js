@@ -9,7 +9,6 @@ const menuItemsFilePath = `${os.homedir()}/Documents/menu-items.txt`;
 
 async function addPlate(_, config) {
 
-  config._id = uuidv4();
   const row = `${JSON.stringify(config)}\r\n`;
 
   await fs.appendFile(platesFilePath, row, err => {
@@ -19,9 +18,7 @@ async function addPlate(_, config) {
     // file written successfully
   });
 
-  // display notification
-  filesAdded();
-  return Promise.resolve("Saved!");
+   return Promise.resolve("Saved!");
 }
 
 async function readPlates(_) {
@@ -43,7 +40,7 @@ async function readPlateById(_, id) {
     let plate = undefined;
 
     for await (const line of _getReaderInterface(platesFilePath)) {
-      if (line !== "" && line.includes(`"_id":"${id}"`)) {
+      if (line !== "" && line.includes(`"name":"${id}"`)) {
         plate = JSON.parse(line);
         break;
       }
@@ -67,7 +64,7 @@ async function deletePlateById(_, id) {
       let lines = data.split('\r\n');
       for (let index = 0; index < lines.length; index++) {
         const line = lines[index];
-        if (line !== "" && line.includes(`"_id":"${id}"`)) {
+        if (line !== "" && line.includes(`"name":"${id}"`)) {
           foundIndex = index;
           break;
         }
@@ -103,7 +100,7 @@ async function updatePlate(_, config) {
       let lines = data.split('\r\n');
       for (let index = 0; index < lines.length; index++) {
         const line = lines[index];
-        if (line !== "" && line.includes(`"_id":"${config._id}"`)) {
+        if (line !== "" && line.includes(`"name":"${config._id}"`)) {
           foundIndex = index;
           break;
         }
@@ -158,8 +155,6 @@ async function addOrder(_, order) {
     // file written successfully
   });
 
-  // display notification
-  filesAdded();
   return Promise.resolve("Saved!");
 }
 

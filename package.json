@@ -16,7 +16,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron .",
-    "build-electron": "ng build --base-href ./ && electron ."
+    "build-electron": "ng build --source-map --base-href ./ && electron ."
   },
   "repository": {
     "type": "git",
@@ -44,9 +44,10 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "idb": "^7.0.2",
+    "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",
     "primeng": "^13.4.1",
-    "primeflex": "^3.2.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"

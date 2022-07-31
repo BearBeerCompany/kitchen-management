@@ -8,6 +8,17 @@ h3 {
   .table-header {
     display: flex;
     justify-content: space-between;
+
+    .table-header-buttons {
+      display: flex;
+      flex-direction: row;
+    }
+  }
+
+  .p-datatable .p-datatable-thead > tr > th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
   }
 
   .p-datatable.p-datatable-orders {
@@ -37,4 +48,21 @@ h3 {
       display: none;
     }
   }
+
+  .plate-badge {
+    @include badge;
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .category-badge {
+    @include badge;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    border: 2px solid;
+  }
+
 }

@@ -1,33 +1,44 @@
 import {BehaviorSubject, Observable, of} from "rxjs";
 
 export class ReactiveQueue<T> {
-  private items$: BehaviorSubject<T[]>;
+  private readonly items: T[];
+  private readonly items$: BehaviorSubject<T[]>;
 
   constructor(items?: T[]) {
-    this.items$ = new BehaviorSubject<T[]>(items ?? []);
+    this.items = items ?? [];
+    this.items$ = new BehaviorSubject<T[]>(this.items);
   }
 
   get dequeue(): T | undefined {
-    return this.items$.getValue().shift();
+    return this.items.shift();
   }
 
-  get count(): Observable<number> {
-    return of(this.items$.getValue().length)
+  get count$(): Observable<number> {
+    return of(this.items.length)
   }
 
   get values(): T[] {
-    return this.items$.getValue();
+    return this.items;
+  }
+
+  set values(items: T[]) {
+    this.items.length = 0;
+    this.items.push(...items);
   }
 
   get values$(): Observable<T[]> {
-    return of(this.items$.getValue());
+    return this.items$
   }
 
-  get isEmpty(): Observable<boolean> {
-    return of(this.items$.getValue() == null || this.items$.getValue().length == 0);
+  get isEmpty$(): Observable<boolean> {
+    return of(this.items == null || this.items.length == 0);
   }
 
   public enqueue(value: T): void {
     this.values.push(value);
+  }
+
+  public refresh() {
+    this.items$.next(this.items);
   }
 }

@@ -11,6 +11,9 @@ export const I18N = {
       NAME: "Nome Piastra",
       COLOR: "Colore",
       NUMBER: "Numero posti"
+    },
+    OVERLAY: {
+      EMPTY: "Nessun ordine in attesa"
     }
   },
   SETTINGS: {
@@ -23,5 +26,8 @@ export const I18N = {
   },
   ORDERS: {
     TITLE: "Gestione Ordini"
+  },
+  DASHBOARD: {
+    TITLE: "Home"
   }
 }

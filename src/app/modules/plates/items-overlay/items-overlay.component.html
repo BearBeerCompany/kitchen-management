@@ -1,0 +1,27 @@
+<section>
+  <button (click)="onClose.emit()"
+          *ngIf="!hideCloseButton"
+          class="p-button-rounded p-button-info exit-button"
+          icon="pi pi-times"
+          pButton
+          pRipple
+          type="button"></button>
+  <p *ngIf="items.length > 0">Ordini in Attesa</p>
+  <div class="items-overlay__rows-container">
+    <div *ngFor="let i of items" class="items-overlay__row">
+      <i class="pi pi-apple item-icon"></i>
+      <span class="item_title">{{i.menuItem?.name}}</span>
+      <span class="item_order">ORDINE {{i.orderId}}</span>
+      <button (click)="onRun.emit(i)"
+              class="play-button p-button-success"
+              icon="pi pi-play play-button"
+              pButton
+              [showDelay]="500"
+              pTooltip="Avvia"></button>
+    </div>
+  </div>
+  <div *ngIf="items.length == 0" class="items-overlay__empty-container">
+    <i class="pi pi-book"></i>
+    <h3>{{i18n.PLATE.OVERLAY.EMPTY}}</h3>
+  </div>
+</section>

@@ -9,7 +9,8 @@
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
           "name": "Panini",
-          "description": "Panini"
+          "description": "Panini",
+          "color": "#e7615d"
         }
       },
       "orderId": 1,
@@ -25,7 +26,8 @@
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
           "name": "Panini",
-          "description": "Panini"
+          "description": "Panini",
+          "color": "#e7615d"
         }
       },
       "orderId": 2,
@@ -42,7 +44,8 @@
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eA",
           "name": "Panini",
-          "description": "Panini"
+          "description": "Panini",
+          "color": "#e7615d"
         }
       },
       "orderId": 3,
@@ -59,7 +62,8 @@
         "category": {
           "_id": "1c7ca4c9-b6d2-43b4-b83e-d30023e8a2eB",
           "name": "Piadine",
-          "description": "Piadine"
+          "description": "Piadine",
+          "color": "#ffbc4f"
         }
       },
       "orderId": 4,

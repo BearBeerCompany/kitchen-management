@@ -12,6 +12,9 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {PlatePageComponent} from "./page/plate-page.component";
 import {ItemComponent} from './item/item.component';
+import {BadgeModule} from "primeng/badge";
+import {ItemsOverlayComponent} from './items-overlay/items-overlay.component';
+import {TooltipModule} from 'primeng/tooltip';
 
 const routes: Routes = [
   {
@@ -29,7 +32,8 @@ const routes: Routes = [
     PlatesComponent,
     PlateComponent,
     PlatePageComponent,
-    ItemComponent
+    ItemComponent,
+    ItemsOverlayComponent
   ],
   exports: [
     PlateComponent
@@ -43,7 +47,9 @@ const routes: Routes = [
     ButtonModule,
     RippleModule,
     ReactiveFormsModule,
-    InputNumberModule
+    InputNumberModule,
+    BadgeModule,
+    TooltipModule
   ]
 })
 export class PlatesModule {

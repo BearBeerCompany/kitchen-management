@@ -8,6 +8,8 @@ import {FormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {TagModule} from "primeng/tag";
+import {BadgeModule} from "primeng/badge";
+import {TooltipModule} from 'primeng/tooltip';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import {TagModule} from "primeng/tag";
     FormsModule,
     ButtonModule,
     RippleModule,
-    TagModule
+    TagModule,
+    BadgeModule,
+    TooltipModule
   ],
   exports: [
     NavbarButtonComponent,
