@@ -16,7 +16,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron .",
-    "build-electron": "ng build --source-map --base-href ./ && electron ."
+    "build-electron": "ng build --source-map --base-href ./ && electron .",
+    "package:linux": "electron-packager . kitchen-management --overwrite --asar=true --platform=linux --arch=x64 --icon=src/favicon.ico --prune=true --out=release-builds",
+    "package:windows": "electron-packager . kitchen-management --overwrite --asar=true --platform=win32 --arch=ia32 --icon=src/favicon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Gestione Piastre\""
   },
   "repository": {
     "type": "git",
@@ -59,6 +61,7 @@
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "electron": "^19.0.4",
+    "electron-packager": "^15.5.1",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
