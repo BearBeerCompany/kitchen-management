@@ -6,6 +6,8 @@ import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
 import {Subscription} from "rxjs";
 import {Order} from "../../orders/order";
+import {PlateIndexDbService} from "../../../services/plate-index-db.service";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'plates',
@@ -39,7 +41,9 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(public i18nService: I18nService,
               public plateQueueManagerService: PlateQueueManagerService,
               private _elementRef: ElementRef,
-              @Inject('ApiConnector') private _apiConnector: ApiConnector) {
+              @Inject('ApiConnector') private _apiConnector: ApiConnector,
+              private _plateIndexDbService: PlateIndexDbService,
+              private _messageService: MessageService) {
     this.i18n = i18nService.instance;
   }
 
@@ -99,7 +103,15 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onNewPlate(config: Plate) {
-    this._apiConnector.addPlate(config).subscribe(() => this._loadPlatesConfig());
+    this._plateIndexDbService.exist(config.name!)
+      .then((result: boolean) => {
+        if (!result) {
+          this._apiConnector.addPlate(config).subscribe(() => this._loadPlatesConfig())
+        } else {
+          this._messageService
+            .add({severity:'error', summary:'Errore', detail:'Il nome della piastra è già stato inserito'});
+        }
+      })
   }
 
   public handleItemEvent(event: ItemEvent): void {

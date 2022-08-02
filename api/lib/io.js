@@ -11,6 +11,11 @@ async function addPlate(_, config) {
 
   const row = `${JSON.stringify(config)}\r\n`;
 
+  const savePlate = await readPlateById(config.name);
+  if (savePlate) {
+    return Promise.reject(`Configuration for ${config.name} already exists!`);
+  }
+
   await fs.appendFile(platesFilePath, row, err => {
     if (err) {
       return Promise.resolve("Error!");
@@ -18,7 +23,7 @@ async function addPlate(_, config) {
     // file written successfully
   });
 
-   return Promise.resolve("Saved!");
+  return Promise.resolve("Saved!");
 }
 
 async function readPlates(_) {

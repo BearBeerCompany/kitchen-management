@@ -11,7 +11,14 @@ import {Plate} from "../../../plates/plate/plate.model";
                [value]="config._status!"
                styleClass="mr-2"></p-tag>
       </div>
-      <button>
+      <button *ngIf="!hideEdit" class="edit-button"
+              (mouseover)="hideDelete = true"
+              (mouseleave)="hideDelete = false">
+        <i class="pi pi-pencil"></i>
+      </button>
+      <button *ngIf="!hideDelete" class="delete-button"
+              (mouseover)="hideEdit = true"
+              (mouseleave)="hideEdit = false">
         <i class="pi pi-trash"></i>
       </button>
     </div>
@@ -22,8 +29,8 @@ export class PlateInfoComponent implements OnInit {
 
   @Input() config!: Plate;
 
-  constructor() {
-  }
+  public hideEdit: boolean = false;
+  public hideDelete: boolean = false;
 
   ngOnInit(): void {
   }

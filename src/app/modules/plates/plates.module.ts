@@ -15,6 +15,8 @@ import {ItemComponent} from './item/item.component';
 import {BadgeModule} from "primeng/badge";
 import {ItemsOverlayComponent} from './items-overlay/items-overlay.component';
 import {TooltipModule} from 'primeng/tooltip';
+import {ToastModule} from 'primeng/toast';
+import {MessageService} from "primeng/api";
 
 const routes: Routes = [
   {
@@ -49,8 +51,10 @@ const routes: Routes = [
     ReactiveFormsModule,
     InputNumberModule,
     BadgeModule,
-    TooltipModule
-  ]
+    TooltipModule,
+    ToastModule
+  ],
+  providers: [MessageService]
 })
 export class PlatesModule {
 }

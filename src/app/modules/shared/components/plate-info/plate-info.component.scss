@@ -30,19 +30,45 @@
   }
 
   button {
-    background-color: var(--red-400);
     border: none;
     box-sizing: border-box;
-    border-radius: 0 16px 16px 0;
 
     height: 100%;
     width: 20%;
 
     position: absolute;
-    right: 0;
     top: 0;
 
     transition: all 0.3s;
+
+    i {
+      font-size: 2rem;
+    }
+  }
+
+  .edit-button {
+    background-color: var(--gray-400);
+    border-radius: 0;
+
+    right: 20%;
+
+    &:hover {
+      width: 40%;
+      right: 0;
+
+      cursor: pointer;
+
+      background-color: var(--gray-600);
+      color: white;
+      border-radius: 0 16px 16px 0;
+    }
+  }
+
+  .delete-button {
+    background-color: var(--red-400);
+    border-radius: 0 16px 16px 0;
+
+    right: 0;
 
     &:hover {
       width: 40%;
@@ -51,10 +77,6 @@
 
       background-color: var(--red-600);
       color: white;
-    }
-
-    i {
-      font-size: 2rem;
     }
   }
 }

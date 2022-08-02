@@ -7,14 +7,6 @@ function uuidv4() {
   });
 }
 
-function removeElement(array, elem) {
-  const index = array.indexOf(elem);
-  if (index > -1) {
-    array.splice(index, 1);
-  }
-}
-
 module.exports = {
-  uuidv4,
-  removeElement
+  uuidv4
 }
