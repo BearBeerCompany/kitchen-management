@@ -38,8 +38,8 @@ export class PlateIndexDbService {
     return await db.delete('plate', name);
   }
 
-  public async count(name: string): Promise<number> {
-    return await this.findByKey(name) != undefined ? 1 : 0
+  public async exist(name: string): Promise<boolean> {
+    return await this.findByKey(name) != undefined
   }
 
   private _getConnection(): Promise<IDBPDatabase<PlateDBSchema>> {

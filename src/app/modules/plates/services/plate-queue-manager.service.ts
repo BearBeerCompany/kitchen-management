@@ -29,8 +29,8 @@ export class PlateQueueManagerService {
   }
 
   public addQueue(name: string): void {
-    this._dbService.count(name).then((result: number) => {
-      if (result == 0) {
+    this._dbService.exist(name).then((result: boolean) => {
+      if (!result) {
         this._dbService.insert(name, []);
         this._plates.set(name, new ReactiveQueue());
       } else {
