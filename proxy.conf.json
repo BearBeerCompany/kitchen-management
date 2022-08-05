@@ -1,0 +1,7 @@
+{
+    "/ws/*": {
+        "target": "http://localhost:8081/ws",
+        "secure": false,
+        "changeOrigin": false
+    }
+}
