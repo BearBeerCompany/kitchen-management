@@ -5,7 +5,7 @@ import * as SockJS from 'sockjs-client';
 @Injectable({
     providedIn: 'root'
 })
-export class WebSocketAPI {
+export class WebSocketService {
     webSocketEndPoint: string = 'http://localhost:8080/ws';
     topic: string = "/topic/greetings";
     stompClient: any;
@@ -32,9 +32,10 @@ export class WebSocketAPI {
 
     // on error, schedule a reconnection attempt
     errorCallBack(error: any) {
-        console.log("errorCallBack -> " + error)
+        console.log("errorCallBack -> " + error);
+        const _this = this;
         setTimeout(() => {
-            this.connect();
+            _this.connect();
         }, 5000);
     }
 
@@ -49,6 +50,6 @@ export class WebSocketAPI {
 
     onMessageReceived(message: any) {
         console.log("Message Recieved from Server :: " + message);
-        // this.appComponent.handleMessage(JSON.stringify(message.body));
     }
+
 }
