@@ -3,7 +3,7 @@ import {I18nService} from 'src/app/services/i18n.service';
 import {OrdersService} from '../orders.service';
 import {Table} from 'primeng/table';
 import {MenuItem, Order, Status} from '../order';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {Router} from "@angular/router";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {MenuItemsService} from "../menu-items.service";
@@ -11,6 +11,8 @@ import {DatePipe} from "@angular/common";
 import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../../plates/plate/plate.model";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
+import { WebSocketService } from 'src/app/services/web-socket-service';
+import { PKMINotification } from 'src/app/services/pkmi-notification';
 
 @Component({
   selector: 'orders',
@@ -22,6 +24,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   private ordersSub: Subscription = new Subscription();
   private menuItemsSub: Subscription = new Subscription();
   private platesSub: Subscription = new Subscription();
+  private pkmiNotificationSub: Subscription = new Subscription();
   private clonedOrders: Order[] = [];
 
   public readonly i18n: any;
@@ -36,6 +39,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   menuItems: any[] = [];
   platesOptions: any[] = [];
   plates: Plate[] = [];
+  pkmiNotification$: Observable<PKMINotification | null>;
 
   @ViewChild('dt') table: Table | undefined;
 
@@ -47,7 +51,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
               private confirmationService: ConfirmationService,
               private datePipe: DatePipe,
               @Inject('ApiConnector') private apiConnector: ApiConnector,
-              private _plateQueueManagerService: PlateQueueManagerService) {
+              private _plateQueueManagerService: PlateQueueManagerService,
+              private _webSockerService: WebSocketService) {
     this.i18n = i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
@@ -55,6 +60,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       {label: 'Done', value: Status.Done, icon: 'pi-check', color: 'green'},
       {label: 'Cancelled', value: Status.Cancelled, icon: 'pi-times', color: 'red'}
     ];
+    this.pkmiNotification$ = this._webSockerService.pkmiNotifications;
   }
 
   ngOnInit(): void {
@@ -78,6 +84,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         this.loading = false;
       });
     });
+    
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = [{
@@ -96,12 +103,22 @@ export class OrdersComponent implements OnInit, OnDestroy {
         };
       }));
     });
+
+    this.pkmiNotificationSub = this.pkmiNotification$.subscribe((notification: PKMINotification | null) => {
+      console.log('order page notification: ' + notification?.type);
+      this.messageService.add({
+        severity:'success',
+        summary: 'Aggiunto ordine',
+        detail: 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItemId + ', ordine ' + notification?.plateKitchenMenuItem?.orderNumber, 
+        life: 2500});
+    });
   }
 
   ngOnDestroy(): void {
     this.ordersSub.unsubscribe();
     this.menuItemsSub.unsubscribe();
     this.platesSub.unsubscribe();
+    this.pkmiNotificationSub.unsubscribe();
   }
 
   addOrder() {

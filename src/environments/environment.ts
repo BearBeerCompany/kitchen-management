@@ -4,7 +4,12 @@
 
 export const environment = {
   production: false,
-  connector: "api"
+  connector: "api",
+  webSocket: {
+    endpoint: 'http://localhost:8080/ws',
+    defaultTopic: '/topic/greetings',
+    pkmiTopic: '/topic/pkmi'
+  }
 };
 
 /*
