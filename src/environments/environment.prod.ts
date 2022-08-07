@@ -3,6 +3,7 @@ export const environment = {
   connector: "fs",
   webSocket: {
     endpoint: 'http://localhost:8080/ws',
-    topic: '/topic/greetings'
+    defaultTopic: '/topic/greetings',
+    pkmiTopic: '/topic/pkmi'
   }
 };

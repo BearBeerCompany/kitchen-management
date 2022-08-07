@@ -7,7 +7,8 @@ export const environment = {
   connector: "api",
   webSocket: {
     endpoint: 'http://localhost:8080/ws',
-    topic: '/topic/greetings'
+    defaultTopic: '/topic/greetings',
+    pkmiTopic: '/topic/pkmi'
   }
 };
 
