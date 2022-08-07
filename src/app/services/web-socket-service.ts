@@ -1,13 +1,14 @@
 import { Injectable } from "@angular/core";
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class WebSocketService {
-    webSocketEndPoint: string = 'http://localhost:8080/ws';
-    topic: string = "/topic/greetings";
+    webSocketEndPoint: string = environment.webSocket.endpoint;
+    topic: string = environment.webSocket.topic;
     stompClient: any;
 
     connect() {

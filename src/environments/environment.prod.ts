@@ -1,4 +1,8 @@
 export const environment = {
   production: true,
-  connector: "fs"
+  connector: "fs",
+  webSocket: {
+    endpoint: 'http://localhost:8080/ws',
+    topic: '/topic/greetings'
+  }
 };
