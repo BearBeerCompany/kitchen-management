@@ -52,7 +52,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
               private datePipe: DatePipe,
               @Inject('ApiConnector') private apiConnector: ApiConnector,
               private _plateQueueManagerService: PlateQueueManagerService,
-              private _webSockerService: WebSocketService) {
+              private _webSockerService: WebSocketService,
+              private _orderService: OrdersService) {
     this.i18n = i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
@@ -68,6 +69,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       this.menuItems = data;
 
       this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
+      // this.ordersSub = this.ordersService.getAll().subscribe(data => {
         this.orders = data;
         this.ordersRows = this.orders.map((order: Order) => {
           const menuItem = this._getMenuItemNode(order);
