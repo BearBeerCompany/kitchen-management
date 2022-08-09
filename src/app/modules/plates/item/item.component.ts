@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ItemEvent, PlateItemAction, PlateItemStatus} from "../plate.interface";
+import {Component, EventEmitter, Input, NgModule, OnInit, Output} from '@angular/core';
+import {ItemEvent, Plate, PlateItemAction, PlateItemStatus} from "../plate.interface";
 import {Order, Status} from "../../orders/order";
 import {MenuItem as PrimeMenuItem} from 'primeng/api';
-import {Plate} from "../plate/plate.model";
+import {CommonModule} from "@angular/common";
+import {RippleModule} from "primeng/ripple";
+import {ButtonModule} from "primeng/button";
 
 @Component({
   selector: 'item',
@@ -86,4 +88,12 @@ export class ItemComponent implements OnInit {
     this.onCancelEvent.emit(event);
     this.toggleOverlay();
   }
+}
+
+@NgModule({
+  imports: [CommonModule, RippleModule, ButtonModule],
+  declarations: [ItemComponent],
+  exports: [ItemComponent]
+})
+export class ItemComponentModule{
 }

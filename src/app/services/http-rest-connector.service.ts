@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
 import {map, Observable, of} from "rxjs";
-import {Plate} from "../modules/plates/plate/plate.model";
 import {HttpClient} from "@angular/common/http";
 import {Order} from "../modules/orders/order";
 import {TreeNode} from "primeng/api";
+import {Plate} from "../modules/plates/plate.interface";
 
 @Injectable({
   providedIn: 'root'

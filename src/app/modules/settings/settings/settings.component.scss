@@ -29,4 +29,18 @@ main {
 
 }
 
+form {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  #confirmForm {
+    width: 100%;
+
+    display: inline-flex;
+    justify-content: space-between;
+  }
+}
 

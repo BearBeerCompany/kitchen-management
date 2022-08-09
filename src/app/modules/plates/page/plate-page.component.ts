@@ -2,7 +2,7 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs";
 import {ApiConnector} from "../../../services/api-connector";
-import {Plate} from "../plate/plate.model";
+import {Plate} from "../plate.interface";
 
 @Component({
   selector: 'page',

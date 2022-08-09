@@ -9,10 +9,10 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {MenuItemsService} from "../menu-items.service";
 import {DatePipe} from "@angular/common";
 import {ApiConnector} from "../../../services/api-connector";
-import {Plate} from "../../plates/plate/plate.model";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 import { WebSocketService } from 'src/app/services/web-socket-service';
 import { PKMINotification } from 'src/app/services/pkmi-notification';
+import {Plate} from "../../plates/plate.interface";
 
 @Component({
   selector: 'orders',
@@ -52,7 +52,8 @@ export class OrdersComponent implements OnInit, OnDestroy {
               private datePipe: DatePipe,
               @Inject('ApiConnector') private apiConnector: ApiConnector,
               private _plateQueueManagerService: PlateQueueManagerService,
-              private _webSockerService: WebSocketService) {
+              private _webSockerService: WebSocketService,
+              private _orderService: OrdersService) {
     this.i18n = i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: Status.Todo, icon: 'pi-stop-circle', color: 'grey'},
@@ -68,6 +69,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       this.menuItems = data;
 
       this.ordersSub = this.apiConnector.getOrders().subscribe(data => {
+      // this.ordersSub = this.ordersService.getAll().subscribe(data => {
         this.orders = data;
         this.ordersRows = this.orders.map((order: Order) => {
           const menuItem = this._getMenuItemNode(order);
@@ -84,7 +86,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
         this.loading = false;
       });
     });
-    
+
     this.platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = [{
@@ -109,7 +111,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
       this.messageService.add({
         severity:'success',
         summary: 'Aggiunto ordine',
-        detail: 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItemId + ', ordine ' + notification?.plateKitchenMenuItem?.orderNumber, 
+        detail: 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItemId + ', ordine ' + notification?.plateKitchenMenuItem?.orderNumber,
         life: 2500});
     });
   }
