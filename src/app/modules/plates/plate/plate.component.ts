@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {ItemEvent, mode, PlateInterface} from "../plate.interface";
+import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
-import {Plate} from "./plate.model";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";

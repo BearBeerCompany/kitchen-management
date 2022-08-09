@@ -13,7 +13,7 @@ export class OrdersService extends RequestService implements CRUDService<Order> 
     super(ApiResourceEnum.KITCHEN_MENU_ITEM);
   }
 
-  public getAll(parentId?: number): Observable<Order[]> {
+  public getAll(parentId?: string): Observable<Order[]> {
     return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return (res || []) as Order[];
@@ -21,7 +21,7 @@ export class OrdersService extends RequestService implements CRUDService<Order> 
     );
   }
 
-  public getById(id: number): Observable<Order> {
+  public getById(id: string): Observable<Order> {
     return this._http.get(this._getUrl(id), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return (res || {}) as Order;
@@ -45,7 +45,7 @@ export class OrdersService extends RequestService implements CRUDService<Order> 
     );
   }
 
-  public delete(id: number): Observable<any> {
+  public delete(id: string): Observable<any> {
     return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
   }
 

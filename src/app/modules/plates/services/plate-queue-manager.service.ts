@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {Plate} from "../plate/plate.model";
-import {PlateItemAction, PlateItemStatus} from "../plate.interface";
+import {Plate, PlateItemAction, PlateItemStatus} from "../plate.interface";
 import {BehaviorSubject} from "rxjs";
 import {Order, Status} from "../../orders/order";
 import {PlateIndexDbService} from "../../../services/plate-index-db.service";

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Plate} from "../../../plates/plate/plate.model";
+import {Plate} from "../../../plates/plate.interface";
 
 @Component({
   selector: 'plate-info',

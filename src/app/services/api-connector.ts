@@ -1,6 +1,6 @@
 import {Observable} from "rxjs";
-import {Plate} from "../modules/plates/plate/plate.model";
 import {Order} from "../modules/orders/order";
+import {Plate} from "../modules/plates/plate.interface";
 
 export interface ApiConnector {
 

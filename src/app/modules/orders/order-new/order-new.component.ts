@@ -7,10 +7,10 @@ import {Subscription} from "rxjs";
 import {I18nService} from "../../../services/i18n.service";
 import {Category, MenuItem, MenuItemExtended, Order, Status} from "../order";
 import {ApiConnector} from "../../../services/api-connector";
-import {Plate} from "../../plates/plate/plate.model";
 import {DatePipe} from "@angular/common";
 import {Router} from "@angular/router";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
+import {Plate} from "../../plates/plate.interface";
 
 @Component({
   selector: 'order-new',

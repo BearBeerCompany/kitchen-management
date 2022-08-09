@@ -2,9 +2,9 @@ import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {PrimeNGConfig} from "primeng/api";
 import {PlateQueueManagerService} from "./modules/plates/services/plate-queue-manager.service";
 import {ApiConnector} from "./services/api-connector";
-import {Plate} from "./modules/plates/plate/plate.model";
 import {Subscription} from "rxjs";
 import { WebSocketService } from './services/web-socket-service';
+import {Plate} from "./modules/plates/plate.interface";
 
 @Component({
   selector: 'app-root',

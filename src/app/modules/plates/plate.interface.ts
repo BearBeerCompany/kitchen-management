@@ -23,3 +23,14 @@ export interface ItemEvent {
   item: Order;
   nextId?: string;
 }
+
+export interface Plate {
+  mode?: PlateInterface;
+  color?: string;
+  name?: string;
+  description?: string;
+  label?: string;
+  slot?: [number, number];
+  _severity?: string;
+  _status?: string;
+}

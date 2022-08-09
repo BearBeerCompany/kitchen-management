@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit} from '@angular/core';
-import {ItemEvent, mode, PlateInterface, PlateItemStatus} from "../plate.interface";
+import {ItemEvent, mode, Plate, PlateInterface, PlateItemStatus} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
-import {Plate} from "../plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
 import {Subscription} from "rxjs";

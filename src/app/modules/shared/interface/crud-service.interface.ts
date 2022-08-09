@@ -2,14 +2,14 @@ import { Observable } from 'rxjs';
 
 export interface CRUDService<T> {
 
-    getAll(parentId?: number): Observable<Array<T>>;
+    getAll(parentId?: string): Observable<Array<T>>;
 
-    getById(id: number, parentId?: number): Observable<T>;
+    getById(id: string): Observable<T>;
 
-    create(dto: T, parentId?: number): Observable<T>;
+    create(dto: T): Observable<T>;
 
-    update(dto: T, parentId?: number): Observable<T>;
+    update(dto: T): Observable<T>;
 
-    delete(id: number, parentId?: number): Observable<boolean> | Observable<any>;
-    
+    delete(id: string): Observable<boolean> | Observable<any>;
+
 }

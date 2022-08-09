@@ -1,5 +1,4 @@
-import {Plate} from "../plates/plate/plate.model";
-import {PlateItemAction} from "../plates/plate.interface";
+import {Plate, PlateItemAction} from "../plates/plate.interface";
 
 export interface Order {
   _id?: string,

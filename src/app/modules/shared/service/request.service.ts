@@ -8,7 +8,7 @@ import { ApiResourceEnum } from './api-resource.enum';
 })
 export class RequestService {
 
-    private _resource: ApiResourceEnum;
+    private readonly _resource: ApiResourceEnum;
 
     constructor(resource: ApiResourceEnum) {
         this._resource = resource;
@@ -30,7 +30,7 @@ export class RequestService {
         };
     }
 
-    protected _getUrl(id?: number): string {
+    protected _getUrl(id?: string): string {
         if (id)
             return `${RequestService.baseUrl}/${this._resource}/${id}`;
         else

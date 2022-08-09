@@ -2,9 +2,8 @@ import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
 import {map, Observable} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
-import {Plate} from "../modules/plates/plate/plate.model";
 import {I18nService} from "./i18n.service";
-import {PlateInterface} from "../modules/plates/plate.interface";
+import {Plate, PlateInterface} from "../modules/plates/plate.interface";
 import {MenuItem, Order} from "../modules/orders/order";
 
 @Injectable({

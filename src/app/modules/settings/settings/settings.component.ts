@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {I18nService} from "../../../services/i18n.service";
-import {Plate} from "../../plates/plate/plate.model";
 import {ApiConnector} from "../../../services/api-connector";
 import {Observable} from "rxjs";
+import {Plate} from "../../plates/plate.interface";
 
 @Component({
   selector: 'settings',

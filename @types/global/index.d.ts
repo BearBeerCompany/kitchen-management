@@ -1,5 +1,5 @@
-import {Plate} from "../../src/app/modules/plates/plate/plate.model";
 import {Order, MenuItem} from "../../src/app/modules/orders/order";
+import {Plate} from "../../src/app/modules/plates/plate.interface";
 
 export {};
 

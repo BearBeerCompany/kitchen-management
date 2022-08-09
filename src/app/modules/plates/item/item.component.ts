@@ -1,8 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ItemEvent, PlateItemAction, PlateItemStatus} from "../plate.interface";
+import {ItemEvent, Plate, PlateItemAction, PlateItemStatus} from "../plate.interface";
 import {Order, Status} from "../../orders/order";
 import {MenuItem as PrimeMenuItem} from 'primeng/api';
-import {Plate} from "../plate/plate.model";
 
 @Component({
   selector: 'item',
