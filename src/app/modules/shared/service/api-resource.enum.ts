@@ -2,6 +2,6 @@ export enum ApiResourceEnum {
     CATEGORY = "category",
     KITCHEN_MENU_ITEM = "item",
     PLATE = "plate",
-    PLATE_ITEM = "plate-item",
-    PLATE_ITEM_LIST = "plate-item/list"
+    PLATE_MENU_ITEM = "plate-item",
+    PLATE_MENU_ITEM_LIST = "plate-item/list"
 }

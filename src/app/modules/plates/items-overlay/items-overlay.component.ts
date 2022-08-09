@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Order} from "../../orders/order";
+import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 import {I18nService} from "../../../services/i18n.service";
 
 @Component({
@@ -11,11 +11,11 @@ export class ItemsOverlayComponent {
 
   public readonly i18n: any;
 
-  @Input() public items: Order[] = [];
+  @Input() public items: PlateMenuItem[] = [];
   @Input() public hideCloseButton: boolean = false;
 
   @Output() public onClose: EventEmitter<void> = new EventEmitter<void>(false);
-  @Output() public onRun: EventEmitter<Order> = new EventEmitter<Order>(false);
+  @Output() public onRun: EventEmitter<PlateMenuItem> = new EventEmitter<PlateMenuItem>(false);
 
   constructor(public i18nService: I18nService) {
     this.i18n = i18nService.instance;

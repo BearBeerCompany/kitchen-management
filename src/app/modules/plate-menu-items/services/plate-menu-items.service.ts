@@ -1,46 +1,46 @@
 import {map, Observable} from "rxjs";
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Order} from './order';
-import { CRUDService } from "../shared/interface/crud-service.interface";
-import { RequestService } from "../shared/service/request.service";
-import { ApiResourceEnum } from "../shared/service/api-resource.enum";
+import {PlateMenuItem} from '../plate-menu-item';
+import { CRUDService } from "../../shared/interface/crud-service.interface";
+import { RequestService } from "../../shared/service/request.service";
+import { ApiResourceEnum } from "../../shared/service/api-resource.enum";
 
 @Injectable()
-export class OrdersService extends RequestService implements CRUDService<Order> {
+export class PlateMenuItemsService extends RequestService implements CRUDService<PlateMenuItem> {
 
   constructor(private _http: HttpClient) {
-    super(ApiResourceEnum.KITCHEN_MENU_ITEM);
+    super(ApiResourceEnum.PLATE_MENU_ITEM);
   }
 
-  public getAll(parentId?: string): Observable<Order[]> {
+  public getAll(parentId?: string): Observable<PlateMenuItem[]> {
     return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || []) as Order[];
+        return (res || []) as PlateMenuItem[];
       })
     );
   }
 
-  public getById(id: string): Observable<Order> {
+  public getById(id: string): Observable<PlateMenuItem> {
     return this._http.get(this._getUrl(id), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || {}) as Order;
+        return (res || {}) as PlateMenuItem;
       })
     );
   }
 
-  public create(dto: Order): Observable<Order> {
+  public create(dto: PlateMenuItem): Observable<PlateMenuItem> {
     return this._http.post(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || {}) as Order
+        return (res || {}) as PlateMenuItem
       })
     );
   }
 
-  public update(dto: Order): Observable<Order> {
+  public update(dto: PlateMenuItem): Observable<PlateMenuItem> {
     return this._http.put(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || {}) as Order
+        return (res || {}) as PlateMenuItem
       })
     );
   }
@@ -48,13 +48,6 @@ export class OrdersService extends RequestService implements CRUDService<Order> 
   public delete(id: string): Observable<any> {
     return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
   }
-
-  // getOrders(): Observable<Order[]> {
-  //   return this.http.get<any>('assets/orders.json')
-  //     .pipe(
-  //       map(res => res.data as Order[])
-  //     );
-  // }
 
   // fixme remove
   createId(): string {

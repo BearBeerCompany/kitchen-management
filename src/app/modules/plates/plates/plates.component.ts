@@ -4,7 +4,7 @@ import {I18nService} from "../../../services/i18n.service";
 import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
 import {Subscription} from "rxjs";
-import {Order} from "../../orders/order";
+import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 import {PlateIndexDbService} from "../../../services/plate-index-db.service";
 import {MessageService} from "primeng/api";
 
@@ -26,7 +26,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public totalPages: number = 0;
   public showOverlay: boolean = false;
   public showPlateList: boolean = false;
-  public unassignedItems: Order[] = [];
+  public unassignedItems: PlateMenuItem[] = [];
   public pages: number[] = [];
 
   private readonly _MIN_DELTA_SWIPE = 90;
@@ -35,7 +35,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   private _end: number = 0;
   private _total: number = 0;
   private _queue$: Subscription = new Subscription();
-  private _currentItem?: Order;
+  private _currentItem?: PlateMenuItem;
 
   constructor(public i18nService: I18nService,
               public plateQueueManagerService: PlateQueueManagerService,
@@ -50,7 +50,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
     this._loadPlatesConfig();
     this._queue$.add(
       this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
-        .values$?.subscribe((items: Order[]) => {
+        .values$?.subscribe((items: PlateMenuItem[]) => {
         this.unassignedItems = items;
       })
     );
@@ -117,7 +117,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
   }
 
-  public onUnassignedRun(item: Order): void {
+  public onUnassignedRun(item: PlateMenuItem): void {
     this.showPlateList = true;
     this._currentItem = item;
   }

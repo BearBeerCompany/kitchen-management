@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
 import {map, Observable, of} from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {Order} from "../modules/orders/order";
+import {PlateMenuItem} from "../modules/plate-menu-items/plate-menu-item";
 import {TreeNode} from "primeng/api";
 import {Plate} from "../modules/plates/plate.interface";
 
@@ -38,24 +38,24 @@ export class HttpRestConnectorService implements ApiConnector {
     return new Observable();
   }
 
-  addOder(order: Order): Observable<any> {
+  addOder(order: PlateMenuItem): Observable<any> {
     return new Observable();
   }
 
-  addOrders(orders: Order[]): Observable<any> {
+  addOrders(orders: PlateMenuItem[]): Observable<any> {
     // todo temporary, used for mocked data
     return of(true);
   }
 
-  getOrder(id: string): Observable<Order> {
+  getOrder(id: string): Observable<PlateMenuItem> {
     return new Observable();
   }
 
-  getOrders(): Observable<Order[]> {
+  getOrders(): Observable<PlateMenuItem[]> {
     // todo temporary, used for mocked data
     return this.http.get<any>('assets/orders.json')
       .pipe(
-        map(res => res.data as Order[])
+        map(res => res.data as PlateMenuItem[])
       );
   }
 
@@ -69,7 +69,7 @@ export class HttpRestConnectorService implements ApiConnector {
     return of(true);
   }
 
-  updateOrder(order: Order): Observable<Order> {
+  updateOrder(order: PlateMenuItem): Observable<PlateMenuItem> {
     // todo temporary, used for mocked data
     return of(order);
   }

@@ -1,14 +1,14 @@
 import {NgModule} from '@angular/core';
 import {CommonModule, DatePipe} from '@angular/common';
 
-import {OrdersRoutingModule} from './orders-routing.module';
-import {OrdersComponent} from './orders/orders.component';
-import {OrderNewComponent} from './order-new/order-new.component';
+import {PlateMenuItemsRoutingModule} from './plate-menu-items-routing.module';
+import {PlateMenuItemsComponent} from './plate-menu-items/plate-menu-items.component';
+import {PlateMenuItemNewComponent} from './plate-menu-items-new/plate-menu-item-new.component';
 
 import {TableModule} from 'primeng/table';
 import {InputTextModule} from "primeng/inputtext";
 
-import {OrdersService} from './orders.service';
+import {PlateMenuItemsService} from './services/plate-menu-items.service';
 import {SharedModule} from "../shared/shared.module";
 import {CalendarModule} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
@@ -18,25 +18,26 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {ToastModule} from "primeng/toast";
 import {ToolbarModule} from "primeng/toolbar";
 import {DialogModule} from "primeng/dialog";
-import {MenuItemsService} from "./menu-items.service";
+import {MenuItemsService} from "./services/menu-items.service";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {CardModule} from "primeng/card";
 import {TabViewModule} from "primeng/tabview";
 import {SplitButtonModule} from "primeng/splitbutton";
 import {DragDropModule} from "primeng/dragdrop";
+import {CategoryService} from "./services/category.service";
 
 @NgModule({
   declarations: [
-    OrdersComponent,
-    OrderNewComponent
+    PlateMenuItemsComponent,
+    PlateMenuItemNewComponent
   ],
   imports: [
     CommonModule,
     TableModule,
     InputTextModule,
     SharedModule,
-    OrdersRoutingModule,
+    PlateMenuItemsRoutingModule,
     CalendarModule,
     DropdownModule,
     FormsModule,
@@ -52,6 +53,6 @@ import {DragDropModule} from "primeng/dragdrop";
     SplitButtonModule,
     DragDropModule
   ],
-  providers: [OrdersService, MenuItemsService, MessageService, ConfirmationService, DatePipe]
+  providers: [PlateMenuItemsService, MenuItemsService, CategoryService, MessageService, ConfirmationService, DatePipe]
 })
-export class OrdersModule { }
+export class PlateMenuItemsModule { }

@@ -20,7 +20,7 @@ electron.contextBridge.exposeInMainWorld("fs", {
     return electron.ipcRenderer.invoke("fs::on-order-add", order);
   },
   addOrders: (orders) => {
-    return electron.ipcRenderer.invoke("fs::on-orders-add", orders);
+    return electron.ipcRenderer.invoke("fs::on-plate-menu-items-add", orders);
   },
   readOrders: () => {
     return electron.ipcRenderer.invoke("fs::on-order-get-all");
@@ -32,7 +32,7 @@ electron.contextBridge.exposeInMainWorld("fs", {
     return electron.ipcRenderer.invoke("fs::on-order-delete-by-id", id);
   },
   deleteOrders: (ids) => {
-    return electron.ipcRenderer.invoke("fs::on-orders-delete-by-ids", ids);
+    return electron.ipcRenderer.invoke("fs::on-plate-menu-items-delete-by-ids", ids);
   },
   updateOrder: (order) => {
     return electron.ipcRenderer.invoke("fs::on-order-update", order);

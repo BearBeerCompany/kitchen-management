@@ -4,7 +4,7 @@ import {map, Observable} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {I18nService} from "./i18n.service";
 import {Plate, PlateInterface} from "../modules/plates/plate.interface";
-import {MenuItem, Order} from "../modules/orders/order";
+import {MenuItem, PlateMenuItem} from "../modules/plate-menu-items/plate-menu-item";
 
 @Injectable({
   providedIn: 'root'
@@ -65,19 +65,19 @@ export class FileSystemConnectorService implements ApiConnector {
     return config;
   }
 
-  addOder(order: Order): Observable<Order | undefined> {
+  addOder(order: PlateMenuItem): Observable<PlateMenuItem | undefined> {
     return fromPromise(fs.addOrder(order));
   }
 
-  addOrders(orders: Order[]): Observable<Order | undefined> {
+  addOrders(orders: PlateMenuItem[]): Observable<PlateMenuItem | undefined> {
     return fromPromise(fs.addOrders(orders));
   }
 
-  getOrder(id: string): Observable<Order | undefined> {
+  getOrder(id: string): Observable<PlateMenuItem | undefined> {
     return fromPromise(fs.readOrder(id));
   }
 
-  getOrders(): Observable<Order[]> {
+  getOrders(): Observable<PlateMenuItem[]> {
     return fromPromise(fs.readOrders());
   }
 
@@ -89,7 +89,7 @@ export class FileSystemConnectorService implements ApiConnector {
     return fromPromise(fs.deleteOrders(ids));
   }
 
-  updateOrder(order: Order): Observable<Order | undefined> {
+  updateOrder(order: PlateMenuItem): Observable<PlateMenuItem | undefined> {
     return fromPromise(fs.updateOrder(order));
   }
 

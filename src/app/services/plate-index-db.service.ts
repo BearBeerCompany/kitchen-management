@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {DBSchema, IDBPDatabase, openDB} from 'idb';
-import {Order} from "../modules/orders/order";
+import {PlateMenuItem} from "../modules/plate-menu-items/plate-menu-item";
 
 interface PlateDBSchema extends DBSchema {
   "plate": {
     key: string;
-    value: Order[];
+    value: PlateMenuItem[];
   }
 }
 
@@ -14,13 +14,13 @@ interface PlateDBSchema extends DBSchema {
 })
 export class PlateIndexDbService {
 
-  public async insert(name: string, orders?: Order[] | null): Promise<void> {
+  public async insert(name: string, orders?: PlateMenuItem[] | null): Promise<void> {
     const db: IDBPDatabase<PlateDBSchema> = await this._getConnection();
 
     await db.put('plate', orders ?? [], name);
   }
 
-  public async findByKey(name: string): Promise<Order[] | undefined> {
+  public async findByKey(name: string): Promise<PlateMenuItem[] | undefined> {
     const db: IDBPDatabase<PlateDBSchema> = await this._getConnection();
 
     return await db.get('plate', name);
