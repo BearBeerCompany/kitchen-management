@@ -84,7 +84,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           this.plateMenuItems = data;
 
           this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
-            const menuItemNode = this._getMenuItemNode(plateMenuItem.menuItem); // todo: transform to TreeNode (primeng) for update row options
+            const menuItemNode = this._getMenuItemNode(plateMenuItem.menuItem); // transform to TreeNode (primeng)
             return {
               id: plateMenuItem.id,
               orderNumber: plateMenuItem.orderNumber,
@@ -100,7 +100,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       });
     });
 
-    // this._platesSub = this.apiConnector.getPlates().subscribe((data: Plate[]) => {
     this._platesSub = this._plateService.getAll().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = [{
@@ -157,7 +156,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   deleteSelectedPkmis() {
     this._confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected plate-menu-items?',
+      message: 'Are you sure you want to delete the selected plate menu items?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
@@ -194,6 +193,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         date: this.currentPlateMenuItem.date,
         plate: this.currentPlateMenuItem.plate
       };
+      // fixme
       this.apiConnector.updateOrder(editOrder).subscribe(order => {
         console.log("order" + order);
 
@@ -231,37 +231,13 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         });
       }
 
+      // fixme
       this.apiConnector.addOrders(newOrders).subscribe(orders => {
         this.plateMenuItems = this.plateMenuItems.concat(orders);
       })
     }
 
     this.pkmiDialog = false;
-  }
-
-  editPkmi(plateMenuItem: PlateMenuItem) {
-    this.currentPlateMenuItem = {...plateMenuItem};
-    let menuItemNode = this._getMenuItemNode(plateMenuItem.menuItem);
-    if (menuItemNode) {
-      this.currentPlateMenuItem.menuItem = menuItemNode;
-    }
-
-    this.pkmiDialog = true;
-  }
-
-  deletePkmi(plateMenuItem: PlateMenuItem) {
-    this._confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected plate menu item?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.apiConnector.removeOrder(plateMenuItem.id!).subscribe(() => {
-          this.plateMenuItems = this.plateMenuItems.filter(val => val != plateMenuItem);
-          this.pkmiRows = this.pkmiRows.filter(val => val != plateMenuItem);
-          this._messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
-        })
-      }
-    });
   }
 
   onRowEditInit(pkmi: any) {
@@ -318,33 +294,14 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       label: menuItem.name,
       data: menuItem,
       parent: {
-        data: {
-          id: menuItem.categoryId,
-          name: 'Panini', //fixme
-          description: 'Panini', // fixme
-          color: 'red' // fixme
-        }
+        data: this.categories.find(category => category.id === menuItem.categoryId)
       }
     };
 
-    // this.menuItems.forEach(item => {
-    //   if (item.data._id === categoryId) {
-    //     menuItemNode = item.children.find((child: any) => {
-    //       return child.data._id === menuItemId;
-    //     });
-    //     menuItemNode = {
-    //       ...menuItemNode,
-    //       parent: {
-    //         data: plateMenuItem.menuItem.category
-    //       }
-    //     };
-    //   }
-    // });
     return menuItemNode;
   }
 
   private _getMenuItemOptions(categories: Category[], items: MenuItem[]): TreeNode[] {
-    // fixme, create the tree structure
     const optionsTree: TreeNode[] = [];
     optionsTree.push(...categories.map(category => {
       return  {
