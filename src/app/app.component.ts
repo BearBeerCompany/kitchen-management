@@ -5,6 +5,7 @@ import {ApiConnector} from "./services/api-connector";
 import {Subscription} from "rxjs";
 import { WebSocketService } from './services/web-socket-service';
 import {Plate} from "./modules/plates/plate.interface";
+import {PlateService} from "./modules/plates/services/plate.service";
 
 @Component({
   selector: 'app-root',
@@ -28,14 +29,14 @@ export class AppComponent implements OnInit, OnDestroy {
   private _bootstrap$: Subscription = new Subscription();
 
   constructor(private _primengConfig: PrimeNGConfig,
-              @Inject('ApiConnector') private _apiConnector: ApiConnector,
               private _plateQueueManagerService: PlateQueueManagerService,
+              private _plateService: PlateService,
               private _webSocketService: WebSocketService) {
     this._primengConfig.ripple = true;
   }
 
   public ngOnInit(): void {
-    this._bootstrap$.add(this._apiConnector.getPlates()
+    this._bootstrap$.add(this._plateService.getAll()
       .subscribe((plates: Plate[]) => {
         this._plateQueueManagerService.load(plates);
         this._webSocketService.connect();

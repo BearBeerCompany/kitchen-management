@@ -3,7 +3,6 @@ import {ReactiveQueue} from "../../shared/class/reactive-queue";
 import {Plate, PlateMenuItemAction, PlateItemStatus} from "../plate.interface";
 import {BehaviorSubject} from "rxjs";
 import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
-import {PlateIndexDbService} from "../../../services/plate-index-db.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class PlateQueueManagerService {
   private _plates: Map<string, ReactiveQueue<PlateMenuItem>> = new Map<string, ReactiveQueue<PlateMenuItem>>();
   private _changes$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-  constructor(private _dbService: PlateIndexDbService) {
+  constructor() {
   }
 
   public load(plates: Plate[]) {
@@ -28,14 +27,8 @@ export class PlateQueueManagerService {
   }
 
   public addQueue(name: string): void {
-    this._dbService.exist(name).then((result: boolean) => {
-      if (!result) {
-        this._dbService.insert(name, []);
-        this._plates.set(name, new ReactiveQueue());
-      } else {
-        this._dbService.findByKey(name).then(data => this._plates.set(name, new ReactiveQueue(data)));
-      }
-    });
+    this._plates.set(name, new ReactiveQueue());
+    //TODO: call api to load plate status
   }
 
   get notify(): BehaviorSubject<number> {
@@ -51,7 +44,7 @@ export class PlateQueueManagerService {
     item.status = Status.Todo;
     this._getQueue(name).enqueue(item);
     this._changes$.next(this._changes$.value + 1);
-    this._dbService.insert(name, this._getQueue(name).values).then(_ => this._getQueue(name).refresh());
+    //TODO: call api for save plate status
   }
 
   public removeFromQueue(name: string, item: PlateMenuItem): void {
@@ -61,7 +54,7 @@ export class PlateQueueManagerService {
       return i.id != item.id;
     });
     this._changes$.next(this._changes$.value - 1);
-    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
+    //TODO: call api for save plate status
   }
 
   public onItemAction(name: string, item: PlateMenuItem, action: PlateMenuItemAction, nextId?: string): void {
@@ -79,7 +72,7 @@ export class PlateQueueManagerService {
       case Status.Cancelled:
       case Status.Done:
         this.removeFromQueue(name, item);
-        //TODO: Invoke order services
+        //TODO: Invoke order service
         break;
       case Status.Progress:
         this._runItemProgress(name, item);
@@ -98,13 +91,13 @@ export class PlateQueueManagerService {
     } else {
       queue.enqueue(item);
     }
-    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
+    //TODO: call api for save plate status
   }
 
   private _runItemProgress(name: string, item: PlateMenuItem): void {
     const queue: ReactiveQueue<PlateMenuItem> = this._getQueue(name);
     queue.values.find(i => item.id === i.id)!.status = Status.Progress;
-    this._dbService.insert(name, queue.values).then(_ => this._getQueue(name).refresh());
+    //TODO: call api for save plate status
   }
 
   private _validateItem(item: PlateMenuItem): void {

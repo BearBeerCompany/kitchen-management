@@ -2,19 +2,11 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PlatesComponent} from './plates/plates.component';
 import {RouterModule, Routes} from "@angular/router";
-import {PlateComponent} from './plate/plate.component';
-import {TagModule} from 'primeng/tag';
-import {InputTextModule} from 'primeng/inputtext';
-import {ColorPickerModule} from 'primeng/colorpicker';
-import {ButtonModule} from 'primeng/button';
-import {RippleModule} from "primeng/ripple";
-import {ReactiveFormsModule} from "@angular/forms";
-import {InputNumberModule} from "primeng/inputnumber";
+import {PlateComponentModule} from './plate/plate.component';
 import {PlatePageComponent} from "./page/plate-page.component";
-import {ItemComponent} from './item/item.component';
+import {ItemComponentModule} from './item/item.component';
 import {BadgeModule} from "primeng/badge";
-import {ItemsOverlayComponent} from './items-overlay/items-overlay.component';
-import {TooltipModule} from 'primeng/tooltip';
+import {ItemsOverlayComponentModule} from './items-overlay/items-overlay.component';
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from "primeng/api";
 
@@ -31,27 +23,16 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    PlatesComponent,
-    PlateComponent,
     PlatePageComponent,
-    ItemComponent,
-    ItemsOverlayComponent
-  ],
-  exports: [
-    PlateComponent
+    PlatesComponent
   ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
-    TagModule,
-    InputTextModule,
-    ColorPickerModule,
-    ButtonModule,
-    RippleModule,
-    ReactiveFormsModule,
-    InputNumberModule,
     BadgeModule,
-    TooltipModule,
+    PlateComponentModule,
+    ItemComponentModule,
+    ItemsOverlayComponentModule,
     ToastModule
   ],
   providers: [MessageService]

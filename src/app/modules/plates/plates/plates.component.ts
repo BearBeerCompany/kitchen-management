@@ -5,8 +5,8 @@ import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
 import {Subscription} from "rxjs";
 import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
-import {PlateIndexDbService} from "../../../services/plate-index-db.service";
 import {MessageService} from "primeng/api";
+import {PlateService} from "../services/plate.service";
 
 @Component({
   selector: 'plates',
@@ -41,7 +41,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               public plateQueueManagerService: PlateQueueManagerService,
               private _elementRef: ElementRef,
               @Inject('ApiConnector') private _apiConnector: ApiConnector,
-              private _plateIndexDbService: PlateIndexDbService,
+              private _plateService: PlateService,
               private _messageService: MessageService) {
     this.i18n = i18nService.instance;
   }
@@ -50,7 +50,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
     this._loadPlatesConfig();
     this._queue$.add(
       this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
-        .values$?.subscribe((items: PlateMenuItem[]) => {
+        ?.values$?.subscribe((items: PlateMenuItem[]) => {
         this.unassignedItems = items;
       })
     );
@@ -102,15 +102,15 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onNewPlate(config: Plate) {
-    this._plateIndexDbService.exist(config.name!)
-      .then((result: boolean) => {
-        if (!result) {
-          this._apiConnector.addPlate(config).subscribe(() => this._loadPlatesConfig())
-        } else {
-          this._messageService
-            .add({severity:'error', summary:'Errore', detail:'Il nome della piastra è già stato inserito'});
-        }
-      })
+    this._plateService.create(config).subscribe(
+      (response: Plate) => {
+        this._plateService.getAll().subscribe();
+      },
+      (error: any) => {
+        this._messageService
+          .add({severity: 'error', summary: 'Errore', detail: 'Il nome della piastra è già stato inserito'});
+      }
+    )
   }
 
   public handleItemEvent(event: ItemEvent): void {
@@ -192,17 +192,16 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _loadPlatesConfig(): void {
     this.plateList = [];
-    this._apiConnector.getPlates()
-      .subscribe((plates: Plate[]) => {
-        this.plateList = [
-          ...plates,
-          {
-            mode: PlateInterface.Skeleton
-          }
-        ];
-        this._total = this.plateList.length;
-        this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
-        this.pages = Array.from(Array(this.totalPages).keys())
-      });
+    this._plateService.plates$.subscribe((plates: Plate[]) => {
+      this.plateList = [
+        ...plates,
+        {
+          mode: PlateInterface.Skeleton
+        }
+      ];
+      this._total = this.plateList.length;
+      this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+      this.pages = Array.from(Array(this.totalPages).keys())
+    });
   }
 }

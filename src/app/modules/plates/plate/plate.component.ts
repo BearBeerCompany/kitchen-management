@@ -1,12 +1,23 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NgModule, OnDestroy, OnInit, Output} from '@angular/core';
 import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
 import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {Subscription} from "rxjs";
+import {CommonModule} from "@angular/common";
+import {TooltipModule} from "primeng/tooltip";
+import {TagModule} from "primeng/tag";
+import {BadgeModule} from "primeng/badge";
+import {InputTextModule} from "primeng/inputtext";
+import {ColorPickerModule} from "primeng/colorpicker";
+import {InputNumberModule} from "primeng/inputnumber";
+import {ButtonModule} from "primeng/button";
+import {RippleModule} from "primeng/ripple";
+import {ItemComponentModule} from "../item/item.component";
+import {ItemsOverlayComponentModule} from "../items-overlay/items-overlay.component";
 
 @Component({
   selector: 'plate',
@@ -49,16 +60,16 @@ export class PlateComponent implements OnInit, OnDestroy {
     );
 
     this.queue$.add(this.queue?.values$?.subscribe((items: PlateMenuItem[] = []) => {
-      this.progressItems = [];
-      this.todoItems = [];
-      for (const i of items) {
-        if (i.status === Status.Progress)
-          this.progressItems.push(i);
-        else
-          this.todoItems.push(i);
-      }
-      if (this.todoItems.length == 0) {
-        this.showOverlay = false;
+        this.progressItems = [];
+        this.todoItems = [];
+        for (const i of items) {
+          if (i.status === Status.Progress)
+            this.progressItems.push(i);
+          else
+            this.todoItems.push(i);
+        }
+        if (this.todoItems.length == 0) {
+          this.showOverlay = false;
         }
       })
     );
@@ -137,4 +148,24 @@ export class PlateComponent implements OnInit, OnDestroy {
 
     this.onItemEvent.emit(event);
   }
+}
+
+@NgModule({
+  imports: [CommonModule,
+    TooltipModule,
+    TagModule,
+    BadgeModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    ColorPickerModule,
+    InputNumberModule,
+    ButtonModule,
+    RippleModule,
+    ItemComponentModule,
+    ItemsOverlayComponentModule
+  ],
+  declarations: [PlateComponent],
+  exports: [PlateComponent]
+})
+export class PlateComponentModule {
 }

@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  connector: "fs",
+  connector: "api",
   webSocket: {
     endpoint: 'http://localhost:8080/ws',
     defaultTopic: '/topic/greetings',
