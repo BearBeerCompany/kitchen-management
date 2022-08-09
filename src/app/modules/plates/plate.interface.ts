@@ -25,6 +25,8 @@ export interface ItemEvent {
 }
 
 export interface Plate {
+  id?: string;
+  enabled?: boolean;
   mode?: PlateInterface;
   color?: string;
   name?: string;

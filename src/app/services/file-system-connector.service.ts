@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiConnector} from "./api-connector";
-import {map, Observable} from "rxjs";
+import {map, Observable, of} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {I18nService} from "./i18n.service";
 import {Plate, PlateInterface} from "../modules/plates/plate.interface";
@@ -19,27 +19,6 @@ export class FileSystemConnectorService implements ApiConnector {
 
   getPlate(id: string): Observable<Plate | undefined> {
     return fromPromise(fs.readPlate(id)).pipe(map(p => this._evaluateStatus(p)));
-  }
-
-  addPlate(config: Plate): Observable<Plate | undefined> {
-    return fromPromise(fs.addPlate(config)).pipe(map(p => this._evaluateStatus(p)));
-  }
-
-  getPlates(): Observable<any[]> {
-    return fromPromise(fs.readPlates())
-      .pipe(
-        map((plates: Plate[]) => {
-          return plates.map(p => this._evaluateStatus(p));
-        })
-      );
-  }
-
-  removePlate(id: string): Observable<Plate | undefined> {
-    return fromPromise(fs.deletePlate(id));
-  }
-
-  updatePlate(config: Plate): Observable<Plate | undefined> {
-    return fromPromise(fs.updatePlate(config)).pipe(map(p => this._evaluateStatus(p)));
   }
 
   private _evaluateStatus(config: Plate): Plate {
@@ -63,6 +42,27 @@ export class FileSystemConnectorService implements ApiConnector {
     config.mode = config?.mode ?? PlateInterface.On;
 
     return config;
+  }
+
+  addPlate(config: Plate): Observable<Plate | undefined> {
+    return fromPromise(fs.addPlate(config)).pipe(map(p => this._evaluateStatus(p)));
+  }
+
+  getPlates(): Observable<any[]> {
+    return fromPromise(fs.readPlates())
+      .pipe(
+        map((plates: Plate[]) => {
+          return plates.map(p => this._evaluateStatus(p));
+        })
+      );
+  }
+
+  removePlate(id: string): Observable<Plate | undefined> {
+    return fromPromise(fs.deletePlate(id));
+  }
+
+  updatePlate(config: Plate): Observable<Plate | undefined> {
+    return fromPromise(fs.updatePlate(config)).pipe(map(p => this._evaluateStatus(p)));
   }
 
   addOder(order: Order): Observable<Order | undefined> {
