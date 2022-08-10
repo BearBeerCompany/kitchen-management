@@ -162,6 +162,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         this._plateMenuItemsService.deleteAll(ids).subscribe((data) => {
           // fixme
           this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
+          this.pkmiRows = this.pkmiRows.filter(val => !this.selectedPlateMenuItems.includes(val));
           this.selectedPlateMenuItems = [];
         })
       }
