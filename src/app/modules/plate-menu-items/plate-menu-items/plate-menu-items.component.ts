@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {I18nService} from 'src/app/services/i18n.service';
 import {PlateMenuItemsService} from '../services/plate-menu-items.service';
 import {Table} from 'primeng/table';
@@ -8,7 +8,6 @@ import {Router} from "@angular/router";
 import {ConfirmationService, MessageService, TreeNode} from "primeng/api";
 import {MenuItemsService} from "../services/menu-items.service";
 import {DatePipe} from "@angular/common";
-import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 import {WebSocketService} from 'src/app/services/web-socket-service';
 import {PKMINotification, PKMINotificationType} from 'src/app/services/pkmi-notification';
@@ -55,7 +54,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
               private _messageService: MessageService,
               private _confirmationService: ConfirmationService,
               private _datePipe: DatePipe,
-              @Inject('ApiConnector') private apiConnector: ApiConnector,
               private _plateQueueManagerService: PlateQueueManagerService,
               private _webSocketService: WebSocketService,
               private _plateMenuItemsService: PlateMenuItemsService,
@@ -78,13 +76,13 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
       this._menuItemsSub = this._menuItemsService.getAll().subscribe(data => {
         this.menuItems = data;
-        this.menuItemOptions = this._getMenuItemOptions(this.categories, data);
+        this.menuItemOptions = PlateMenuItemsService.getCategoryMenuItemTreeNodeOptions(this.categories, data);
 
         this._pkmisSub = this._plateMenuItemsService.getAll().subscribe(data => {
           this.plateMenuItems = data;
 
           this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
-            const menuItemNode = this._getMenuItemNode(plateMenuItem.menuItem); // transform to TreeNode (primeng)
+            const menuItemNode = PlateMenuItemsService.getMenuItemNode(this.categories, plateMenuItem.menuItem);
             return {
               id: plateMenuItem.id,
               orderNumber: plateMenuItem.orderNumber,
@@ -121,43 +119,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
     this._pkmiNotificationSub = this.pkmiNotification$.subscribe((notification: PKMINotification | null) => {
       console.log('order page notification: ' + notification?.type);
-      let summary = '';
-      let detail = '';
-      let severity = '';
-
-      switch (notification?.type) {
-        case PKMINotificationType.PKMI_ADD:
-          severity = 'success';
-          summary = 'Aggiunto panino';
-          detail = 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
-          break;
-        case PKMINotificationType.PKMI_ADD_ALL:
-          severity = 'success';
-          summary = 'Aggiunti panini';
-          detail = 'Aggiunti ' + notification?.ids?.length + ' panini';
-          break;
-        case PKMINotificationType.PKMI_UPDATE:
-          severity = 'warn';
-          summary = 'Modificato panino';
-          detail = 'Modificato panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
-          break;
-        case PKMINotificationType.PKMI_UPDATE_ALL:
-          severity = 'warn';
-          summary = 'Modificati panini';
-          detail = 'Modificati ' + notification?.ids?.length + ' panini';
-          break;
-        case PKMINotificationType.PKMI_DELETE:
-          severity = 'error';
-          summary = 'Cancellato panino';
-          detail = 'Cancellato panino id ' + notification?.ids[0];
-          break;
-        case PKMINotificationType.PKMI_DELETE_ALL:
-          severity = 'error';
-          summary = 'Cancellati panini';
-          detail = 'Cancellati ' + notification?.ids?.length + ' panini';
-          break;
+      if (notification) {
+        const msgData = this._getNotificationMsgData(notification);
+        this._messageService.add({ severity: msgData.severity, summary: msgData.summary, detail: msgData.detail, life: 2500 });
       }
-      this._messageService.add({ severity, summary, detail, life: 2500 });
     });
   }
 
@@ -258,48 +223,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     delete this._clonedPkmis[order._id];
   }
 
-  private _getMenuItemNode(menuItem: MenuItem): TreeNode {
-    const menuItemNode = {
-      label: menuItem.name,
-      data: menuItem,
-      parent: {
-        data: this.categories.find(category => category.id === menuItem.categoryId)
-      }
-    };
-
-    return menuItemNode;
-  }
-
-  private _getMenuItemOptions(categories: Category[], items: MenuItem[]): TreeNode[] {
-    const optionsTree: TreeNode[] = [];
-    optionsTree.push(...categories.map(category => {
-      return  {
-        key: category.id,
-        label: category.name,
-        data: category,
-        expandedIcon: 'pi pi-folder-open',
-        collapsedIcon: 'pi pi-folder',
-        selectable: false,
-        children: []
-      } as TreeNode;
-    }));
-
-    items.forEach(item => {
-      const itemNode = {
-        key: item.id,
-        label: item.name,
-        data: item,
-        icon: 'pi pi-file'
-      };
-      const itemCategoryNode = optionsTree.find(node => node.key === item.categoryId);
-      if (itemCategoryNode) {
-        itemCategoryNode.children?.push(itemNode);
-      }
-    });
-
-    return optionsTree;
-  }
-
   getPlateColor(pkmiPlate: string): string {
     const plate = this.plates.find((item => item.name === pkmiPlate));
     return (plate && plate.color) ? plate.color : 'transparent';
@@ -330,5 +253,45 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       color = category.color;
     }
     return color;
+  }
+
+  private _getNotificationMsgData(notification: PKMINotification) {
+    let summary = '';
+    let detail = '';
+    let severity = '';
+    switch (notification?.type) {
+      case PKMINotificationType.PKMI_ADD:
+        severity = 'success';
+        summary = 'Aggiunto panino';
+        detail = 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
+        break;
+      case PKMINotificationType.PKMI_ADD_ALL:
+        severity = 'success';
+        summary = 'Aggiunti panini';
+        detail = 'Aggiunti ' + notification?.ids?.length + ' panini';
+        break;
+      case PKMINotificationType.PKMI_UPDATE:
+        severity = 'warn';
+        summary = 'Modificato panino';
+        detail = 'Modificato panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
+        break;
+      case PKMINotificationType.PKMI_UPDATE_ALL:
+        severity = 'warn';
+        summary = 'Modificati panini';
+        detail = 'Modificati ' + notification?.ids?.length + ' panini';
+        break;
+      case PKMINotificationType.PKMI_DELETE:
+        severity = 'error';
+        summary = 'Cancellato panino';
+        detail = 'Cancellato panino id ' + notification?.ids[0];
+        break;
+      case PKMINotificationType.PKMI_DELETE_ALL:
+        severity = 'error';
+        summary = 'Cancellati panini';
+        detail = 'Cancellati ' + notification?.ids?.length + ' panini';
+        break;
+    }
+
+    return {severity, summary, detail};
   }
 }
