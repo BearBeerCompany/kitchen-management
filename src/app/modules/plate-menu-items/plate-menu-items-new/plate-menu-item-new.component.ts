@@ -139,7 +139,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
 
     let menuItem: MenuItem = {
       ...newOrder.menuItem.data,
-      category: newOrder.menuItem.parent.data
+      categoryId: newOrder.menuItem.parent.data.id
     };
     for (let i = 0; i < newOrder.quantity; i++) {
       this.plateMenuItems.push({

@@ -20,8 +20,7 @@ export interface MenuItem {
   id?: string,
   name?: string,
   description?: string,
-  category?: Category,
-  categoryId?: string // fixme, remove temporarily
+  categoryId?: string
 }
 
 export interface MenuItemExtended extends MenuItem {

@@ -10,8 +10,8 @@ import {MenuItemsService} from "../services/menu-items.service";
 import {DatePipe} from "@angular/common";
 import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
-import { WebSocketService } from 'src/app/services/web-socket-service';
-import { PKMINotification } from 'src/app/services/pkmi-notification';
+import {WebSocketService} from 'src/app/services/web-socket-service';
+import {PKMINotification, PKMINotificationType} from 'src/app/services/pkmi-notification';
 import {Plate} from "../../plates/plate.interface";
 import {PlateService} from "../../plates/services/plate.service";
 import {CategoryService} from "../services/category.service";
@@ -121,12 +121,43 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
     this._pkmiNotificationSub = this.pkmiNotification$.subscribe((notification: PKMINotification | null) => {
       console.log('order page notification: ' + notification?.type);
-      this._messageService.add({
-        severity:'success',
-        summary: 'Aggiunto ordine',
-        detail: 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItemId + ', ordine ' + notification?.plateKitchenMenuItem?.orderNumber,
-        life: 2500
-      });
+      let summary = '';
+      let detail = '';
+      let severity = '';
+
+      switch (notification?.type) {
+        case PKMINotificationType.PKMI_ADD:
+          severity = 'success';
+          summary = 'Aggiunto panino';
+          detail = 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
+          break;
+        case PKMINotificationType.PKMI_ADD_ALL:
+          severity = 'success';
+          summary = 'Aggiunti panini';
+          detail = 'Aggiunti ' + notification?.ids?.length + ' panini';
+          break;
+        case PKMINotificationType.PKMI_UPDATE:
+          severity = 'warn';
+          summary = 'Modificato panino';
+          detail = 'Modificato panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
+          break;
+        case PKMINotificationType.PKMI_UPDATE_ALL:
+          severity = 'warn';
+          summary = 'Modificati panini';
+          detail = 'Modificati ' + notification?.ids?.length + ' panini';
+          break;
+        case PKMINotificationType.PKMI_DELETE:
+          severity = 'error';
+          summary = 'Cancellato panino';
+          detail = 'Cancellato panino id ' + notification?.ids[0];
+          break;
+        case PKMINotificationType.PKMI_DELETE_ALL:
+          severity = 'error';
+          summary = 'Cancellati panini';
+          detail = 'Cancellati ' + notification?.ids?.length + ' panini';
+          break;
+      }
+      this._messageService.add({ severity, summary, detail, life: 2500 });
     });
   }
 
@@ -161,10 +192,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         const ids = this.selectedPlateMenuItems.map(item => item.id!);
-        this.apiConnector.removeOrders(ids).subscribe(() => {
+        this._plateMenuItemsService.deleteAll(ids).subscribe((data) => {
+          // fixme
           this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
           this.selectedPlateMenuItems = [];
-          this._messageService.add({severity:'success', summary: 'Successful', detail: 'Orders Deleted', life: 3000});
         })
       }
     });
@@ -175,83 +206,18 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this.submitted = false;
   }
 
-  savePkmi() {
-    this.submitted = true;
-    if (this.currentPlateMenuItem._id) {
-      let menuItem: MenuItem = {
-        ...this.currentPlateMenuItem.menuItem.data,
-        category: this.currentPlateMenuItem.menuItem.parent.data
-      };
-      const currentOrderIdx = this.plateMenuItems.findIndex(order => order.id === this.currentPlateMenuItem._id);
-
-      const editOrder = {
-        ... this.plateMenuItems[currentOrderIdx],
-        orderId: this.currentPlateMenuItem.orderId,
-        menuItem,
-        status: this.currentPlateMenuItem.status,
-        notes: this.currentPlateMenuItem.notes,
-        date: this.currentPlateMenuItem.date,
-        plate: this.currentPlateMenuItem.plate
-      };
-      // fixme
-      this.apiConnector.updateOrder(editOrder).subscribe(order => {
-        console.log("order" + order);
-
-        this.plateMenuItems[currentOrderIdx] = {
-          ... this.plateMenuItems[currentOrderIdx],
-          orderNumber: order.orderId,
-          menuItem,
-          status: order.status,
-          notes: order.notes,
-          date: order.date,
-          plate: order.plate
-        };
-      });
-    } else {
-      // new plate-menu-items
-      let newOrders: PlateMenuItem[] = [];
-      let menuItem: MenuItem = {
-        ...this.currentPlateMenuItem.menuItem.data,
-        category: this.currentPlateMenuItem.menuItem.parent.data
-      };
-      const date = new Date();
-      const dateFormatted = this._datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
-
-      for (let i = 0; i < this.currentPlateMenuItem.quantity; i++) {
-        newOrders.push({
-          id: this._plateMenuItemsService.createId(),
-          orderNumber: this.currentPlateMenuItem.orderId,
-          menuItem,
-          status: this.statuses[0],
-          notes: this.currentPlateMenuItem.notes,
-          date: dateFormatted,
-          plate: this.currentPlateMenuItem.plate,
-          clientName: '', // todo
-          tableNumber: 0, // todo
-        });
-      }
-
-      // fixme
-      this.apiConnector.addOrders(newOrders).subscribe(orders => {
-        this.plateMenuItems = this.plateMenuItems.concat(orders);
-      })
-    }
-
-    this.pkmiDialog = false;
-  }
-
   onRowEditInit(pkmi: any) {
-    this._clonedPkmis[pkmi._id] = {...pkmi};
+    this._clonedPkmis[pkmi.id] = {...pkmi};
   }
 
   onRowEditSave(pkmiRow: any) {
-    let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow._id);
+    let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow.id);
 
     if (plateMenuItem) {
       const previousPlate = plateMenuItem.plate;
       const menuItem: MenuItem = {
         ...pkmiRow.menuItem.data,
-        category: pkmiRow.menuItem.parent.data
+        categoryId: pkmiRow.menuItem.parent.data.id
       };
       const plate = this.plates.find(item => item.name === pkmiRow.plate) as Plate;
 
@@ -264,21 +230,24 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         notes: pkmiRow.notes,
         plate
       };
-      this.apiConnector.updateOrder(plateMenuItem).subscribe(order => {
-        delete this._clonedPkmis[order._id];
 
-        if (order.plate) {
-          if (!previousPlate || (previousPlate && order.plate.name !== previousPlate.name)) {
+      this._plateMenuItemsService.update(plateMenuItem).subscribe(editedPkmi => {
+        let index = this._clonedPkmis.findIndex(clonedItem => clonedItem.id === editedPkmi.id);
+        delete this._clonedPkmis[index];
+
+        // fixme
+        if (editedPkmi.plate) {
+          if (!previousPlate || (previousPlate && editedPkmi.plate.name !== previousPlate.name)) {
             const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
             // remove the order from previous plate
-            this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
-            this._plateQueueManagerService.sendToQueue(order.plate?.name!, order);
+            this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
+            this._plateQueueManagerService.sendToQueue(editedPkmi.plate?.name!, editedPkmi);
           }
         } else {
           const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
           // remove the order from previous plate
-          this._plateQueueManagerService.removeFromQueue(previousPlateName!, order);
-          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
+          this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
+          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, editedPkmi);
         }
       });
     }
@@ -331,33 +300,33 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     return optionsTree;
   }
 
-  getPlateColor(orderPlate: string): string {
-    const plate = this.plates.find((item => item.name === orderPlate));
+  getPlateColor(pkmiPlate: string): string {
+    const plate = this.plates.find((item => item.name === pkmiPlate));
     return (plate && plate.color) ? plate.color : 'transparent';
   }
 
-  getStatusIcon(orderStatus: string): string {
-    const status = this.statuses.find(item => item.value === orderStatus);
+  getStatusIcon(pkmiStatus: string): string {
+    const status = this.statuses.find(item => item.value === pkmiStatus);
     return 'pi ' + status.icon;
   }
 
-  getStatusLabelColor(orderStatus: string): string {
-    const status = this.statuses.find(item => item.value === orderStatus);
+  getStatusLabelColor(pkmiStatus: string): string {
+    const status = this.statuses.find(item => item.value === pkmiStatus);
     return status.color;
   }
 
-  getCategory(menuItem: any): string {
+  getCategory(menuItemNode: TreeNode): string {
     let category = '';
-    if (menuItem.parent && menuItem.parent.data) {
-      category = menuItem.parent.data.name;
+    if (menuItemNode.parent && menuItemNode.parent.data) {
+      category = menuItemNode.parent.data.name;
     }
     return category;
   }
 
-  getCategoryColor(menuItem: any): string {
+  getCategoryColor(menuItemNode: TreeNode): string {
     let color = 'transparent';
-    if (menuItem.parent && menuItem.parent.data) {
-      const category = menuItem.parent.data;
+    if (menuItemNode.parent && menuItemNode.parent.data) {
+      const category = menuItemNode.parent.data;
       color = category.color;
     }
     return color;

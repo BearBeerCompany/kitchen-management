@@ -1,29 +1,16 @@
+import {PlateMenuItem} from "../modules/plate-menu-items/plate-menu-item";
+
 export interface PKMINotification {
     type: PKMINotificationType;
     ids: Array<string>;
-    plateKitchenMenuItem: PlateKitchenMenuItem;
-}
-
-export interface PlateKitchenMenuItem {
-    id: string;
-    plateId?: string;
-    menuItemId: string;
-    status: ItemStatus;
-    orderNumber: number;
-    tableNumber: number;
-    clientName: string;
-    notes: string;
+    plateKitchenMenuItem: PlateMenuItem;
 }
 
 export enum PKMINotificationType {
-    PKMI_ADD,
-    PKMI_ADD_ALL,
-    PKMI_UPDATE,
-    PKMI_UPDATE_ALL,
-    PKMI_DELETE,
-    PKMI_DELETE_ALL
-}
-
-export enum ItemStatus {
-    TODO, PROGRESS, DONE, CANCELLED
+    PKMI_ADD = 'PKMI_ADD',
+    PKMI_ADD_ALL = 'PKMI_ADD_ALL',
+    PKMI_UPDATE = 'PKMI_UPDATE',
+    PKMI_UPDATE_ALL = 'PKMI_UPDATE_ALL',
+    PKMI_DELETE = 'PKMI_DELETE',
+    PKMI_DELETE_ALL = 'PKMI_DELETE_ALL'
 }

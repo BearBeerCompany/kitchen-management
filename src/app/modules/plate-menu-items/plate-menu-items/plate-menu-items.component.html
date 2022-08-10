@@ -175,7 +175,7 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td style="text-align:center" *ngIf="plateMenuItem.status === 'TODO'; else noEdit">
+      <td style="text-align:center">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
         ></button>
@@ -199,54 +199,5 @@
     <td></td>
   </ng-template>
 </p-table>
-
-<p-dialog [(visible)]="pkmiDialog" [style]="{width: '450px', height: '700px'}" header="Order Details" [modal]="true" styleClass="p-fluid">
-  <ng-template pTemplate="content">
-    <div class="p-field">
-      <label for="orderId">Order Id</label>
-      <p-inputNumber [max]="1000"
-                     [min]="0"
-                     [showButtons]="true"
-                     id="orderId"
-                     [(ngModel)]="currentPlateMenuItem.orderId"
-      ></p-inputNumber>
-      <small class="p-invalid" *ngIf="submitted && !currentPlateMenuItem.orderId">Id is required.</small>
-    </div>
-    <div class="p-field">
-      <label for="menuItem">Burger</label>
-      <p-treeSelect id="menuItem"
-        [(ngModel)]="currentPlateMenuItem.menuItem"
-        [options]="menuItems"
-        [metaKeySelection]="false"
-        placeholder="Select Menu Item"
-        [filter]="true"
-        [filterInputAutoFocus]="true"
-        scrollHeight="300px"
-      ></p-treeSelect>
-      <small class="p-invalid" *ngIf="submitted && !currentPlateMenuItem.orderId">Id is required.</small>
-    </div>
-    <div class="p-field" *ngIf="!currentPlateMenuItem._id">
-      <label for="quantity">Quantity</label>
-      <p-inputNumber id="quantity" [(ngModel)]="currentPlateMenuItem.quantity"></p-inputNumber>
-    </div>
-    <div class="p-field" *ngIf="currentPlateMenuItem._id">
-      <label for="status">Status</label>
-      <p-dropdown id="status" [options]="statuses" [(ngModel)]="currentPlateMenuItem.status" optionLabel="label"></p-dropdown>
-    </div>
-    <div class="p-field">
-      <label for="plate">Plate</label>
-      <p-dropdown id="plate" [options]="platesOptions" [(ngModel)]="currentPlateMenuItem.plate" optionLabel="name"></p-dropdown>
-    </div>
-    <div class="p-field">
-      <label for="notes">Notes</label>
-      <textarea id="notes" pInputTextarea [(ngModel)]="currentPlateMenuItem.notes" required rows="3" cols="20"></textarea>
-    </div>
-  </ng-template>
-
-  <ng-template pTemplate="footer">
-    <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="savePkmi()"></button>
-  </ng-template>
-</p-dialog>
 
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

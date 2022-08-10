@@ -32,7 +32,15 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   public create(dto: PlateMenuItem): Observable<PlateMenuItem> {
     return this._http.post(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || {}) as PlateMenuItem
+        return (res || {}) as PlateMenuItem;
+      })
+    );
+  }
+
+  public createAll(dtoList: PlateMenuItem[]): Observable<PlateMenuItem[]> {
+    return this._http.post(`${this._getUrl()}/list`, dtoList, RequestService.baseHttpOptions).pipe(
+      map((res: any) => {
+        return (res || {}) as PlateMenuItem[];
       })
     );
   }
@@ -40,13 +48,41 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   public update(dto: PlateMenuItem): Observable<PlateMenuItem> {
     return this._http.put(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || {}) as PlateMenuItem
+        return (res || {}) as PlateMenuItem;
+      })
+    );
+  }
+
+  public updateAll(dtoList: PlateMenuItem[]): Observable<PlateMenuItem[]> {
+    return this._http.put(`${this._getUrl()}/list`, dtoList, RequestService.baseHttpOptions).pipe(
+      map((res: any) => {
+        return (res || {}) as PlateMenuItem[];
       })
     );
   }
 
   public delete(id: string): Observable<any> {
-    return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
+    const httpOptions = {
+      ...RequestService.baseHttpOptions,
+      body: id
+    }
+    return this._http.delete(`${this._getUrl()}`, httpOptions).pipe(
+      map((res: any) => {
+        return (res || {});
+      })
+    );
+  }
+
+  public deleteAll(ids: string[]): Observable<any> {
+    const httpOptions = {
+      ...RequestService.baseHttpOptions,
+      body: ids
+    }
+    return this._http.delete(`${this._getUrl()}/list`, httpOptions).pipe(
+      map((res: any) => {
+        return (res || {});
+      })
+    );
   }
 
   // fixme remove
