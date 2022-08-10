@@ -34,6 +34,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
   private _menuItemsSub: Subscription = new Subscription();
   private _platesSub: Subscription = new Subscription();
   private _categoriesSub: Subscription = new Subscription();
+  private _pkmiCreateAllSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
   private _clonedPkmis: PlateMenuItem[] = [];
   private _draggedMenuItem: MenuItemExtended | null = null;
@@ -105,6 +106,8 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._menuItemsSub.unsubscribe();
     this._platesSub.unsubscribe();
+    this._categoriesSub.unsubscribe();
+    this._pkmiCreateAllSub.unsubscribe();
   }
 
   savePkmis() {
@@ -123,7 +126,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       return pkmi;
     });
 
-    this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
+    this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
       // fixme
       data.forEach(pkmi => {
         if (pkmi.plate)

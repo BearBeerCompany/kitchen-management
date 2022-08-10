@@ -77,11 +77,6 @@
           </th>
           <th>
             <div class="p-d-flex p-jc-between p-ai-center">
-              # Order
-            </div>
-          </th>
-          <th>
-            <div class="p-d-flex p-jc-between p-ai-center">
               Menu Item
             </div>
           </th>
@@ -108,16 +103,6 @@
         <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
           <td>
             <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
-          </td>
-          <td pEditableColumn>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber" [style]="{'width': '100px'}">
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{plateMenuItem.orderNumber}}
-              </ng-template>
-            </p-cellEditor>
           </td>
           <td>
             <span class="image-text">{{plateMenuItem.menuItem.name}}</span>
