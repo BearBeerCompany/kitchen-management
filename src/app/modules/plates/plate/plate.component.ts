@@ -5,7 +5,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {Routing} from "../../../app-routing.module";
 import {ActivatedRoute} from "@angular/router";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {Order, Status} from "../../orders/order";
+import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {Subscription} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {TooltipModule} from "primeng/tooltip";
@@ -28,7 +28,7 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   @Input() public config!: Plate;
   @Input() public plateList: Plate[] = [];
-  @Input() public queue!: ReactiveQueue<Order>;
+  @Input() public queue!: ReactiveQueue<PlateMenuItem>;
 
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
   @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -42,8 +42,8 @@ export class PlateComponent implements OnInit, OnDestroy {
   public badgeSize: string = "large";
   public badgeColor: string = "info";
   public showOverlay: boolean = false;
-  public progressItems: Order[] = [];
-  public todoItems: Order[] = [];
+  public progressItems: PlateMenuItem[] = [];
+  public todoItems: PlateMenuItem[] = [];
 
   private queue$: Subscription = new Subscription();
 
@@ -59,7 +59,7 @@ export class PlateComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.queue$.add(this.queue?.values$?.subscribe((items: Order[] = []) => {
+    this.queue$.add(this.queue?.values$?.subscribe((items: PlateMenuItem[] = []) => {
         this.progressItems = [];
         this.todoItems = [];
         for (const i of items) {
@@ -139,7 +139,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     this.onItemEvent.emit(event);
   }
 
-  public onItemStart(item: Order) {
+  public onItemStart(item: PlateMenuItem) {
     const event: ItemEvent = {
       action: Status.Progress,
       item: item,

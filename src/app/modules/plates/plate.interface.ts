@@ -1,4 +1,4 @@
-import {Order, Status} from "../orders/order";
+import {PlateMenuItem, Status} from "../plate-menu-items/plate-menu-item";
 
 export enum PlateInterface {
   Skeleton = "skeleton",
@@ -15,12 +15,12 @@ export enum PlateItemStatus {
   Moved = "MOVED",
 }
 
-export type PlateItemAction = PlateItemStatus | Status;
+export type PlateMenuItemAction = PlateItemStatus | Status;
 
 export interface ItemEvent {
   plateId: string;
-  action: PlateItemAction;
-  item: Order;
+  action: PlateMenuItemAction;
+  item: PlateMenuItem;
   nextId?: string;
 }
 

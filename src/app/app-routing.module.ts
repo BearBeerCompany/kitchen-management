@@ -5,7 +5,7 @@ export enum Routing {
   Dashboard = "dashboard",
   Plates = "plates",
   Settings = "settings",
-  Orders = "orders"
+  PlateMenuItems = "plate-menu-items"
 }
 
 const routes: Routes = [
@@ -27,8 +27,8 @@ const routes: Routes = [
     loadChildren: () => import("./modules/settings/settings.module").then(m => m.SettingsModule)
   },
   {
-    path: Routing.Orders,
-    loadChildren: () => import('./modules/orders/orders.module').then(m => m.OrdersModule)
+    path: Routing.PlateMenuItems,
+    loadChildren: () => import('./modules/plate-menu-items/plate-menu-items.module').then(m => m.PlateMenuItemsModule)
   },
   {
     path: '**',

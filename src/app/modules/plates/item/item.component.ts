@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, NgModule, OnInit, Output} from '@angular/core';
-import {ItemEvent, Plate, PlateItemAction, PlateItemStatus} from "../plate.interface";
-import {Order, Status} from "../../orders/order";
+import {ItemEvent, Plate, PlateMenuItemAction, PlateItemStatus} from "../plate.interface";
+import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {MenuItem as PrimeMenuItem} from 'primeng/api';
 import {CommonModule} from "@angular/common";
 import {RippleModule} from "primeng/ripple";
@@ -13,7 +13,7 @@ import {ButtonModule} from "primeng/button";
 })
 export class ItemComponent implements OnInit {
 
-  @Input() public config!: Order;
+  @Input() public config!: PlateMenuItem;
   @Input() public plateList: Plate[] = [];
 
   @Output() public onDoneEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -63,7 +63,7 @@ export class ItemComponent implements OnInit {
     } as ItemEvent);
   }
 
-  public onCancel(status: PlateItemAction): void {
+  public onCancel(status: PlateMenuItemAction): void {
     const event: ItemEvent = {
       action: status,
       item: this.config

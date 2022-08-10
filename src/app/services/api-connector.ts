@@ -1,5 +1,5 @@
 import {Observable} from "rxjs";
-import {Order} from "../modules/orders/order";
+import {PlateMenuItem} from "../modules/plate-menu-items/plate-menu-item";
 import {Plate} from "../modules/plates/plate.interface";
 
 export interface ApiConnector {
@@ -18,11 +18,11 @@ export interface ApiConnector {
 
   getOrders(): Observable<any[]>;
 
-  addOder(order: Order): Observable<any>;
+  addOder(order: PlateMenuItem): Observable<any>;
 
-  addOrders(orders: Order[]): Observable<any>;
+  addOrders(orders: PlateMenuItem[]): Observable<any>;
 
-  updateOrder(order: Order): Observable<any>;
+  updateOrder(order: PlateMenuItem): Observable<any>;
 
   removeOrder(id: string): Observable<any>;
 

@@ -11,7 +11,7 @@
     <div *ngFor="let i of items" class="items-overlay__row">
       <i class="pi pi-apple item-icon"></i>
       <span class="item_title">{{i.menuItem?.name}}</span>
-      <span class="item_order">ORDINE {{i.orderId}}</span>
+      <span class="item_order">ORDINE {{i.orderNumber}}</span>
       <button (click)="onRun.emit(i)"
               class="play-button p-button-success"
               icon="pi pi-play play-button"

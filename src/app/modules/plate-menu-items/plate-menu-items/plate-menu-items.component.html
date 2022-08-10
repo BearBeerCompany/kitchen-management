@@ -1,9 +1,9 @@
 <p-toast></p-toast>
 
 <p-table #dt
-         [value]="ordersRows"
-         [(selection)]="selectedOrders"
-         dataKey="_id"
+         [value]="pkmiRows"
+         [(selection)]="selectedPlateMenuItems"
+         dataKey="id"
          styleClass="p-datatable-orders"
          [rowHover]="true"
          [rows]="10"
@@ -13,7 +13,7 @@
          [paginator]="true"
          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
-         [globalFilterFields]="['orderId','menuItem.name','menuItem.category.name','status','plate.name']"
+         [globalFilterFields]="['orderNumber','menuItem.name','menuItem.category.name','status','plate.name']"
          editMode="row"
 >
   <ng-template pTemplate="caption">
@@ -21,8 +21,8 @@
       List of Burgers
       <div class="table-header-buttons">
         <div>
-          <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addOrder()"></button>
-          <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedProducts()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addPlateMenuItems()"></button>
+          <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedPkmis()" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
         </div>
         <div class="ml-4">
           <span class="p-input-icon-left">
@@ -39,11 +39,11 @@
       <th style="width: 3rem">
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
-      <th pSortableColumn="orderId">
+      <th pSortableColumn="orderNumber">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Order Id
-          <p-sortIcon field="orderId"></p-sortIcon>
-          <p-columnFilter  type="numeric" field="orderId" display="menu"></p-columnFilter>
+          Order Number
+          <p-sortIcon field="orderNumber"></p-sortIcon>
+          <p-columnFilter  type="numeric" field="orderNumber" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="menuItem.name">
@@ -101,26 +101,26 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body" let-order let-editing="editing" let-ri="rowIndex">
-    <tr [pEditableRow]="order" class="p-selectable-row">
+  <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
+    <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
       <td>
-        <p-tableCheckbox [value]="order"></p-tableCheckbox>
+        <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
       </td>
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="number" [(ngModel)]="order.orderId">
+            <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber">
           </ng-template>
           <ng-template pTemplate="output">
-            {{order.orderId}}
+            {{plateMenuItem.orderNumber}}
           </ng-template>
         </p-cellEditor>
       </td>
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-treeSelect [(ngModel)]="order.menuItem"
-                          [options]="menuItems"
+            <p-treeSelect [(ngModel)]="plateMenuItem.menuItem"
+                          [options]="menuItemOptions"
                           [metaKeySelection]="false"
                           placeholder="Select Menu Item"
                           [filter]="true"
@@ -129,28 +129,28 @@
             ></p-treeSelect>
           </ng-template>
           <ng-template pTemplate="output">
-            {{order.menuItem.data.name}}
+            {{plateMenuItem.menuItem.data.name}}
           </ng-template>
         </p-cellEditor>
       </td>
       <td>
-        <span class="category-badge" [style]="{'border-color': getCategoryColor(order.menuItem)}">
-          {{getCategory(order.menuItem)}}
+        <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem.menuItem)}">
+          {{getCategory(plateMenuItem.menuItem)}}
         </span>
       </td>
       <td>
         <span class="p-column-title">Date</span>
-        {{order.date}}
+        {{plateMenuItem.date}}
       </td>
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="statuses" [(ngModel)]="order.status" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="statuses" [(ngModel)]="plateMenuItem.status" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span [style]="{'color': getStatusLabelColor(order.status)}">
-              <i [class]="getStatusIcon(order.status)"></i>
-              <label class="ml-2">{{order.status}}</label>
+            <span [style]="{'color': getStatusLabelColor(plateMenuItem.status)}">
+              <i [class]="getStatusIcon(plateMenuItem.status)"></i>
+              <label class="ml-2">{{plateMenuItem.status}}</label>
             </span>
           </ng-template>
         </p-cellEditor>
@@ -158,32 +158,32 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="platesOptions" [(ngModel)]="order.plate" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="platesOptions" [(ngModel)]="plateMenuItem.plate" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span class="plate-badge" [style]="{'background-color': getPlateColor(order.plate)}">{{order.plate}}</span>
+            <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem.plate)}">{{plateMenuItem.plate}}</span>
           </ng-template>
         </p-cellEditor>
       </td>
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="order.notes">
+            <input pInputText type="text" [(ngModel)]="plateMenuItem.notes">
           </ng-template>
           <ng-template pTemplate="output">
-            {{order.notes}}
+            {{plateMenuItem.notes}}
           </ng-template>
         </p-cellEditor>
       </td>
-      <td style="text-align:center" *ngIf="order.status === 'TODO'; else noEdit">
+      <td style="text-align:center" *ngIf="plateMenuItem.status === 'TODO'; else noEdit">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                (click)="onRowEditInit(order)" class="p-button-rounded p-button-text"
+                (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                (click)="onRowEditSave(order)" class="p-button-rounded p-button-text p-button-success p-mr-2"
+                (click)="onRowEditSave(plateMenuItem)" class="p-button-rounded p-button-text p-button-success p-mr-2"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
-                (click)="onRowEditCancel(order, ri)" class="p-button-rounded p-button-text p-button-danger"
+                (click)="onRowEditCancel(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-danger"
         ></button>
       </td>
     </tr>
@@ -191,7 +191,7 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="9">No orders found.</td>
+      <td colspan="9">No plate menu items found.</td>
     </tr>
   </ng-template>
 
@@ -200,7 +200,7 @@
   </ng-template>
 </p-table>
 
-<p-dialog [(visible)]="orderDialog" [style]="{width: '450px', height: '700px'}" header="Order Details" [modal]="true" styleClass="p-fluid">
+<p-dialog [(visible)]="pkmiDialog" [style]="{width: '450px', height: '700px'}" header="Order Details" [modal]="true" styleClass="p-fluid">
   <ng-template pTemplate="content">
     <div class="p-field">
       <label for="orderId">Order Id</label>
@@ -208,14 +208,14 @@
                      [min]="0"
                      [showButtons]="true"
                      id="orderId"
-                     [(ngModel)]="currentOrder.orderId"
+                     [(ngModel)]="currentPlateMenuItem.orderId"
       ></p-inputNumber>
-      <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
+      <small class="p-invalid" *ngIf="submitted && !currentPlateMenuItem.orderId">Id is required.</small>
     </div>
     <div class="p-field">
       <label for="menuItem">Burger</label>
       <p-treeSelect id="menuItem"
-        [(ngModel)]="currentOrder.menuItem"
+        [(ngModel)]="currentPlateMenuItem.menuItem"
         [options]="menuItems"
         [metaKeySelection]="false"
         placeholder="Select Menu Item"
@@ -223,29 +223,29 @@
         [filterInputAutoFocus]="true"
         scrollHeight="300px"
       ></p-treeSelect>
-      <small class="p-invalid" *ngIf="submitted && !currentOrder.orderId">Id is required.</small>
+      <small class="p-invalid" *ngIf="submitted && !currentPlateMenuItem.orderId">Id is required.</small>
     </div>
-    <div class="p-field" *ngIf="!currentOrder._id">
+    <div class="p-field" *ngIf="!currentPlateMenuItem._id">
       <label for="quantity">Quantity</label>
-      <p-inputNumber id="quantity" [(ngModel)]="currentOrder.quantity"></p-inputNumber>
+      <p-inputNumber id="quantity" [(ngModel)]="currentPlateMenuItem.quantity"></p-inputNumber>
     </div>
-    <div class="p-field" *ngIf="currentOrder._id">
+    <div class="p-field" *ngIf="currentPlateMenuItem._id">
       <label for="status">Status</label>
-      <p-dropdown id="status" [options]="statuses" [(ngModel)]="currentOrder.status" optionLabel="label"></p-dropdown>
+      <p-dropdown id="status" [options]="statuses" [(ngModel)]="currentPlateMenuItem.status" optionLabel="label"></p-dropdown>
     </div>
     <div class="p-field">
       <label for="plate">Plate</label>
-      <p-dropdown id="plate" [options]="platesOptions" [(ngModel)]="currentOrder.plate" optionLabel="name"></p-dropdown>
+      <p-dropdown id="plate" [options]="platesOptions" [(ngModel)]="currentPlateMenuItem.plate" optionLabel="name"></p-dropdown>
     </div>
     <div class="p-field">
       <label for="notes">Notes</label>
-      <textarea id="notes" pInputTextarea [(ngModel)]="currentOrder.notes" required rows="3" cols="20"></textarea>
+      <textarea id="notes" pInputTextarea [(ngModel)]="currentPlateMenuItem.notes" required rows="3" cols="20"></textarea>
     </div>
   </ng-template>
 
   <ng-template pTemplate="footer">
     <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveOrder()"></button>
+    <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="savePkmi()"></button>
   </ng-template>
 </p-dialog>
 
