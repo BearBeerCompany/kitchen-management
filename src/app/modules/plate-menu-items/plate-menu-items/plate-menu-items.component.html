@@ -21,7 +21,8 @@
       List of Burgers
       <div class="table-header-buttons">
         <div>
-          <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2" (click)="addPlateMenuItems()"></button>
+          <button pButton pRipple label="Completed" icon="pi pi-eye" class="p-mr-2" (click)="viewCompletedPlateMenuItems()"></button>
+          <button pButton pRipple label="New" icon="pi pi-plus" class="p-mr-2 ml-2" (click)="addPlateMenuItems()"></button>
           <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedPkmis()" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
         </div>
         <div class="ml-4">

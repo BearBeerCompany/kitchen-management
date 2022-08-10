@@ -78,25 +78,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         this.menuItems = data;
         this.menuItemOptions = PlateMenuItemsService.getCategoryMenuItemTreeNodeOptions(this.categories, data);
 
-        this._pkmisSub = this._plateMenuItemsService.getAll().subscribe(data => {
-          this.plateMenuItems = data;
-
-          this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
-            const menuItemNode = PlateMenuItemsService.getMenuItemNode(this.categories, plateMenuItem.menuItem);
-            return {
-              id: plateMenuItem.id,
-              orderNumber: plateMenuItem.orderNumber,
-              tableNumber: plateMenuItem.tableNumber,
-              clientName: plateMenuItem.clientName,
-              menuItem: menuItemNode,
-              date: plateMenuItem.date,
-              status: plateMenuItem.status,
-              plate: plateMenuItem.plate?.name,
-              notes: plateMenuItem.notes
-            };
-          });
-          this.loading = false;
-        });
+        this._loadPlateMenuItems();
+        this.loading = false;
       });
     });
 
@@ -123,7 +106,25 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       console.log('order page notification: ' + notification?.type);
       if (notification) {
         const msgData = this._getNotificationMsgData(notification);
-        this._messageService.add({ severity: msgData.severity, summary: msgData.summary, detail: msgData.detail, life: 2500 });
+        this._messageService.add({ severity: msgData.severity, summary: msgData.summary, detail: msgData.detail, life: 3000 });
+
+        switch (notification.type) {
+          case PKMINotificationType.PKMI_ADD:
+          case PKMINotificationType.PKMI_ADD_ALL:
+            this.loading = true;
+            this._loadPlateMenuItems();
+            this.loading = false;
+
+            break;
+          case PKMINotificationType.PKMI_UPDATE:
+          case PKMINotificationType.PKMI_UPDATE_ALL:
+            // todo
+            break;
+          case PKMINotificationType.PKMI_DELETE:
+          case PKMINotificationType.PKMI_DELETE_ALL:
+            // todo
+            break;
+        }
       }
     });
   }
@@ -138,6 +139,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   addPlateMenuItems() {
     this._router.navigate(['/plate-menu-items/new']);
+  }
+
+  viewCompletedPlateMenuItems() {
+    // todo show the list of completed associations
   }
 
   filterGlobal(event: any) {
@@ -160,7 +165,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       accept: () => {
         const ids = this.selectedPlateMenuItems.map(item => item.id!);
         this._plateMenuItemsService.deleteAll(ids).subscribe((data) => {
-          // fixme
           this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
           this.pkmiRows = this.pkmiRows.filter(val => !this.selectedPlateMenuItems.includes(val));
           this.selectedPlateMenuItems = [];
@@ -258,6 +262,27 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       color = category.color;
     }
     return color;
+  }
+
+  private _loadPlateMenuItems() {
+    this._pkmisSub = this._plateMenuItemsService.getAll().subscribe(data => {
+      this.plateMenuItems = data;
+
+      this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
+        const menuItemNode = PlateMenuItemsService.getMenuItemNode(this.categories, plateMenuItem.menuItem);
+        return {
+          id: plateMenuItem.id,
+          orderNumber: plateMenuItem.orderNumber,
+          tableNumber: plateMenuItem.tableNumber,
+          clientName: plateMenuItem.clientName,
+          menuItem: menuItemNode,
+          date: plateMenuItem.date,
+          status: plateMenuItem.status,
+          plate: plateMenuItem.plate?.name,
+          notes: plateMenuItem.notes
+        };
+      });
+    });
   }
 
   private _getNotificationMsgData(notification: PKMINotification) {
