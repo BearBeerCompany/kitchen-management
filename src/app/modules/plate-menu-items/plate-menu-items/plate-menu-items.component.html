@@ -13,7 +13,7 @@
          [paginator]="true"
          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
-         [globalFilterFields]="['orderNumber','menuItem.name','menuItem.category.name','status','plate.name']"
+         [globalFilterFields]="['orderNumber','menuItem.name','status','plate.name','clientName']"
          editMode="row"
 >
   <ng-template pTemplate="caption">
@@ -39,13 +39,6 @@
       <th style="width: 3rem">
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
-      <th pSortableColumn="orderNumber">
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Order Number
-          <p-sortIcon field="orderNumber"></p-sortIcon>
-          <p-columnFilter  type="numeric" field="orderNumber" display="menu"></p-columnFilter>
-        </div>
-      </th>
       <th pSortableColumn="menuItem.name">
         <div class="p-d-flex p-jc-between p-ai-center">
           Menu Item
@@ -58,6 +51,27 @@
           Category
           <p-sortIcon field="menuItem.category.name"></p-sortIcon>
           <p-columnFilter type="text" field="menuItem.category.name" display="menu"></p-columnFilter>
+        </div>
+      </th>
+      <th pSortableColumn="orderNumber">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Order #
+          <p-sortIcon field="orderNumber"></p-sortIcon>
+          <p-columnFilter type="numeric" field="orderNumber" display="menu"></p-columnFilter>
+        </div>
+      </th>
+      <th pSortableColumn="tableNumber">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Table #
+          <p-sortIcon field="tableNumber"></p-sortIcon>
+          <p-columnFilter type="numeric" field="tableNumber" display="menu"></p-columnFilter>
+        </div>
+      </th>
+      <th pSortableColumn="clientName">
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Client Name
+          <p-sortIcon field="clientName"></p-sortIcon>
+          <p-columnFilter type="text" field="clientName" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="date">
@@ -83,17 +97,15 @@
           </p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="plate.name">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Plate
-          <p-sortIcon field="plate.name"></p-sortIcon>
           <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="notes">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Notes
-          <p-sortIcon field="notes"></p-sortIcon>
           <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
         </div>
       </th>
@@ -105,16 +117,6 @@
     <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
       <td>
         <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
-      </td>
-      <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber">
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem.orderNumber}}
-          </ng-template>
-        </p-cellEditor>
       </td>
       <td>
         <p-cellEditor>
@@ -137,6 +139,36 @@
         <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem.menuItem)}">
           {{getCategory(plateMenuItem.menuItem)}}
         </span>
+      </td>
+      <td>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{plateMenuItem.orderNumber}}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="number" [(ngModel)]="plateMenuItem.tableNumber">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{plateMenuItem.tableNumber}}
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="text" [(ngModel)]="plateMenuItem.clientName">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{plateMenuItem.clientName}}
+          </ng-template>
+        </p-cellEditor>
       </td>
       <td>
         <span class="p-column-title">Date</span>

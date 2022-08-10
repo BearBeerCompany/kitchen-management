@@ -86,6 +86,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
             return {
               id: plateMenuItem.id,
               orderNumber: plateMenuItem.orderNumber,
+              tableNumber: plateMenuItem.tableNumber,
+              clientName: plateMenuItem.clientName,
               menuItem: menuItemNode,
               date: plateMenuItem.date,
               status: plateMenuItem.status,
@@ -189,6 +191,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       plateMenuItem = {
         ...plateMenuItem,
         orderNumber: pkmiRow.orderNumber,
+        tableNumber: pkmiRow.tableNumber,
+        clientName: pkmiRow.clientName,
         menuItem,
         date: pkmiRow.date,
         status: pkmiRow.status,
@@ -218,9 +222,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onRowEditCancel(order: any, index: number) {
-    this.pkmiRows[index] = this._clonedPkmis[order._id];
-    delete this._clonedPkmis[order._id];
+  onRowEditCancel(pkmi: any, index: number) {
+    this.pkmiRows[index] = this._clonedPkmis[pkmi.id];
+    delete this._clonedPkmis[pkmi.id];
   }
 
   getPlateColor(pkmiPlate: string): string {
