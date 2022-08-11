@@ -114,15 +114,28 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
             this.loading = true;
             this._loadPlateMenuItems();
             this.loading = false;
-
             break;
           case PKMINotificationType.PKMI_UPDATE:
+            this.loading = true;
+            this._updateItem(notification.plateKitchenMenuItem);
+
+            this.loading = false;
+            break;
           case PKMINotificationType.PKMI_UPDATE_ALL:
-            // todo
+            this.loading = true;
+            this._updateItems(notification.ids);
+            this.loading = false;
             break;
           case PKMINotificationType.PKMI_DELETE:
+            this.loading = true;
+            this._deleteItem(notification.plateKitchenMenuItem);
+            this.loading = false;
+
+            break;
           case PKMINotificationType.PKMI_DELETE_ALL:
-            // todo
+            this.loading = true;
+            this._deleteItems(notification.ids);
+            this.loading = false;
             break;
         }
       }
@@ -205,24 +218,21 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         plate
       };
 
-      this._plateMenuItemsService.update(plateMenuItem).subscribe(editedPkmi => {
-        let index = this._clonedPkmis.findIndex(clonedItem => clonedItem.id === editedPkmi.id);
-        delete this._clonedPkmis[index];
-
-        // fixme
-        if (editedPkmi.plate) {
-          if (!previousPlate || (previousPlate && editedPkmi.plate.name !== previousPlate.name)) {
-            const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-            // remove the order from previous plate
-            this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-            this._plateQueueManagerService.sendToQueue(editedPkmi.plate?.name!, editedPkmi);
-          }
-        } else {
-          const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-          // remove the order from previous plate
-          this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, editedPkmi);
-        }
+      this._plateMenuItemsService.update(plateMenuItem).subscribe(() => {
+        // fixme, @boz move logic inside the websocket notification subscription
+        // if (editedPkmi.plate) {
+        //   if (!previousPlate || (previousPlate && editedPkmi.plate.name !== previousPlate.name)) {
+        //     const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+        //     // remove the order from previous plate
+        //     this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
+        //     this._plateQueueManagerService.sendToQueue(editedPkmi.plate?.name!, editedPkmi);
+        //   }
+        // } else {
+        //   const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
+        //   // remove the order from previous plate
+        //   this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
+        //   this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, editedPkmi);
+        // }
       });
     }
   }
@@ -269,20 +279,61 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       this.plateMenuItems = data;
 
       this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
-        const menuItemNode = PlateMenuItemsService.getMenuItemNode(this.categories, plateMenuItem.menuItem);
-        return {
-          id: plateMenuItem.id,
-          orderNumber: plateMenuItem.orderNumber,
-          tableNumber: plateMenuItem.tableNumber,
-          clientName: plateMenuItem.clientName,
-          menuItem: menuItemNode,
-          date: plateMenuItem.date,
-          status: plateMenuItem.status,
-          plate: plateMenuItem.plate?.name,
-          notes: plateMenuItem.notes
-        };
+        return this._getPkmiRow(plateMenuItem);
       });
     });
+  }
+
+  private _updateItem(plateMenuItem: PlateMenuItem) {
+    const updItemId = plateMenuItem.id;
+    const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === updItemId);
+    const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
+
+    this.plateMenuItems[pkmiIndex] = { ...this.plateMenuItems[pkmiIndex], ...plateMenuItem };
+    this.pkmiRows[pkmiRowIndex] = {
+      ...this.pkmiRows[pkmiRowIndex],
+      ...this._getPkmiRow(plateMenuItem)
+    };
+  }
+
+  private _updateItems(ids: string[]) {
+    this._plateMenuItemsService.getByIds(ids).subscribe((plateMenuItems) => {
+      plateMenuItems.forEach(item => {
+        this._updateItem(item);
+      });
+    });
+  }
+
+  private _deleteItem(plateMenuItem: PlateMenuItem) {
+    const delItemId = plateMenuItem.id;
+    const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === delItemId);
+    const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === delItemId);
+
+    delete this.plateMenuItems[pkmiIndex];
+    delete this.pkmiRows[pkmiRowIndex]
+  }
+
+  private _deleteItems(ids: string[]) {
+    this._plateMenuItemsService.getByIds(ids).subscribe((plateMenuItems) => {
+      plateMenuItems.forEach(item => {
+        this._deleteItem(item);
+      });
+    });
+  }
+
+  private _getPkmiRow(plateMenuItem: PlateMenuItem) {
+    const menuItemNode = PlateMenuItemsService.getMenuItemNode(this.categories, plateMenuItem.menuItem);
+    return {
+      id: plateMenuItem.id,
+      orderNumber: plateMenuItem.orderNumber,
+      tableNumber: plateMenuItem.tableNumber,
+      clientName: plateMenuItem.clientName,
+      menuItem: menuItemNode,
+      date: plateMenuItem.date,
+      status: plateMenuItem.status,
+      plate: plateMenuItem.plate?.name,
+      notes: plateMenuItem.notes
+    };
   }
 
   private _getNotificationMsgData(notification: PKMINotification) {
@@ -324,4 +375,5 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
     return {severity, summary, detail};
   }
+
 }

@@ -129,7 +129,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
     });
 
     this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
-      // fixme, move logic inside the websocket notification subscription
+      // fixme, @boz move logic inside the websocket notification subscription
       // data.forEach(pkmi => {
       //   if (pkmi.plate)
       //     this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
