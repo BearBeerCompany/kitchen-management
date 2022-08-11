@@ -36,6 +36,7 @@ export class ReactiveQueue<T> {
 
   public enqueue(value: T): void {
     this.values.push(value);
+    this.refresh();
   }
 
   public refresh() {

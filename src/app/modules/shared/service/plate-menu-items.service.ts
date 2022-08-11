@@ -1,10 +1,10 @@
 import {map, Observable} from "rxjs";
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Category, MenuItem, MenuItemExtended, PlateMenuItem} from '../plate-menu-item';
-import { CRUDService } from "../../shared/interface/crud-service.interface";
-import { RequestService } from "../../shared/service/request.service";
-import { ApiResourceEnum } from "../../shared/service/api-resource.enum";
+import {Category, MenuItem, MenuItemExtended, PlateMenuItem} from '../../plate-menu-items/plate-menu-item';
+import { CRUDService } from "../interface/crud-service.interface";
+import { RequestService } from "./request.service";
+import { ApiResourceEnum } from "./api-resource.enum";
 import {TreeNode} from "primeng/api";
 
 @Injectable()
@@ -31,11 +31,7 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   }
 
   public getByIds(ids: string[]): Observable<PlateMenuItem[]> {
-    const httpOptions = {
-      ...RequestService.baseHttpOptions,
-      body: ids
-    };
-    return this._http.get(`${this._getUrl()}/ids`, httpOptions).pipe(
+    return this._http.post(`${this._getUrl()}/ids`, ids, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return (res || {}) as PlateMenuItem[];
       })

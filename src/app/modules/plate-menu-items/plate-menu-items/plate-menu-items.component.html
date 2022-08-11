@@ -137,8 +137,8 @@
         </p-cellEditor>
       </td>
       <td>
-        <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem.menuItem)}">
-          {{getCategory(plateMenuItem.menuItem)}}
+        <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem?.menuItem)}">
+          {{getCategory(plateMenuItem?.menuItem)}}
         </span>
       </td>
       <td>
@@ -224,7 +224,7 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="9">No plate menu items found.</td>
+      <td colspan="11">No plate menu items found.</td>
     </tr>
   </ng-template>
 

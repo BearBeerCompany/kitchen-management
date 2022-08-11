@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {I18nService} from 'src/app/services/i18n.service';
-import {PlateMenuItemsService} from '../services/plate-menu-items.service';
+import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
 import {Table} from 'primeng/table';
 import {Category, MenuItem, PlateMenuItem, Status} from '../plate-menu-item';
 import {Observable, Subscription} from 'rxjs';
@@ -8,7 +8,6 @@ import {Router} from "@angular/router";
 import {ConfirmationService, MessageService, TreeNode} from "primeng/api";
 import {MenuItemsService} from "../services/menu-items.service";
 import {DatePipe} from "@angular/common";
-import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 import {WebSocketService} from 'src/app/services/web-socket-service';
 import {PKMINotification, PKMINotificationType} from 'src/app/services/pkmi-notification';
 import {Plate} from "../../plates/plate.interface";
@@ -28,6 +27,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   private _categoriesSub: Subscription = new Subscription();
   private _pkmiNotificationSub: Subscription = new Subscription();
   private _clonedPkmis: PlateMenuItem[] = [];
+  private _pkmiNotification$: Observable<PKMINotification | null>;
 
   public readonly i18n: any;
   plateMenuItems: PlateMenuItem[] = [];
@@ -42,9 +42,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   plates: Plate[] = [];
   categories: Category[] = [];
   menuItemOptions: TreeNode[] = [];
-  platesOptions: any[] = [];
 
-  pkmiNotification$: Observable<PKMINotification | null>;
+  platesOptions: any[] = [];
 
   @ViewChild('dt') table: Table | undefined;
 
@@ -54,7 +53,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
               private _messageService: MessageService,
               private _confirmationService: ConfirmationService,
               private _datePipe: DatePipe,
-              private _plateQueueManagerService: PlateQueueManagerService,
               private _webSocketService: WebSocketService,
               private _plateMenuItemsService: PlateMenuItemsService,
               private _plateService: PlateService,
@@ -67,7 +65,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       {label: 'Done', value: Status.Done, icon: 'pi-check', color: 'green'},
       {label: 'Cancelled', value: Status.Cancelled, icon: 'pi-times', color: 'red'}
     ];
-    this.pkmiNotification$ = this._webSocketService.pkmiNotifications;
+    this._pkmiNotification$ = this._webSocketService.pkmiNotifications$;
   }
 
   ngOnInit(): void {
@@ -102,10 +100,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       }));
     });
 
-    this._pkmiNotificationSub = this.pkmiNotification$.subscribe((notification: PKMINotification | null) => {
-      console.log('order page notification: ' + notification?.type);
+    this._pkmiNotificationSub = this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
+      console.log('plate - menuitem page notification: ' + notification?.type);
       if (notification) {
-        const msgData = this._getNotificationMsgData(notification);
+        const msgData = WebSocketService.getNotificationMsgData(notification);
         this._messageService.add({ severity: msgData.severity, summary: msgData.summary, detail: msgData.detail, life: 3000 });
 
         switch (notification.type) {
@@ -118,7 +116,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           case PKMINotificationType.PKMI_UPDATE:
             this.loading = true;
             this._updateItem(notification.plateKitchenMenuItem);
-
             this.loading = false;
             break;
           case PKMINotificationType.PKMI_UPDATE_ALL:
@@ -128,9 +125,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
             break;
           case PKMINotificationType.PKMI_DELETE:
             this.loading = true;
-            this._deleteItem(notification.plateKitchenMenuItem);
+            this._deleteItem(notification.plateKitchenMenuItem?.id!);
             this.loading = false;
-
             break;
           case PKMINotificationType.PKMI_DELETE_ALL:
             this.loading = true;
@@ -259,7 +255,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   getCategory(menuItemNode: TreeNode): string {
     let category = '';
-    if (menuItemNode.parent && menuItemNode.parent.data) {
+    if (menuItemNode?.parent && menuItemNode.parent?.data) {
       category = menuItemNode.parent.data.name;
     }
     return category;
@@ -267,7 +263,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   getCategoryColor(menuItemNode: TreeNode): string {
     let color = 'transparent';
-    if (menuItemNode.parent && menuItemNode.parent.data) {
+    if (menuItemNode?.parent && menuItemNode.parent?.data) {
       const category = menuItemNode.parent.data;
       color = category.color;
     }
@@ -304,20 +300,17 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _deleteItem(plateMenuItem: PlateMenuItem) {
-    const delItemId = plateMenuItem.id;
-    const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === delItemId);
-    const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === delItemId);
+  private _deleteItem(id: string) {
+    const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === id);
+    const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === id);
 
     delete this.plateMenuItems[pkmiIndex];
-    delete this.pkmiRows[pkmiRowIndex]
+    delete this.pkmiRows[pkmiRowIndex];
   }
 
   private _deleteItems(ids: string[]) {
-    this._plateMenuItemsService.getByIds(ids).subscribe((plateMenuItems) => {
-      plateMenuItems.forEach(item => {
-        this._deleteItem(item);
-      });
+    ids.forEach(id => {
+      this._deleteItem(id);
     });
   }
 
@@ -334,46 +327,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       plate: plateMenuItem.plate?.name,
       notes: plateMenuItem.notes
     };
-  }
-
-  private _getNotificationMsgData(notification: PKMINotification) {
-    let summary = '';
-    let detail = '';
-    let severity = '';
-    switch (notification?.type) {
-      case PKMINotificationType.PKMI_ADD:
-        severity = 'success';
-        summary = 'Aggiunto panino';
-        detail = 'Aggiunto panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
-        break;
-      case PKMINotificationType.PKMI_ADD_ALL:
-        severity = 'success';
-        summary = 'Aggiunti panini';
-        detail = 'Aggiunti ' + notification?.ids?.length + ' panini';
-        break;
-      case PKMINotificationType.PKMI_UPDATE:
-        severity = 'warn';
-        summary = 'Modificato panino';
-        detail = 'Modificato panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
-        break;
-      case PKMINotificationType.PKMI_UPDATE_ALL:
-        severity = 'warn';
-        summary = 'Modificati panini';
-        detail = 'Modificati ' + notification?.ids?.length + ' panini';
-        break;
-      case PKMINotificationType.PKMI_DELETE:
-        severity = 'error';
-        summary = 'Cancellato panino';
-        detail = 'Cancellato panino id ' + notification?.ids[0];
-        break;
-      case PKMINotificationType.PKMI_DELETE_ALL:
-        severity = 'error';
-        summary = 'Cancellati panini';
-        detail = 'Cancellati ' + notification?.ids?.length + ' panini';
-        break;
-    }
-
-    return {severity, summary, detail};
   }
 
 }

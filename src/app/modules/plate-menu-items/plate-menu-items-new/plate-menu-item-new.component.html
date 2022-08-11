@@ -1,9 +1,7 @@
-<form [formGroup]="form!" class="ml-2 mr-2" (ngSubmit)="savePkmis()">
-
 <div class="flex flex-row justify-content-between column-gap-3">
-
-  <div class="flex-column menu-item-choice">
+    <div class="flex-column menu-item-choice">
     <h3>Add Burgers</h3>
+      <form [formGroup]="form!" class="ml-2 mr-2">
       <div class="flex flex-row mt-4">
         <div class="field col-4 ml-3">
           <label for="orderNumber">Order Number</label>
@@ -51,13 +49,14 @@
           </div>
         </p-tabPanel>
       </p-tabView>
+      </form>
   </div>
 
   <!-- summary -->
   <div class="flex-column" pDroppable="ddOrders" (onDrop)="drop()">
     <p-toolbar styleClass="p-mb-4">
       <ng-template pTemplate="left">
-        <button pButton pRipple label="Save" icon="pi pi-plus" class="p-mr-2 mr-2" type="submit" [disabled]="form?.invalid"></button>
+        <button pButton pRipple label="Save" icon="pi pi-plus" class="p-mr-2 mr-2" (click)="savePkmis()" [disabled]="form?.invalid"></button>
         <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger mr-2" (click)="deleteSelectedProducts()"
                 [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
         <p-splitButton label="Plate" icon="pi pi-plus" [model]="platesAction" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></p-splitButton>
@@ -157,4 +156,3 @@
 
   </div>
 </div>
-</form>

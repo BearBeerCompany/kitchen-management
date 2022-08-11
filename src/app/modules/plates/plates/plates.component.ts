@@ -1,12 +1,14 @@
-import {AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import {ItemEvent, mode, Plate, PlateInterface, PlateItemStatus} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
-import {ApiConnector} from "../../../services/api-connector";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
-import {Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 import {MessageService} from "primeng/api";
 import {PlateService} from "../services/plate.service";
+import {WebSocketService} from "../../../services/web-socket-service";
+import {PKMINotification, PKMINotificationType} from "../../../services/pkmi-notification";
+import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
 
 @Component({
   selector: 'plates',
@@ -37,13 +39,17 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   private _queue$: Subscription = new Subscription();
   private _currentItem?: PlateMenuItem;
 
+  private _pkmiNotification$: Observable<PKMINotification | null>;
+
   constructor(public i18nService: I18nService,
               public plateQueueManagerService: PlateQueueManagerService,
               private _elementRef: ElementRef,
-              @Inject('ApiConnector') private _apiConnector: ApiConnector,
               private _plateService: PlateService,
-              private _messageService: MessageService) {
+              private _messageService: MessageService,
+              private _webSocketService: WebSocketService,
+              private _plateMenuItemService: PlateMenuItemsService) {
     this.i18n = i18nService.instance;
+    this._pkmiNotification$ = this._webSocketService.pkmiNotifications$;
   }
 
   public ngOnInit(): void {
@@ -52,6 +58,40 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
       this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
         ?.values$?.subscribe((items: PlateMenuItem[]) => {
         this.unassignedItems = items;
+      })
+    );
+
+    this._queue$.add(
+      this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
+        console.log('plate page notification: ' + notification?.type);
+        if (notification) {
+          const msgData = WebSocketService.getNotificationMsgData(notification);
+          this._messageService.add({
+            severity: msgData.severity,
+            summary: msgData.summary,
+            detail: msgData.detail,
+            life: 3000
+          });
+
+          switch (notification.type) {
+            case PKMINotificationType.PKMI_ADD:
+            case PKMINotificationType.PKMI_ADD_ALL:
+              this._addItemsToPlateQueues(notification.ids);
+              break;
+            case PKMINotificationType.PKMI_UPDATE:
+              // todo
+              break;
+            case PKMINotificationType.PKMI_UPDATE_ALL:
+              // todo
+              break;
+            case PKMINotificationType.PKMI_DELETE:
+              // todo
+              break;
+            case PKMINotificationType.PKMI_DELETE_ALL:
+              // todo
+              break;
+          }
+        }
       })
     );
   }
@@ -202,6 +242,20 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
       this._total = this.plateList.length;
       this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
       this.pages = Array.from(Array(this.totalPages).keys())
+    });
+  }
+
+  private _addItemsToPlateQueues(ids: string[]) {
+    // todo: manage notifications already managed
+    this._plateMenuItemService.getByIds(ids).subscribe((plateMenuItems) => {
+      plateMenuItems.forEach(item => {
+        // split item to its plate queue
+        if (item.plate) {
+          this.plateQueueManagerService.sendToQueue(item.plate?.name!, item);
+        } else {
+          this.plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, item);
+        }
+      });
     });
   }
 }

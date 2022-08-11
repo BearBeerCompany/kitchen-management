@@ -8,7 +8,7 @@ import {PlateMenuItemNewComponent} from './plate-menu-items-new/plate-menu-item-
 import {TableModule} from 'primeng/table';
 import {InputTextModule} from "primeng/inputtext";
 
-import {PlateMenuItemsService} from './services/plate-menu-items.service';
+import {PlateMenuItemsService} from '../shared/service/plate-menu-items.service';
 import {SharedModule} from "../shared/shared.module";
 import {CalendarModule} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
@@ -53,6 +53,6 @@ import {CategoryService} from "./services/category.service";
     SplitButtonModule,
     DragDropModule
   ],
-  providers: [PlateMenuItemsService, MenuItemsService, CategoryService, MessageService, ConfirmationService, DatePipe]
+  providers: [MenuItemsService, CategoryService, MessageService, ConfirmationService, DatePipe]
 })
 export class PlateMenuItemsModule { }
