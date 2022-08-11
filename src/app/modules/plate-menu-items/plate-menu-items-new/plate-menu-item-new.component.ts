@@ -59,9 +59,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       orderNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
       menuItem: new FormControl("", Validators.required),
       tableNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
-      clientName: new FormControl("", Validators.required),
-      notes: new FormControl(""),
-      plate: new FormControl(null)
+      clientName: new FormControl("", Validators.required)
     });
   }
 
@@ -111,6 +109,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
   }
 
   savePkmis() {
+    const formValue = this.form?.value;
     const newPkmis = this.plateMenuItems.map(item => {
       const pkmi: PlateMenuItem = {
         ...item,
@@ -122,24 +121,28 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
           id: pkmiPlate.code
         } as Plate;
       }
+      pkmi.orderNumber = formValue.orderNumber;
+      pkmi.clientName = formValue.clientName;
+      pkmi.tableNumber = formValue.tableNumber;
       delete pkmi.id;
       return pkmi;
     });
 
     this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
-      // fixme
-      data.forEach(pkmi => {
-        if (pkmi.plate)
-          this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
-        else
-          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, pkmi);
-      });
+      // fixme, move logic inside the websocket notification subscription
+      // data.forEach(pkmi => {
+      //   if (pkmi.plate)
+      //     this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
+      //   else
+      //     this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, pkmi);
+      // });
       this._router.navigate(['/plate-menu-items']);
     });
   }
 
   deleteSelectedProducts() {
     this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
+    this.form?.get('menuItem')?.setValue(this.plateMenuItems);
     this.selectedPlateMenuItems = [];
   }
 
@@ -156,18 +159,13 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       });
     });
 
-    const formValue = this.form?.value;
-    const date = new Date();
-    const dateFormatted = this._datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
     this.plateMenuItems.push({
       id: PlateMenuItemsService.createFakeId(),
-      orderNumber: formValue.orderNumber,
-      clientName: formValue.clientName,
-      tableNumber: formValue.tableNumber,
       menuItem: item,
-      status: this.statuses[0].value,
-      date: dateFormatted
-    });
+      status: this.statuses[0].value
+    } as PlateMenuItem);
+
+    this.form?.get('menuItem')?.setValue(this.plateMenuItems);
   }
 
   onRowEditInit(pkmi: any) {
@@ -215,18 +213,12 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
 
   drop() {
     if (this._draggedMenuItem) {
-      const formValue = this.form?.value;
-      const date = new Date();
-      const dateFormatted = this._datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
       this.plateMenuItems.push({
         id: PlateMenuItemsService.createFakeId(),
-        orderNumber: formValue.orderNumber,
-        clientName: formValue.clientName,
-        tableNumber: formValue.tableNumber,
         menuItem: this._draggedMenuItem,
         status: this.statuses[0].value,
-        date: dateFormatted
-      });
+      } as PlateMenuItem);
+      this.form?.get('menuItem')?.setValue(this.plateMenuItems);
       this._draggedMenuItem = null;
     }
   }
