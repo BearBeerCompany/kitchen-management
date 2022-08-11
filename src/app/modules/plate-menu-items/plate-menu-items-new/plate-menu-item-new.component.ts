@@ -1,16 +1,17 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {PlateMenuItemsService} from "../services/plate-menu-items.service";
 import {MenuItemsService} from "../services/menu-items.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {I18nService} from "../../../services/i18n.service";
-import {Category, MenuItem, MenuItemExtended, PlateMenuItem, Status} from "../plate-menu-item";
-import {ApiConnector} from "../../../services/api-connector";
+import {Category, MenuItemExtended, PlateMenuItem, Status} from "../plate-menu-item";
 import {DatePipe} from "@angular/common";
 import {Router} from "@angular/router";
 import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 import {Plate} from "../../plates/plate.interface";
+import {CategoryService} from "../services/category.service";
+import {PlateService} from "../../plates/services/plate.service";
 
 @Component({
   selector: 'plate-menu-items-new',
@@ -21,7 +22,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
 
   public readonly i18n: any;
   public form: FormGroup | undefined;
-  public menuItemsNodes: TreeNode[] = [];
+  public menuItemsOptions: TreeNode[] = [];
   public menuItems: MenuItemExtended[] = [];
   public categories: Category[] = [];
   public plateMenuItems: PlateMenuItem[] = [];
@@ -30,19 +31,23 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
   public platesOptions: any[] = [];
   public platesAction: any[] = [];
 
-  private menuItemsSub: Subscription = new Subscription();
-  private platesSub: Subscription = new Subscription();
+  private _menuItemsSub: Subscription = new Subscription();
+  private _platesSub: Subscription = new Subscription();
+  private _categoriesSub: Subscription = new Subscription();
+  private _pkmiCreateAllSub: Subscription = new Subscription();
   private readonly statuses: any[] = [];
-  private clonedPkmis: PlateMenuItem[] = [];
-  private draggedMenuItem: MenuItemExtended | null = null;
+  private _clonedPkmis: PlateMenuItem[] = [];
+  private _draggedMenuItem: MenuItemExtended | null = null;
 
   constructor(private _i18nService: I18nService,
               private _plateMenuItemsService: PlateMenuItemsService,
               private _menuItemsService: MenuItemsService,
-              @Inject('ApiConnector') private _apiConnector: ApiConnector,
-              private datePipe: DatePipe,
-              private router: Router,
-              private _plateQueueManagerService: PlateQueueManagerService) {
+              private _datePipe: DatePipe,
+              private _router: Router,
+              private _plateQueueManagerService: PlateQueueManagerService,
+              private _categoryService: CategoryService,
+              private _plateService: PlateService) {
+
     this.i18n = _i18nService.instance;
     this.statuses = [
       {label: 'Todo', value: Status.Todo},
@@ -50,59 +55,24 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       {label: 'Done', value: Status.Done},
       {label: 'Cancelled', value: Status.Cancelled}
     ];
+    this.form = new FormGroup({
+      orderNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      menuItem: new FormControl("", Validators.required),
+      tableNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      clientName: new FormControl("", Validators.required)
+    });
   }
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      orderId: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
-      menuItem: new FormControl("", Validators.required),
-      quantity: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
-      notes: new FormControl(""),
-      plate: new FormControl(null)
-    });
-
-    this.menuItemsSub = this._apiConnector.getMenuItems().subscribe(data => {
-      this.menuItemsNodes = data;
-      this.categories = data.map(node => {
-        return {
-          id: node.data._id,
-          name: node.data.name,
-          description: node.data.description,
-          menuItems: node.children.map((child: any) => {
-            return {
-              _id: child.data._id,
-              name: child.data.name,
-              description: child.data.description,
-              category: {
-                _id: node.data._id,
-                name: node.data.name,
-                description: node.data.description,
-                color: node.data.color
-              },
-              quantity: 0
-            }
-          })
-        }
+    this._categoriesSub = this._categoryService.getAll().subscribe(categoriesData => {
+      this._menuItemsSub = this._menuItemsService.getAll().subscribe(data => {
+        this.menuItems = data;
+        this.menuItemsOptions = PlateMenuItemsService.getCategoryMenuItemTreeNodeOptions(categoriesData, data);
+        this.categories = PlateMenuItemsService.getCategoryMenuItemTreeNodes(categoriesData, data);
       });
-
-      this.menuItems = data.map(node => {
-        return node.children.map((child: any) => {
-          return {
-            _id: child.data._id,
-            name: child.data.name,
-            description: child.data.description,
-            category: {
-              _id: node.data._id,
-              name: node.data.name,
-              description: node.data.description,
-              color: node.data.color
-            },
-            quantity: 0
-          }
-        });
-      }).flat();
     });
-    this.platesSub = this._apiConnector.getPlates().subscribe((data: Plate[]) => {
+
+    this._platesSub = this._plateService.getAll().subscribe((data: Plate[]) => {
       this.plates = data;
       this.platesOptions = [{
         code: null,
@@ -113,7 +83,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       }];
       this.platesOptions.push(...data.map(item => {
         return {
-          code: item.name,
+          code: item.id,
           name: item.name,
           label: item.name,
           value: item.name,
@@ -131,60 +101,48 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSubmit() {
-    console.log(this.form?.value);
-    const newOrder = this.form?.value;
-    const date = new Date();
-    const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
-
-    let menuItem: MenuItem = {
-      ...newOrder.menuItem.data,
-      category: newOrder.menuItem.parent.data
-    };
-    for (let i = 0; i < newOrder.quantity; i++) {
-      this.plateMenuItems.push({
-        id: this._plateMenuItemsService.createId(),
-        orderNumber: newOrder.orderId,
-        menuItem,
-        status: this.statuses[0],
-        notes: newOrder.notes,
-        date: dateFormatted,
-        plate: newOrder.plate,
-        clientName: '', // todo
-        tableNumber: 0, // todo
-      });
-    }
-  }
-
   ngOnDestroy(): void {
-    this.menuItemsSub.unsubscribe();
-    this.platesSub.unsubscribe();
+    this._menuItemsSub.unsubscribe();
+    this._platesSub.unsubscribe();
+    this._categoriesSub.unsubscribe();
+    this._pkmiCreateAllSub.unsubscribe();
   }
 
-  saveOrders() {
-    this.plateMenuItems.forEach(order => {
-      if (!!order.plate) {
-        const orderPlate = this.platesOptions.find(plate => plate.name === order.plate);
-        // override order.plate
-        order.plate = {
-          _id: orderPlate.code,
-          name: orderPlate.name
+  savePkmis() {
+    const formValue = this.form?.value;
+    const newPkmis = this.plateMenuItems.map(item => {
+      const pkmi: PlateMenuItem = {
+        ...item,
+        menuItem: {id: item.menuItem.id}
+      };
+      if (!!item.plate) {
+        const pkmiPlate = this.platesOptions.find(plate => plate.name === item.plate);
+        pkmi.plate = {
+          id: pkmiPlate.code
         } as Plate;
       }
+      pkmi.orderNumber = formValue.orderNumber;
+      pkmi.clientName = formValue.clientName;
+      pkmi.tableNumber = formValue.tableNumber;
+      delete pkmi.id;
+      return pkmi;
     });
-    this._apiConnector.addOrders(this.plateMenuItems).subscribe(() => {
-      this.plateMenuItems.forEach(order => {
-        if (order.plate)
-          this._plateQueueManagerService.sendToQueue(order.plate?.name!, order);
-        else
-          this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, order);
-      });
-      this.router.navigate(['/plate-menu-items']);
+
+    this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
+      // fixme, move logic inside the websocket notification subscription
+      // data.forEach(pkmi => {
+      //   if (pkmi.plate)
+      //     this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
+      //   else
+      //     this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, pkmi);
+      // });
+      this._router.navigate(['/plate-menu-items']);
     });
   }
 
   deleteSelectedProducts() {
     this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
+    this.form?.get('menuItem')?.setValue(this.plateMenuItems);
     this.selectedPlateMenuItems = [];
   }
 
@@ -201,31 +159,26 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       });
     });
 
-    const newOrder = this.form?.value;
-    const date = new Date();
-    const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
     this.plateMenuItems.push({
-      id: this._plateMenuItemsService.createId(),
-      orderNumber: newOrder.orderId,
+      id: PlateMenuItemsService.createFakeId(),
       menuItem: item,
-      status: this.statuses[0].value,
-      date: dateFormatted,
-      clientName: '', // todo
-      tableNumber: 0, // todo
-    });
+      status: this.statuses[0].value
+    } as PlateMenuItem);
+
+    this.form?.get('menuItem')?.setValue(this.plateMenuItems);
   }
 
-  onRowEditInit(order: any) {
-    this.clonedPkmis[order._id] = {...order};
+  onRowEditInit(pkmi: any) {
+    this._clonedPkmis[pkmi.id] = {...pkmi};
   }
 
-  onRowEditSave(order: any) {
-    delete this.clonedPkmis[order._id];
+  onRowEditSave(pkmi: any) {
+    delete this._clonedPkmis[pkmi.id];
   }
 
-  onRowEditCancel(order: any, index: number) {
-    this.plateMenuItems[index] = this.clonedPkmis[order._id];
-    delete this.clonedPkmis[order._id];
+  onRowEditCancel(pkmi: any, index: number) {
+    this.plateMenuItems[index] = this._clonedPkmis[pkmi.id];
+    delete this._clonedPkmis[pkmi.id];
   }
 
   getCategoryColor(category: any): string {
@@ -241,38 +194,32 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
     return (plate && plate.color) ? plate.color : 'transparent';
   }
 
-  setPlate(orderPlate: Plate, selectedOrders: any[]) {
-    if (selectedOrders && selectedOrders.length) {
-      selectedOrders.forEach(order => {
-        const plate = this.plates.find(item => item.name === orderPlate.name);
-        order.plate = (plate) ? plate.name : null;
+  setPlate(pkmiPlate: Plate, selectedPkmis: any[]) {
+    if (selectedPkmis && selectedPkmis.length) {
+      selectedPkmis.forEach(item => {
+        const plate = this.plates.find(item => item.name === pkmiPlate.name);
+        item.plate = (plate) ? plate.name : null;
       });
     }
   }
 
   dragStart(item: MenuItemExtended) {
-    this.draggedMenuItem = item;
+    this._draggedMenuItem = item;
   }
 
   dragEnd() {
-    this.draggedMenuItem = null;
+    this._draggedMenuItem = null;
   }
 
   drop() {
-    if (this.draggedMenuItem) {
-      const newPkmi = this.form?.value;
-      const date = new Date();
-      const dateFormatted = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
+    if (this._draggedMenuItem) {
       this.plateMenuItems.push({
-        id: this._plateMenuItemsService.createId(),
-        orderNumber: newPkmi.orderNumber,
-        menuItem: this.draggedMenuItem,
+        id: PlateMenuItemsService.createFakeId(),
+        menuItem: this._draggedMenuItem,
         status: this.statuses[0].value,
-        date: dateFormatted,
-        clientName: '', // todo
-        tableNumber: 0, // todo
-      });
-      this.draggedMenuItem = null;
+      } as PlateMenuItem);
+      this.form?.get('menuItem')?.setValue(this.plateMenuItems);
+      this._draggedMenuItem = null;
     }
   }
 }

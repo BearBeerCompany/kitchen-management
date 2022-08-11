@@ -20,13 +20,12 @@ export interface MenuItem {
   id?: string,
   name?: string,
   description?: string,
-  category?: Category,
-  categoryId?: string // fixme, remove temporarily
+  categoryId?: string,
+  category?: Category
 }
 
 export interface MenuItemExtended extends MenuItem {
-  selected?: boolean,
-  quantity: number
+  selected?: boolean
 }
 
 export interface Category {
