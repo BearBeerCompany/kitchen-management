@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Observable, of} from "rxjs";
+import {MenuItem} from "../../plate-menu-items/plate-menu-item";
 
 @Component({
   selector: 'menu-item-list',
@@ -7,7 +9,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MenuItemListComponent implements OnInit {
 
-  constructor() { }
+  @Input() public items$: Observable<MenuItem[]> = of([]);
+  @Input() public categoryName?: string;
+
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

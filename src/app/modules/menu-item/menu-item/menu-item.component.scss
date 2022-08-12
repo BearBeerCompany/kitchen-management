@@ -11,10 +11,46 @@ section {
 
   category {
     width: 30%;
+    overflow-y: auto;
+    border-right: 1px solid rgba(96, 96, 96, 1);
   }
 
-  menu-item-list {
+  div#right-panel {
     width: 70%;
+    overflow-y: auto;
+
+    #action-button_container {
+      height: 10%;
+
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      flex-direction: row;
+
+      button {
+        margin: 0 10px;
+      }
+    }
+
+    menu-item-list {
+      height: 90%;
+    }
   }
 
 }
+
+form {
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  #confirmForm {
+    width: 100%;
+
+    display: inline-flex;
+    justify-content: space-between;
+  }
+}
+
