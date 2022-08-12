@@ -110,7 +110,7 @@ h3 {
 
   plate {
     height: 90%;
-    flex-basis: 33%;
+    flex-basis: calc(100% / var(--chunk));
   }
 
   .carousel-button {
