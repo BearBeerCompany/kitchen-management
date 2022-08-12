@@ -1,0 +1,12 @@
+<section>
+  <ng-container *ngFor="let category of categories$ | async">
+    <button [style.--category-color]="category.color">
+      <span class="title">{{category.name}}</span>
+      <span>{{category.description}}</span>
+    </button>
+  </ng-container>
+  <button id="skeleton">
+    <i class="pi pi-plus"></i>
+    <span>Aggiungi categoria</span>
+  </button>
+</section>

@@ -159,13 +159,16 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
   }
 
-  public onUnassignedRun(item: PlateMenuItem): void {
+  public onUnassignedSelected(item: PlateMenuItem): void {
     this.showPlateList = true;
     this._currentItem = item;
   }
 
   public onUnassignedExecuteRun(plate: Plate): void {
-    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate.id);
+    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE,
+      this._currentItem!,
+      PlateItemStatus.Moved,
+      plate.id);
     this.showPlateList = false;
   }
 

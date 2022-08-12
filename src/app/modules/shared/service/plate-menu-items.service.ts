@@ -94,6 +94,13 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
     );
   }
 
+  public getUnassigned(): Observable<PlateMenuItem[]> {
+    return this._http.get(this._getUrl() + `/unassigned`, RequestService.baseHttpOptions)
+      .pipe(
+        map((res: any) => (res || []) as PlateMenuItem[])
+      );
+  }
+
   public static getMenuItemNode(categories: Category[], menuItem: MenuItem): TreeNode {
     return {
       label: menuItem.name,

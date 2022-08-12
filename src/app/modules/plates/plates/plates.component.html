@@ -42,7 +42,7 @@
   <span *ngFor="let p of pages" [ngClass]="p == currentPage ? 'active' : ''" class="circle"></span>
 </div>
 <ng-template #overlay>
-  <items-overlay (onRun)="onUnassignedRun($event)"
+  <items-overlay (onRun)="onUnassignedSelected($event)"
                  [hideCloseButton]="true"
                  [items]="unassignedItems">
   </items-overlay>

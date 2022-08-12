@@ -3,3 +3,18 @@
 h3 {
   @include title-center;
 }
+
+section {
+
+  display: flex;
+  height: 90%;
+
+  category {
+    width: 30%;
+  }
+
+  menu-item-list {
+    width: 70%;
+  }
+
+}

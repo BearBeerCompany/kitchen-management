@@ -7,8 +7,6 @@ import {PlateMenuItemNewComponent} from './plate-menu-items-new/plate-menu-item-
 
 import {TableModule} from 'primeng/table';
 import {InputTextModule} from "primeng/inputtext";
-
-import {PlateMenuItemsService} from '../shared/service/plate-menu-items.service';
 import {SharedModule} from "../shared/shared.module";
 import {CalendarModule} from "primeng/calendar";
 import {DropdownModule} from "primeng/dropdown";
@@ -25,7 +23,6 @@ import {CardModule} from "primeng/card";
 import {TabViewModule} from "primeng/tabview";
 import {SplitButtonModule} from "primeng/splitbutton";
 import {DragDropModule} from "primeng/dragdrop";
-import {CategoryService} from "./services/category.service";
 
 @NgModule({
   declarations: [
@@ -53,6 +50,6 @@ import {CategoryService} from "./services/category.service";
     SplitButtonModule,
     DragDropModule
   ],
-  providers: [MenuItemsService, CategoryService, MessageService, ConfirmationService, DatePipe]
+  providers: [MenuItemsService, MessageService, ConfirmationService, DatePipe]
 })
 export class PlateMenuItemsModule { }
