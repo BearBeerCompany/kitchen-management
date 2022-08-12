@@ -27,7 +27,7 @@ export const I18N = {
   ORDERS: {
     TITLE: "Gestione Ordini"
   },
-  DASHBOARD: {
-    TITLE: "Home"
+  ITEM: {
+    TITLE: "Gestione Menù"
   }
 }

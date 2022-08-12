@@ -25,7 +25,7 @@
            (onItemEvent)="handleItemEvent($event)"
            [config]="plate"
            [plateList]="getEnabledPlateList(plate)"
-           [queue]="plateQueueManagerService.getQueue(plate.name!)">
+           [queue]="plateQueueManagerService.getQueue(plate.id!)">
     </plate>
   </ng-container>
   <button (click)="onNextPage()"

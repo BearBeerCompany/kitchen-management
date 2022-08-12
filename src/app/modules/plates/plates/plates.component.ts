@@ -80,7 +80,8 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               this._addItemsToPlateQueues(notification.ids);
               break;
             case PKMINotificationType.PKMI_UPDATE:
-              // todo
+              console.log(notification);
+              this._upgradeItemInQueue(notification);
               break;
             case PKMINotificationType.PKMI_UPDATE_ALL:
               // todo
@@ -164,7 +165,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onUnassignedExecuteRun(plate: Plate): void {
-    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate.name);
+    this.plateQueueManagerService.onItemAction(PlateQueueManagerService.UNASSIGNED_QUEUE, this._currentItem!, PlateItemStatus.Moved, plate.id);
     this.showPlateList = false;
   }
 
@@ -174,7 +175,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public getEnabledPlateList(skip: Plate | null): Plate[] {
-    return this.plateList.filter(p => p.mode === PlateInterface.On && p.name !== skip?.name);
+    return this.plateList.filter(p => p.mode === PlateInterface.On && p.id !== skip?.id);
   }
 
   private _swipeStart(event: Touch) {
@@ -252,11 +253,15 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
       plateMenuItems.forEach(item => {
         // split item to its plate queue
         if (item.plate) {
-          this.plateQueueManagerService.sendToQueue(item.plate?.name!, item);
+          this.plateQueueManagerService.sendToQueue(item.plate?.id!, item);
         } else {
           this.plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, item);
         }
       });
     });
+  }
+
+  private _upgradeItemInQueue(notification: PKMINotification ) {
+
   }
 }

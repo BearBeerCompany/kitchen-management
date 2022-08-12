@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 
 export enum Routing {
-  Dashboard = "dashboard",
+  MenuItem = "menu-item",
   Plates = "plates",
   Settings = "settings",
   PlateMenuItems = "plate-menu-items"
@@ -11,12 +11,12 @@ export enum Routing {
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/dashboard',
+    redirectTo: Routing.Plates,
     pathMatch: 'full'
   },
   {
-    path: Routing.Dashboard,
-    loadChildren: () => import("./modules/dashboard/dashboard.module").then(m => m.DashboardModule)
+    path: Routing.MenuItem,
+    loadChildren: () => import("./modules/menu-item/menu-item.module").then(m => m.MenuItemModule)
   },
   {
     path: Routing.Plates,
@@ -32,7 +32,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/dashboard',
+    redirectTo: Routing.Plates,
     pathMatch: 'full'
   }
 ];
