@@ -80,7 +80,6 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               this._addItemsToPlateQueues(notification.ids);
               break;
             case PKMINotificationType.PKMI_UPDATE:
-              console.log(notification);
               this._updateItemInQueue(notification);
               break;
             case PKMINotificationType.PKMI_UPDATE_ALL:
@@ -251,7 +250,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _addItemsToPlateQueues(ids: string[]) {
-    // todo: manage notifications already managed
+    // todo: refresh queue as update case?
     this._plateMenuItemService.getByIds(ids).subscribe((plateMenuItems) => {
       plateMenuItems.forEach(item => {
         // split item to its plate queue
@@ -267,8 +266,16 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   private _updateItemInQueue(notification: PKMINotification ) {
     this._plateService.getAll().subscribe((plates: Plate[]) => {
       plates.forEach(plate => {
+        // refresh plate queues
         this._plateService.getStatusById(plate.id!).subscribe(items => {
           let queue = this.plateQueueManagerService.getQueue(plate.id!);
+          queue.values = items;
+          queue.refresh();
+        });
+
+        // refresh unsigned queue
+        this._plateMenuItemService.getUnassigned().subscribe(items => {
+          let queue = this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
           queue.values = items;
           queue.refresh();
         });
