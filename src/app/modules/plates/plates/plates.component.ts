@@ -250,20 +250,14 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private _addItemsToPlateQueues(ids: string[]) {
-    // todo: refresh queue as update case?
-    this._plateMenuItemService.getByIds(ids).subscribe((plateMenuItems) => {
-      plateMenuItems.forEach(item => {
-        // split item to its plate queue
-        if (item.plate) {
-          this.plateQueueManagerService.sendToQueue(item.plate?.id!, item);
-        } else {
-          this.plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, item);
-        }
-      });
-    });
+    this._refreshPlateQueues();
   }
 
   private _updateItemInQueue(notification: PKMINotification ) {
+    this._refreshPlateQueues();
+  }
+
+  private _refreshPlateQueues() {
     this._plateService.getAll().subscribe((plates: Plate[]) => {
       plates.forEach(plate => {
         // refresh plate queues
