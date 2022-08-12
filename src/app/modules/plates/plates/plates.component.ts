@@ -18,7 +18,7 @@ import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.servi
 export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public readonly i18n: any;
-  public readonly DISPLAY_CHUNK = 3;
+  public readonly DISPLAY_CHUNK = 4;
 
   public plateMode: typeof PlateInterface = mode();
   public hidePrevious: boolean = true;
@@ -50,6 +50,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               private _plateMenuItemService: PlateMenuItemsService) {
     this.i18n = i18nService.instance;
     this._pkmiNotification$ = this._webSocketService.pkmiNotifications$;
+    this._elementRef.nativeElement.style.setProperty("--chunk", this.DISPLAY_CHUNK);
   }
 
   public ngOnInit(): void {
