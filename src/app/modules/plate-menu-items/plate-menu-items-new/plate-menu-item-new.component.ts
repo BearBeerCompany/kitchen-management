@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {PlateMenuItemsService} from "../services/plate-menu-items.service";
+import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
 import {MenuItemsService} from "../services/menu-items.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
@@ -8,7 +8,6 @@ import {I18nService} from "../../../services/i18n.service";
 import {Category, MenuItemExtended, PlateMenuItem, Status} from "../plate-menu-item";
 import {DatePipe} from "@angular/common";
 import {Router} from "@angular/router";
-import {PlateQueueManagerService} from "../../plates/services/plate-queue-manager.service";
 import {Plate} from "../../plates/plate.interface";
 import {CategoryService} from "../services/category.service";
 import {PlateService} from "../../plates/services/plate.service";
@@ -44,7 +43,6 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
               private _menuItemsService: MenuItemsService,
               private _datePipe: DatePipe,
               private _router: Router,
-              private _plateQueueManagerService: PlateQueueManagerService,
               private _categoryService: CategoryService,
               private _plateService: PlateService) {
 

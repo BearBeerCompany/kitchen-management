@@ -10,6 +10,7 @@ import {RippleModule} from "primeng/ripple";
 import {TagModule} from "primeng/tag";
 import {BadgeModule} from "primeng/badge";
 import {TooltipModule} from 'primeng/tooltip';
+import {PlateMenuItemsService} from "./service/plate-menu-items.service";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {TooltipModule} from 'primeng/tooltip';
     PlateInfoComponent,
     ButtonModule,
     RippleModule
-  ]
+  ],
+  providers: [PlateMenuItemsService]
 })
 export class SharedModule {
 }
