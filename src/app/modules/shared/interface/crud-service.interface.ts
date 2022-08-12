@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 
 export interface CRUDService<T> {
 
-    getAll(parentId?: string): Observable<Array<T>>;
+    getAll(): Observable<Array<T>>;
 
     getById(id: string): Observable<T>;
 

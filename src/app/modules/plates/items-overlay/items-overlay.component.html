@@ -9,7 +9,6 @@
   <p *ngIf="items.length > 0">Ordini in Attesa</p>
   <div class="items-overlay__rows-container">
     <div *ngFor="let i of items" class="items-overlay__row">
-      <i class="pi pi-apple item-icon"></i>
       <span class="item_title">{{i.menuItem?.name}}</span>
       <span class="item_order">ORDINE {{i.orderNumber}}</span>
       <button (click)="onRun.emit(i)"

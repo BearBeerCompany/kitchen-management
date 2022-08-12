@@ -37,10 +37,12 @@ export class PlateQueueManagerService {
   }
 
   public addQueue(id: string): void {
+
     if (id === PlateQueueManagerService.UNASSIGNED_QUEUE) {
-      this._plates.set(id, new ReactiveQueue());
+      this._plateMenuItemsService.getUnassigned().subscribe(items => {
+        this.initQueue(id, items);
+      });
     } else {
-      // call api to load plate status
       this._plateService.getStatusById(id!).subscribe(items => {
         this.initQueue(id, items);
       });

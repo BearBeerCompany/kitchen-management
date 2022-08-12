@@ -6,14 +6,16 @@ import {HttpClient} from "@angular/common/http";
 import {ApiResourceEnum} from "../../shared/service/api-resource.enum";
 import {map, Observable} from "rxjs";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class CategoryService extends RequestService implements CRUDService<Category> {
 
   constructor(private _http: HttpClient) {
     super(ApiResourceEnum.CATEGORY);
   }
 
-  public getAll(parentId?: string): Observable<Category[]> {
+  public getAll(): Observable<Category[]> {
     return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return (res || []) as Category[];
