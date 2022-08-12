@@ -1,15 +1,8 @@
 <div class="item_container">
-  <div class="img_container">
-    <div class="ellipse"></div>
-    <i class="pi pi-apple"></i>
-  </div>
   <span class="item_title">{{config.menuItem.name}}</span>
-  <span class="item_order">ORDINE {{config.orderNumber}}</span>
+  <span class="item_order">#{{config.orderNumber}}</span>
   <span class="item_note">
-    <ul>
-      <li>+ ketchup</li>
-      <li>+ maionese</li>
-    </ul>
+    {{config.notes}}
   </span>
   <span class="item_actions">
     <button (click)="onDone()"

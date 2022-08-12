@@ -143,7 +143,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     const event: ItemEvent = {
       action: Status.Progress,
       item: item,
-      plateId: this.config.name!
+      plateId: this.config.id!
     }
 
     this.onItemEvent.emit(event);

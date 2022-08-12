@@ -6,6 +6,7 @@ import {BehaviorSubject, map, Observable} from "rxjs";
 import {Plate, PlateInterface} from "../plate.interface";
 import {HttpClient} from "@angular/common/http";
 import {I18nService} from "../../../services/i18n.service";
+import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
     this._i18n = _i18nService.instance;
   }
 
-  create(dto: Plate): Observable<Plate> {
+  public create(dto: Plate): Observable<Plate> {
     return this._http.post(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return this._evaluateStatus(res);
@@ -29,11 +30,11 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
     );
   }
 
-  delete(id: string): Observable<any> {
+  public delete(id: string): Observable<any> {
     return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
   }
 
-  getAll(): Observable<Array<Plate>> {
+  public getAll(): Observable<Array<Plate>> {
     return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         const plates: Plate[] = ((res || []) as Plate[]).map(p => {
@@ -46,7 +47,7 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
     );
   }
 
-  getById(id: string): Observable<Plate> {
+  public getById(id: string): Observable<Plate> {
     return this._http.get(this._getUrl(id), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return this._evaluateStatus(res);
@@ -54,7 +55,14 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
     );
   }
 
-  update(dto: Plate): Observable<Plate> {
+  public getStatusById(id: string): Observable<PlateMenuItem[]> {
+    return this._http.get(this._getUrl() + `/status/${id}`, RequestService.baseHttpOptions)
+      .pipe(
+        map((res: any) => (res || []) as PlateMenuItem[])
+      );
+  }
+
+  public update(dto: Plate): Observable<Plate> {
     return this._http.put(this._getUrl(), dto, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return this._evaluateStatus(res);
