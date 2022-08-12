@@ -75,11 +75,11 @@
           <p-columnFilter type="text" field="clientName" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="date">
+      <th pSortableColumn="insertDate">
         <div class="p-d-flex p-jc-between p-ai-center">
           Date
-          <p-sortIcon field="date"></p-sortIcon>
-          <p-columnFilter type="date" field="date" display="menu"></p-columnFilter>
+          <p-sortIcon field="insertDate"></p-sortIcon>
+          <p-columnFilter type="insertDate" field="insertDate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="status">
@@ -132,7 +132,7 @@
             ></p-treeSelect>
           </ng-template>
           <ng-template pTemplate="output">
-            {{plateMenuItem.menuItem.data.name}}
+            {{plateMenuItem?.menuItem?.data?.name}}
           </ng-template>
         </p-cellEditor>
       </td>
@@ -147,7 +147,7 @@
             <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber">
           </ng-template>
           <ng-template pTemplate="output">
-            {{plateMenuItem.orderNumber}}
+            {{plateMenuItem?.orderNumber}}
           </ng-template>
         </p-cellEditor>
       </td>
@@ -157,7 +157,7 @@
             <input pInputText type="number" [(ngModel)]="plateMenuItem.tableNumber">
           </ng-template>
           <ng-template pTemplate="output">
-            {{plateMenuItem.tableNumber}}
+            {{plateMenuItem?.tableNumber}}
           </ng-template>
         </p-cellEditor>
       </td>
@@ -167,13 +167,13 @@
             <input pInputText type="text" [(ngModel)]="plateMenuItem.clientName">
           </ng-template>
           <ng-template pTemplate="output">
-            {{plateMenuItem.clientName}}
+            {{plateMenuItem?.clientName}}
           </ng-template>
         </p-cellEditor>
       </td>
       <td>
         <span class="p-column-title">Date</span>
-        {{plateMenuItem.date}}
+        {{this.datePipe.transform(plateMenuItem?.insertDate, this.DATE_FORMAT)}}
       </td>
       <td>
         <p-cellEditor>
@@ -181,9 +181,9 @@
             <p-dropdown [options]="statuses" [(ngModel)]="plateMenuItem.status" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span [style]="{'color': getStatusLabelColor(plateMenuItem.status)}">
-              <i [class]="getStatusIcon(plateMenuItem.status)"></i>
-              <label class="ml-2">{{plateMenuItem.status}}</label>
+            <span [style]="{'color': getStatusLabelColor(plateMenuItem?.status)}">
+              <i [class]="getStatusIcon(plateMenuItem?.status)"></i>
+              <label class="ml-2">{{plateMenuItem?.status}}</label>
             </span>
           </ng-template>
         </p-cellEditor>
@@ -194,7 +194,7 @@
             <p-dropdown [options]="platesOptions" [(ngModel)]="plateMenuItem.plate" [style]="{'width':'100%'}"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem.plate)}">{{plateMenuItem.plate}}</span>
+            <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem?.plate)}">{{plateMenuItem?.plate}}</span>
           </ng-template>
         </p-cellEditor>
       </td>
@@ -204,7 +204,7 @@
             <input pInputText type="text" [(ngModel)]="plateMenuItem.notes">
           </ng-template>
           <ng-template pTemplate="output">
-            {{plateMenuItem.notes}}
+            {{plateMenuItem?.notes}}
           </ng-template>
         </p-cellEditor>
       </td>

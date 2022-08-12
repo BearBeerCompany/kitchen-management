@@ -81,7 +81,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               break;
             case PKMINotificationType.PKMI_UPDATE:
               console.log(notification);
-              this._upgradeItemInQueue(notification);
+              this._updateItemInQueue(notification);
               break;
             case PKMINotificationType.PKMI_UPDATE_ALL:
               // todo
@@ -264,7 +264,15 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private _upgradeItemInQueue(notification: PKMINotification ) {
-
+  private _updateItemInQueue(notification: PKMINotification ) {
+    this._plateService.getAll().subscribe((plates: Plate[]) => {
+      plates.forEach(plate => {
+        this._plateService.getStatusById(plate.id!).subscribe(items => {
+          let queue = this.plateQueueManagerService.getQueue(plate.id!);
+          queue.values = items;
+          queue.refresh();
+        });
+      })
+    });
   }
 }

@@ -25,26 +25,28 @@ export class PlateQueueManagerService {
     this.addQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
   }
 
+  public initQueue(id: string, items: PlateMenuItem[]) {
+    if (items?.length)
+      this._plates.set(id, new ReactiveQueue(items));
+    else
+      this._plates.set(id, new ReactiveQueue());
+  }
+
   public getQueue(id: string): ReactiveQueue<PlateMenuItem> {
     return this._plates.get(id)!;
   }
 
   public addQueue(id: string): void {
 
-    if (id === PlateQueueManagerService.UNASSIGNED_QUEUE)
+    if (id === PlateQueueManagerService.UNASSIGNED_QUEUE) {
       this._plateMenuItemsService.getUnassigned().subscribe(items => {
-        if (items?.length > 0)
-          this._plates.set(id, new ReactiveQueue(items));
-        else
-          this._plates.set(id, new ReactiveQueue());
-      })
-    else
-      this._plateService.getStatusById(id!).subscribe(items => {
-        if (items?.length > 0)
-          this._plates.set(id, new ReactiveQueue(items));
-        else
-          this._plates.set(id, new ReactiveQueue());
+        this.initQueue(id, items);
       });
+    } else {
+      this._plateService.getStatusById(id!).subscribe(items => {
+        this.initQueue(id, items);
+      });
+    }
   }
 
   get notify(): BehaviorSubject<number> {

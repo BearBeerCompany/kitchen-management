@@ -29,6 +29,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   private _clonedPkmis: PlateMenuItem[] = [];
   private _pkmiNotification$: Observable<PKMINotification | null>;
 
+  public readonly DATE_FORMAT = 'dd-MM-yyyy HH:mm:ss';
   public readonly i18n: any;
   plateMenuItems: PlateMenuItem[] = [];
   pkmiRows: any[] = [];
@@ -52,7 +53,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
               private _router: Router,
               private _messageService: MessageService,
               private _confirmationService: ConfirmationService,
-              private _datePipe: DatePipe,
+              public datePipe: DatePipe,
               private _webSocketService: WebSocketService,
               private _plateMenuItemsService: PlateMenuItemsService,
               private _plateService: PlateService,
@@ -208,7 +209,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         tableNumber: pkmiRow.tableNumber,
         clientName: pkmiRow.clientName,
         menuItem,
-        date: pkmiRow.date,
+        insertDate: pkmiRow.insertDate,
         status: pkmiRow.status,
         notes: pkmiRow.notes,
         plate
@@ -322,7 +323,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       tableNumber: plateMenuItem.tableNumber,
       clientName: plateMenuItem.clientName,
       menuItem: menuItemNode,
-      date: plateMenuItem.date,
+      insertDate: plateMenuItem.insertDate,
       status: plateMenuItem.status,
       plate: plateMenuItem.plate?.name,
       notes: plateMenuItem.notes
