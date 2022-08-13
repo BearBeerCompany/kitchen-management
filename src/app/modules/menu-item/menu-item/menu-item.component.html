@@ -6,6 +6,11 @@
   </category>
   <div id="right-panel" *ngIf="selectedCategory">
     <div id="action-button_container">
+      <button pButton pRipple label="Aggiungi a Catalogo"
+              icon="pi pi-plus"
+              class="p-button-info ml-2"
+              (click)="onMenuItemCreate()">
+      </button>
       <button pButton pRipple label="Elimina Categoria"
               icon="pi pi-trash"
               class="p-button-danger ml-2"
@@ -18,8 +23,10 @@
       </button>
     </div>
     <menu-item-list
-      [items$]="items$"
-      [categoryName]="selectedCategory?.name!">
+      [items]="(items$ | async)!"
+      [categoryName]="selectedCategory?.name!"
+      (edit)="onMenuItemEdit($event)"
+      (delete)="onMenuItemDelete($event)">
     </menu-item-list>
   </div>
 </section>
@@ -39,12 +46,38 @@
     <label>Colore</label>
     <p-colorPicker [inline]="true"
                    formControlName="color"></p-colorPicker>
-    <div id="confirmForm">
+    <div class="confirm-form">
       <button (click)="discardCategoryForm()"
               [label]="i18n.COMMON.UNDO"
               class="p-button-secondary" pButton pRipple
               type="button"></button>
       <button [disabled]="categoryForm?.valid ? !categoryForm?.valid : true"
+              [label]="i18n.COMMON.SAVE"
+              class="p-button-success" pButton pRipple
+              type="submit"></button>
+    </div>
+  </form>
+</p-dialog>
+<p-dialog header="Aggiungi Prodotto"
+          [style]="{height: '50vh'}"
+          [(visible)]="menuItemDisplay"
+          [draggable]="false">
+  <form (ngSubmit)="onMenuItemSubmit()" [formGroup]="menuItemForm!">
+    <label>Nome</label>
+    <input formControlName="name"
+           pInputText
+           type="text">
+    <label>Descrizione</label>
+    <input formControlName="description"
+           pInputText
+           type="text">
+    <p class="form-category_title">Categoria: <span>{{selectedCategory?.name}}</span></p>
+    <div class="confirm-form">
+      <button (click)="discardMenuItemForm()"
+              [label]="i18n.COMMON.UNDO"
+              class="p-button-secondary" pButton pRipple
+              type="button"></button>
+      <button [disabled]="menuItemForm?.valid ? !menuItemForm?.valid : true"
               [label]="i18n.COMMON.SAVE"
               class="p-button-success" pButton pRipple
               type="submit"></button>

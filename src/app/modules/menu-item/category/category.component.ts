@@ -8,7 +8,7 @@ import {Category} from "../../plate-menu-items/plate-menu-item";
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.scss']
 })
-export class CategoryComponent implements OnInit {
+export class CategoryComponent {
 
   @Input() public categories$: Observable<Category[]> = of([]);
 
@@ -16,12 +16,6 @@ export class CategoryComponent implements OnInit {
   @Output() public create: EventEmitter<void> = new EventEmitter<void>(false);
 
   public activeCategory?: string;
-
-  constructor(private _categoryService: CategoryService) { }
-
-  public ngOnInit(): void {
-    this.categories$ = this._categoryService.getAll();
-  }
 
   public onCategoryClick(category: Category) {
     this.activeCategory = category.id;

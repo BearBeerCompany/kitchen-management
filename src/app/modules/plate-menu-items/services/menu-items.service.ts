@@ -6,7 +6,9 @@ import {RequestService} from "../../shared/service/request.service";
 import {CRUDService} from "../../shared/interface/crud-service.interface";
 import {MenuItem} from "../plate-menu-item";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class MenuItemsService extends RequestService implements CRUDService<MenuItem> {
 
   constructor(private _http: HttpClient) {
