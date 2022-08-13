@@ -16,7 +16,6 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {ToastModule} from "primeng/toast";
 import {ToolbarModule} from "primeng/toolbar";
 import {DialogModule} from "primeng/dialog";
-import {MenuItemsService} from "./services/menu-items.service";
 import {ConfirmationService, MessageService} from "primeng/api";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {CardModule} from "primeng/card";
@@ -50,6 +49,6 @@ import {DragDropModule} from "primeng/dragdrop";
     SplitButtonModule,
     DragDropModule
   ],
-  providers: [MenuItemsService, MessageService, ConfirmationService, DatePipe]
+  providers: [MessageService, ConfirmationService, DatePipe]
 })
 export class PlateMenuItemsModule { }

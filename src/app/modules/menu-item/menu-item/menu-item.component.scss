@@ -23,12 +23,19 @@ section {
       height: 10%;
 
       display: flex;
-      justify-content: end;
+      justify-content: flex-end;
       align-items: center;
       flex-direction: row;
 
+      position: relative;
+
       button {
         margin: 0 10px;
+      }
+
+      & > button:first-of-type {
+        position: absolute;
+        left: 0;
       }
     }
 
@@ -46,11 +53,21 @@ form {
   flex-direction: column;
   justify-content: space-between;
 
-  #confirmForm {
+  .confirm-form {
     width: 100%;
 
     display: inline-flex;
     justify-content: space-between;
+  }
+
+  .form-category_title {
+    text-transform: capitalize;
+    font-size: 16px;
+
+    span {
+      text-transform: uppercase;
+      font-weight: bold;
+    }
   }
 }
 
