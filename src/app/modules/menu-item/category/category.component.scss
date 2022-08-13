@@ -29,6 +29,7 @@ section {
     background: none;
     text-transform: capitalize;
     font-size: 16px;
+    user-select: none;
 
     &:hover {
       cursor: pointer;
@@ -41,6 +42,11 @@ section {
       text-transform: uppercase;
     }
   }
+}
+
+.active {
+  background-color: var(--category-color) !important;
+  color: white;
 }
 
 #skeleton {

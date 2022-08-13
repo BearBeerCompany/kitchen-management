@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {RequestService} from "../../shared/service/request.service";
 import {CRUDService} from "../../shared/interface/crud-service.interface";
-import {Category} from "../plate-menu-item";
+import {Category, MenuItem} from "../plate-menu-item";
 import {HttpClient} from "@angular/common/http";
 import {ApiResourceEnum} from "../../shared/service/api-resource.enum";
 import {map, Observable} from "rxjs";
@@ -51,4 +51,11 @@ export class CategoryService extends RequestService implements CRUDService<Categ
     return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
   }
 
+  public getItemsByCategoryId(id: string): Observable<MenuItem[]> {
+    return this._http.get(this._getUrl(id) + '/items', RequestService.baseHttpOptions).pipe(
+      map((res: any) => {
+        return (res || []) as MenuItem[];
+      })
+    );
+  }
 }

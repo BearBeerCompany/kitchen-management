@@ -1,5 +1,53 @@
 <h3>Gestione Menù</h3>
 <section>
-  <category></category>
-  <menu-item-list></menu-item-list>
+  <category [categories$]="categories$"
+            (selected)="onCategorySelect($event)"
+            (create)="onCategoryCreate()">
+  </category>
+  <div id="right-panel" *ngIf="selectedCategory">
+    <div id="action-button_container">
+      <button pButton pRipple label="Elimina Categoria"
+              icon="pi pi-trash"
+              class="p-button-danger ml-2"
+              (click)="deleteCategory()">
+      </button>
+      <button pButton pRipple label="Modifica Categoria"
+              icon="pi pi-pencil"
+              class="p-button ml-2"
+              (click)="editCategory()">
+      </button>
+    </div>
+    <menu-item-list
+      [items$]="items$"
+      [categoryName]="selectedCategory?.name!">
+    </menu-item-list>
+  </div>
 </section>
+<p-dialog header="Creazione Categoria"
+          [style]="{height: '80vh'}"
+          [(visible)]="categoryDisplay"
+          [draggable]="false">
+  <form (ngSubmit)="onCategorySubmit()" [formGroup]="categoryForm!">
+    <label>Nome</label>
+    <input formControlName="name"
+           pInputText
+           type="text">
+    <label>Descrizione</label>
+    <input formControlName="description"
+           pInputText
+           type="text">
+    <label>Colore</label>
+    <p-colorPicker [inline]="true"
+                   formControlName="color"></p-colorPicker>
+    <div id="confirmForm">
+      <button (click)="discardCategoryForm()"
+              [label]="i18n.COMMON.UNDO"
+              class="p-button-secondary" pButton pRipple
+              type="button"></button>
+      <button [disabled]="categoryForm?.valid ? !categoryForm?.valid : true"
+              [label]="i18n.COMMON.SAVE"
+              class="p-button-success" pButton pRipple
+              type="submit"></button>
+    </div>
+  </form>
+</p-dialog>
