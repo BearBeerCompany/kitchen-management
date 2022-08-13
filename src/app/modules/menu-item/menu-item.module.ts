@@ -11,6 +11,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {ColorPickerModule} from "primeng/colorpicker";
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {ToastModule} from "primeng/toast";
 
 const routes: Routes = [
   {
@@ -35,8 +38,11 @@ const routes: Routes = [
     ButtonModule,
     RippleModule,
     ColorPickerModule,
-    FormsModule
-  ]
+    FormsModule,
+    ConfirmDialogModule,
+    ToastModule
+  ],
+  providers: [ConfirmationService, MessageService]
 })
 export class MenuItemModule {
 }

@@ -5,6 +5,7 @@ import {Category, MenuItem} from "../../plate-menu-items/plate-menu-item";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {I18nService} from "../../../services/i18n.service";
 import {MenuItemsService} from "../../plate-menu-items/services/menu-items.service";
+import {ConfirmationService, MessageService} from "primeng/api";
 
 @Component({
   selector: 'menu-item',
@@ -26,7 +27,9 @@ export class MenuItemComponent implements OnInit {
 
   constructor(private _categoryService: CategoryService,
               private _i18nService: I18nService,
-              private _menuItemsService: MenuItemsService) {
+              private _menuItemsService: MenuItemsService,
+              private _messageService: MessageService,
+              private _confirmationService: ConfirmationService) {
     this.i18n = _i18nService.instance;
   }
 
@@ -55,14 +58,22 @@ export class MenuItemComponent implements OnInit {
 
   public onCategorySubmit(): void {
     this._getFormCallback("category")
-      .subscribe(_ => this._categoryService.getAll()
-        .subscribe(
-          (response: Category[]) => {
-            this.categories$ = of(response);
-            this.categoryDisplay = false;
-            this.isEdit = false;
-            this.selectedCategory = undefined;
-          })
+      .subscribe((category: Category | MenuItem) => {
+        this.selectedCategory = category as Category;
+        this._categoryService.getAll()
+            .subscribe(
+              (response: Category[]) => {
+                this._messageService.add({
+                  severity: 'success',
+                  summary: this.isEdit ? 'Categoria aggiornata' : 'Categoria creata',
+                  detail: `La categoria è stata ${this.isEdit ? 'modificata' : 'creata'} correttamente`
+                });
+                this.categories$ = of(response);
+                this.categoryDisplay = false;
+                this.isEdit = false;
+              })
+
+        }
       );
   }
 
@@ -77,14 +88,24 @@ export class MenuItemComponent implements OnInit {
   }
 
   public deleteCategory(): void {
-    this._categoryService.delete(this.selectedCategory?.id!)
-      .subscribe(_ => this._categoryService.getAll()
-        .subscribe(
-          (response: Category[]) => {
-            this.selectedCategory = undefined;
-            this.categories$ = of(response);
-          })
-      );
+    this._confirmationService.confirm({
+      message: 'Confermi di eliminare la categoria e tutti i prodotti associati del catalogo?',
+      accept: () => {
+        this._categoryService.delete(this.selectedCategory?.id!)
+          .subscribe(_ => this._categoryService.getAll()
+            .subscribe(
+              (response: Category[]) => {
+                this._messageService.add({
+                  severity: 'success',
+                  summary: 'Categoria eliminata',
+                  detail: `La categoria ${this.selectedCategory?.name} è stata eliminata`
+                });
+                this.selectedCategory = undefined;
+                this.categories$ = of(response);
+              })
+          );
+      }
+    });
   }
 
   public editCategory(): void {
@@ -106,6 +127,11 @@ export class MenuItemComponent implements OnInit {
       .subscribe(_ => this._categoryService.getItemsByCategoryId(this.selectedCategory?.id!)
         .subscribe(
           (response: MenuItem[]) => {
+            this._messageService.add({
+              severity: 'success',
+              summary: this.isEdit ? 'Prodotto aggiornato' : 'Prodotto creato',
+              detail: `Il prodotto è stato ${this.isEdit ? 'modificato' : 'aggiunto a catalogo'} correttamente`
+            });
             this.items$ = of(response);
             this.menuItemDisplay = false;
             this.isEdit = false;
@@ -117,6 +143,35 @@ export class MenuItemComponent implements OnInit {
     this.menuItemForm?.reset();
     this.menuItemForm?.get("categoryId")?.setValue(this.selectedCategory?.id);
     this.menuItemDisplay = true;
+  }
+
+  public onMenuItemEdit(item: MenuItem): void {
+    this.isEdit = true;
+    this.menuItemForm?.get("categoryId")?.setValue(this.selectedCategory?.id);
+    this.menuItemForm?.get("name")?.setValue(item.name);
+    this.menuItemForm?.get("description")?.setValue(item.description);
+    this.menuItemForm?.get("id")?.setValue(item.id);
+    this.onMenuItemSubmit();
+  }
+
+  public onMenuItemDelete(item: MenuItem): void {
+    this._confirmationService.confirm({
+      message: 'Confermi di eliminare il prodotto dal catalogo?',
+      accept: () => {
+        this._menuItemsService.delete(item.id!)
+          .subscribe(_ => this._categoryService.getItemsByCategoryId(this.selectedCategory?.id!)
+            .subscribe(
+              (response: MenuItem[]) => {
+                this.items$ = of(response);
+                this._messageService.add({
+                  severity: 'success',
+                  summary: 'Prodotto eliminato',
+                  detail: `${item.name} è stato rimosso dal catalogo`
+                });
+              })
+          );
+      }
+    });
   }
 
   private _getFormCallback(type: FormType): Observable<Category | MenuItem> {
@@ -132,25 +187,6 @@ export class MenuItemComponent implements OnInit {
       default:
         throw new Error("Wrong form configuration");
     }
-  }
-
-  public onMenuItemEdit(item: MenuItem): void {
-    this.isEdit = true;
-    this.menuItemForm?.get("categoryId")?.setValue(this.selectedCategory?.id);
-    this.menuItemForm?.get("name")?.setValue(item.name);
-    this.menuItemForm?.get("description")?.setValue(item.description);
-    this.menuItemForm?.get("id")?.setValue(item.id);
-    this.onMenuItemSubmit();
-  }
-
-  public onMenuItemDelete(item: MenuItem): void {
-    this._menuItemsService.delete(item.id!)
-      .subscribe(_ => this._categoryService.getItemsByCategoryId(this.selectedCategory?.id!)
-        .subscribe(
-          (response: MenuItem[]) => {
-            this.items$ = of(response);
-          })
-      );
   }
 }
 
