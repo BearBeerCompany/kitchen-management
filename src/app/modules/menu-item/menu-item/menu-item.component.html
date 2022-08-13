@@ -1,6 +1,8 @@
+<p-toast></p-toast>
 <h3>Gestione Menù</h3>
 <section>
-  <category [categories$]="categories$"
+  <category [categories]="(categories$ | async)!"
+            [active]="selectedCategory"
             (selected)="onCategorySelect($event)"
             (create)="onCategoryCreate()">
   </category>
@@ -84,3 +86,8 @@
     </div>
   </form>
 </p-dialog>
+<p-confirmDialog header="Conferma Eliminazione"
+                 icon="pi pi-exclamation-triangle"
+                 acceptLabel="Si"
+                 rejectLabel="No">
+</p-confirmDialog>
