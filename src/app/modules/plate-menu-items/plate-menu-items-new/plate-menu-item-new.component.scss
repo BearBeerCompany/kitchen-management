@@ -38,3 +38,31 @@ h3 {
   font-size: 14px;
   border: 2px solid;
 }
+
+.p-datatable-orders {
+  .p-datatable-header {
+    padding: 1rem;
+    text-align: left;
+    font-size: 1.5rem;
+  }
+
+  .p-paginator {
+    padding: 1rem;
+  }
+
+  .p-datatable-thead > tr > th {
+    text-align: left;
+  }
+
+  .p-datatable-tbody > tr > td {
+    cursor: auto;
+  }
+
+  .p-dropdown-label:not(.p-placeholder) {
+    text-transform: uppercase;
+  }
+
+  .p-datatable-orders .p-datatable-tbody > tr > td .p-column-title {
+    display: none;
+  }
+}

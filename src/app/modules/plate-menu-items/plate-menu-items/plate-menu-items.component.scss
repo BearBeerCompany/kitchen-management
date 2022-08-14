@@ -15,13 +15,13 @@ h3 {
     }
   }
 
-  .p-datatable .p-datatable-thead > tr > th {
+  .p-datatable-thead > tr > th {
     position: -webkit-sticky;
     position: sticky;
     top: 0;
   }
 
-  .p-datatable.p-datatable-orders {
+  .p-datatable-orders {
     .p-datatable-header {
       padding: 1rem;
       text-align: left;

@@ -74,7 +74,7 @@
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 3rem">
-            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            <p-tableHeaderCheckbox [disabled]="!plateMenuItems.length"></p-tableHeaderCheckbox>
           </th>
           <th>
             <div class="p-d-flex p-jc-between p-ai-center">
