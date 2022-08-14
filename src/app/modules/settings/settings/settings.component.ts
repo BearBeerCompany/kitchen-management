@@ -1,59 +1,20 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {I18nService} from "../../../services/i18n.service";
-import {ApiConnector} from "../../../services/api-connector";
-import {Observable} from "rxjs";
-import {Plate, PlateInterface} from "../../plates/plate.interface";
+import {Observable, Subscription} from "rxjs";
+import {Plate} from "../../plates/plate.interface";
 import {PlateService} from "../../plates/services/plate.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {StatsService} from "../../shared/service/stats.service";
+import {Stats, StatsChart} from "../../shared/interface/stats.interface";
+import {Status} from "../../plate-menu-items/plate-menu-item";
+import {MessageService} from "primeng/api";
 
 @Component({
   selector: 'settings',
-  template: `
-    <h3>{{i18n.SETTINGS.TITLE}}</h3>
-    <main>
-      <section id="plate-settings__container">
-        <ng-container *ngFor="let plate of plates$ | async">
-          <plate-info [config]="plate"
-                      (delete)="onDelete($event)"
-                      (edit)="showDialog($event)"
-          ></plate-info>
-        </ng-container>
-      </section>
-    </main>
-    <p-dialog header="Modifica Piastra"
-              [style]="{height: '80vh'}"
-              [(visible)]="display"
-              [draggable]="false">
-      <form (ngSubmit)="onSubmit()" [formGroup]="form!">
-        <h3>{{i18n.PLATE.FORM.TITLE}}</h3>
-        <label>{{i18n.PLATE.FORM.NAME}}</label>
-        <input formControlName="name"
-               pInputText
-               type="text">
-        <label>{{i18n.PLATE.FORM.COLOR}}</label>
-        <p-colorPicker [inline]="true"
-                       formControlName="color"></p-colorPicker>
-        <label>{{i18n.PLATE.FORM.NUMBER}}</label>
-        <p-inputNumber [max]="200"
-                       [min]="0"
-                       [showButtons]="true"
-                       formControlName="number"></p-inputNumber>
-        <div id="confirmForm">
-          <button (click)="discardForm()"
-                  [label]="i18n.COMMON.UNDO"
-                  class="p-button-secondary" pButton pRipple
-                  type="button"></button>
-          <button [disabled]="form?.valid ? !form?.valid : true"
-                  [label]="i18n.COMMON.SAVE"
-                  class="p-button-success" pButton pRipple
-                  type="submit"></button>
-        </div>
-      </form>
-    </p-dialog>
-  `,
+  templateUrl: 'settings.component.html',
   styleUrls: ['./settings.component.scss']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
 
   public readonly i18n: any;
 
@@ -61,13 +22,23 @@ export class SettingsComponent implements OnInit {
   public selectedPlate?: Plate;
   public plates$: Observable<Plate[]> = new Observable<[]>();
   public form?: FormGroup | undefined;
+  public selectedStats?: Stats;
+  public data: StatsChart | undefined;
+  public dateFrom: Date = new Date();
+  public dateTo: Date = new Date()
+  public loading: boolean = false;
+  public showEmpty: boolean = false;
+
+  private statsSub: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,
-              private _platesService: PlateService) {
+              private _platesService: PlateService,
+              private _statsService: StatsService,
+              private _messageService: MessageService) {
     this.i18n = i18nService.instance;
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.plates$ = this._platesService.plates$;
 
     this.form = new FormGroup({
@@ -75,6 +46,14 @@ export class SettingsComponent implements OnInit {
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
+
+    this.statsSub = this._statsService.getTodayStats().subscribe((stats: Stats[]) => {
+      this._loadDiagramData(stats);
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.statsSub.unsubscribe();
   }
 
   public onDelete(id: string): void {
@@ -111,4 +90,49 @@ export class SettingsComponent implements OnInit {
     );
   }
 
+  public searchByDate(): void {
+    this.loading = true;
+    this.statsSub = this._statsService.getStats(StatsService.getDateFormatted(this.dateFrom),
+      StatsService.getDateFormatted(this.dateTo))
+      .subscribe({
+        next: (stats: Stats[]) => {
+          if (stats.length > 0)
+            this._loadDiagramData(stats);
+          else
+            this.showEmpty = true;
+
+          this.loading = false;
+        }, error: () => {
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Caricamento Statistiche',
+            detail: `Errore durante il caricamento delle statistiche per i giorni selezionati`
+          });
+          this.loading = false;
+        }
+      });
+  }
+
+
+  private _loadDiagramData(stats: Stats[]) {
+    this.showEmpty = false;
+    this.selectedStats = stats[0];
+    this.data = {
+      labels: ['Attesa', 'In Corso', 'Completati', 'Cancellati'],
+      datasets: [
+        {
+          data: [this.selectedStats.statusCount[Status.Todo],
+            this.selectedStats.statusCount[Status.Progress],
+            this.selectedStats.statusCount[Status.Done],
+            this.selectedStats.statusCount[Status.Cancelled]],
+          backgroundColor: [
+            "#0d91e8",
+            "#f6dd38",
+            "#5ff104",
+            "#f31919",
+          ]
+        }
+      ]
+    };
+  }
 }
