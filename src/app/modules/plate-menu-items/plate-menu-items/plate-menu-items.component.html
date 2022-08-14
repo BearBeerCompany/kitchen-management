@@ -13,8 +13,10 @@
          [paginator]="true"
          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
          [filterDelay]="0"
-         [globalFilterFields]="['orderNumber','menuItem.name','status','plate.name','clientName']"
+         [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName']"
          editMode="row"
+         sortField="insertDate"
+         [sortOrder]="-1"
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
@@ -43,15 +45,15 @@
       <th pSortableColumn="menuItem.name">
         <div class="p-d-flex p-jc-between p-ai-center">
           Menu Item
-          <p-sortIcon field="menuItem.name"></p-sortIcon>
-          <p-columnFilter type="text" field="menuItem.name" display="menu"></p-columnFilter>
+          <p-sortIcon field="menuItem.label"></p-sortIcon>
+          <p-columnFilter type="text" field="menuItem.label" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="menuItem.category.name">
         <div class="p-d-flex p-jc-between p-ai-center">
           Category
-          <p-sortIcon field="menuItem.category.name"></p-sortIcon>
-          <p-columnFilter type="text" field="menuItem.category.name" display="menu"></p-columnFilter>
+          <p-sortIcon field="menuItem.parent.data.name"></p-sortIcon>
+          <p-columnFilter type="text" field="menuItem.parent.data.name" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="orderNumber">
@@ -79,7 +81,7 @@
         <div class="p-d-flex p-jc-between p-ai-center">
           Date
           <p-sortIcon field="insertDate"></p-sortIcon>
-          <p-columnFilter type="insertDate" field="insertDate" display="menu"></p-columnFilter>
+          <p-columnFilter type="date" field="insertDate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="status">
@@ -101,7 +103,7 @@
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Plate
-          <p-columnFilter type="text" field="plate.name" display="menu"></p-columnFilter>
+          <p-columnFilter type="text" field="plate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th>
