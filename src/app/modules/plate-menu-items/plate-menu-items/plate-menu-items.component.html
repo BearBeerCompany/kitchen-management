@@ -15,6 +15,8 @@
          [filterDelay]="0"
          [globalFilterFields]="['orderNumber','menuItem.name','status','plate.name','clientName']"
          editMode="row"
+         sortField="insertDate"
+         [sortOrder]="-1"
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
