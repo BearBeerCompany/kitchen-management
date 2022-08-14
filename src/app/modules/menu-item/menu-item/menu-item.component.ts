@@ -80,6 +80,7 @@ export class MenuItemComponent implements OnInit {
   public discardCategoryForm(): void {
     this.categoryForm?.reset();
     this.categoryDisplay = false;
+    this.isEdit = false;
   }
 
   public onCategoryCreate(): void {
