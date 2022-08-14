@@ -27,18 +27,18 @@
         </div>
         <div class="field col-4 ml-3">
           <label for="tableNumber">Client Name</label>
-          <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="ClientName" class="ml-4" />
+          <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Client Name" class="ml-4" />
         </div>
       </div>
 
-      <p-tabView>
+      <p-tabView *ngIf="categories.length">
         <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
           <div class="grid">
             <ng-container *ngFor="let item of category.menuItems">
               <p-card [header]="item.name!"
                       [ngClass]="{'menu-item-selection': item.selected}"
                       (click)="selectMenuItem($event, item)"
-                      class="m-2 menu-item-card"
+                      class="menu-item-card col-4"
                       pDraggable="ddOrders"
                       (onDragStart)="dragStart(item)"
                       (onDragEnd)="dragEnd()"
