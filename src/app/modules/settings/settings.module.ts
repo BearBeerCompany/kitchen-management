@@ -6,9 +6,13 @@ import {SharedModule} from "../shared/shared.module";
 import {DialogModule} from 'primeng/dialog';
 import {PlateComponentModule} from "../plates/plate/plate.component";
 import {InputTextModule} from "primeng/inputtext";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InputNumberModule} from "primeng/inputnumber";
 import {ColorPickerModule} from "primeng/colorpicker";
+import {ChartModule} from 'primeng/chart';
+import {CalendarModule} from 'primeng/calendar';
+import {MessageService} from "primeng/api";
+import {ToastModule} from "primeng/toast";
 
 const routes: Routes = [
   {
@@ -30,8 +34,13 @@ const routes: Routes = [
     InputTextModule,
     ReactiveFormsModule,
     InputNumberModule,
-    ColorPickerModule
-  ]
+    ColorPickerModule,
+    ChartModule,
+    CalendarModule,
+    FormsModule,
+    ToastModule
+  ],
+  providers: [MessageService]
 })
 export class SettingsModule {
 }

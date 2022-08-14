@@ -1,0 +1,74 @@
+<p-toast></p-toast>
+<h3>{{i18n.SETTINGS.TITLE}}</h3>
+<main>
+  <div class="stats_container">
+    <div class="stats_numbers_container">
+      <span>Selezionata una data per vedere le statistiche degli ordini</span>
+      <div class="stats-range-date_row">
+        <div class="field col-12 md:col-4">
+          <label for="dateFrom">Data Inizio</label>
+          <p-calendar id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
+        </div>
+        <div class="field col-12 md:col-4">
+          <label for="dateTo">Data Fine</label>
+          <p-calendar id="dateTo" [(ngModel)]="dateTo" [minDate]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
+        </div>
+        <p-button icon="pi pi-search" [loading]="loading" (onClick)="searchByDate()"></p-button>
+      </div>
+      <span id="stats-title">
+        Statistiche: {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}}
+        {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
+        ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) : ''}}
+      </span>
+      <span id="stats-total-count">
+      totale ordini
+      <p class="counter" *ngIf="!showEmpty">{{selectedStats?.count}}</p>
+      <p class="empty" *ngIf="showEmpty">Nessun ordine trovato</p>
+    </span>
+    </div>
+    <div class="pie_container" *ngIf="!showEmpty">
+      <p-chart type="doughnut"
+               [data]="data">
+      </p-chart>
+    </div>
+  </div>
+  <h3>Modifica Piastre</h3>
+  <section id="plate-settings__container">
+    <ng-container *ngFor="let plate of plates$ | async">
+      <plate-info [config]="plate"
+                  (delete)="onDelete($event)"
+                  (edit)="showDialog($event)"
+      ></plate-info>
+    </ng-container>
+  </section>
+</main>
+<p-dialog header="Modifica Piastra"
+          [style]="{height: '80vh'}"
+          [(visible)]="display"
+          [draggable]="false">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form!">
+    <h3>{{i18n.PLATE.FORM.TITLE}}</h3>
+    <label>{{i18n.PLATE.FORM.NAME}}</label>
+    <input formControlName="name"
+           pInputText
+           type="text">
+    <label>{{i18n.PLATE.FORM.COLOR}}</label>
+    <p-colorPicker [inline]="true"
+                   formControlName="color"></p-colorPicker>
+    <label>{{i18n.PLATE.FORM.NUMBER}}</label>
+    <p-inputNumber [max]="200"
+                   [min]="0"
+                   [showButtons]="true"
+                   formControlName="number"></p-inputNumber>
+    <div id="confirmForm">
+      <button (click)="discardForm()"
+              [label]="i18n.COMMON.UNDO"
+              class="p-button-secondary" pButton pRipple
+              type="button"></button>
+      <button [disabled]="form?.valid ? !form?.valid : true"
+              [label]="i18n.COMMON.SAVE"
+              class="p-button-success" pButton pRipple
+              type="submit"></button>
+    </div>
+  </form>
+</p-dialog>
