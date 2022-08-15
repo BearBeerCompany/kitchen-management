@@ -77,12 +77,12 @@ export class PlateQueueManagerService {
     this._changes$.next(this._changes$.value - 1);
   }
 
-  public onItemAction(id: string, item: PlateMenuItem, action: PlateMenuItemAction, nextId?: string): void {
+  public onItemAction(plateId: string, item: PlateMenuItem, action: PlateMenuItemAction, nextPlateId?: string): void {
     this._validateItem(item);
 
     item.status = (action != PlateItemStatus.Moved) ? action : Status.Progress;
-    if (action === PlateItemStatus.Moved && nextId) {
-      item.plate = {id: nextId};
+    if (action === PlateItemStatus.Moved) {
+      item.plate = nextPlateId ? {id: nextPlateId} : {id: plateId};
     }
     this._plateMenuItemsService.update(item).subscribe();
   }
