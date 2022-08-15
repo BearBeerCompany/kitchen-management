@@ -70,6 +70,14 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
     );
   }
 
+  public switch(id: string, enable: boolean): Observable<Plate> {
+    return this._http.patch(this._getUrl(id) + `?enable=${enable}`, RequestService.baseHttpOptions).pipe(
+      map((res: any) => {
+        return this._evaluateStatus(res);
+      })
+    );
+  }
+
   private _evaluateStatus(config: Plate): Plate {
     if (!config.slot)
       config.slot = [0, 0];
