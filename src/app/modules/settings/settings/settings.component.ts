@@ -113,6 +113,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
       });
   }
 
+  public onSwitchPlate(event: { id: string, enable: boolean }) {
+    this._platesService.switch(event.id, event.enable)
+      .subscribe({
+        next: (plate: Plate) => {
+          this._messageService.add({
+            severity: 'success',
+            summary: `Piastra ${plate.enabled ? 'Accesa' : 'Spenta' }`,
+            detail: `${plate.name} è stata ${plate.enabled ? 'accesa' : 'spenta' } con successo`
+          });
+          this._platesService.getAll().subscribe()
+        },
+        error: (error) => {
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Errore',
+            detail: `La piastra non è vuota, spostare tutti gli ordini prima di spegnerla`
+          });
+        }
+      })
+  }
 
   private _loadDiagramData(stats: Stats[]) {
     this.showEmpty = false;
