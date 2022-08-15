@@ -9,7 +9,7 @@ export interface PlateMenuItem {
   menuItem: MenuItem,
   plate?: Plate | null,
   status: PlateMenuItemAction,
-  insertDate: string | null,
+  createdDate: string | null,
   notes?: string,
   clientName: string,
   tableNumber: number,
