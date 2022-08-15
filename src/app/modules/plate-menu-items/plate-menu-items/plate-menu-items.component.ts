@@ -215,22 +215,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         plate
       };
 
-      this._plateMenuItemsService.update(plateMenuItem).subscribe(() => {
-        // fixme, @boz move logic inside the websocket notification subscription
-        // if (editedPkmi.plate) {
-        //   if (!previousPlate || (previousPlate && editedPkmi.plate.name !== previousPlate.name)) {
-        //     const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-        //     // remove the order from previous plate
-        //     this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-        //     this._plateQueueManagerService.sendToQueue(editedPkmi.plate?.name!, editedPkmi);
-        //   }
-        // } else {
-        //   const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-        //   // remove the order from previous plate
-        //   this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-        //   this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, editedPkmi);
-        // }
-      });
+      this._plateMenuItemsService.update(plateMenuItem).subscribe();
     }
   }
 
