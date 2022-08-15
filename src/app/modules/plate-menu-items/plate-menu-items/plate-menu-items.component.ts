@@ -209,28 +209,13 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         tableNumber: pkmiRow.tableNumber,
         clientName: pkmiRow.clientName,
         menuItem,
-        insertDate: pkmiRow.insertDate,
+        createdDate: pkmiRow.createdDate,
         status: pkmiRow.status,
         notes: pkmiRow.notes,
         plate
       };
 
-      this._plateMenuItemsService.update(plateMenuItem).subscribe(() => {
-        // fixme, @boz move logic inside the websocket notification subscription
-        // if (editedPkmi.plate) {
-        //   if (!previousPlate || (previousPlate && editedPkmi.plate.name !== previousPlate.name)) {
-        //     const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-        //     // remove the order from previous plate
-        //     this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-        //     this._plateQueueManagerService.sendToQueue(editedPkmi.plate?.name!, editedPkmi);
-        //   }
-        // } else {
-        //   const previousPlateName = (previousPlate) ? previousPlate.name : PlateQueueManagerService.UNASSIGNED_QUEUE;
-        //   // remove the order from previous plate
-        //   this._plateQueueManagerService.removeFromQueue(previousPlateName!, editedPkmi);
-        //   this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, editedPkmi);
-        // }
-      });
+      this._plateMenuItemsService.update(plateMenuItem).subscribe();
     }
   }
 
@@ -287,10 +272,18 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
 
     this.plateMenuItems[pkmiIndex] = { ...this.plateMenuItems[pkmiIndex], ...plateMenuItem };
-    this.pkmiRows[pkmiRowIndex] = {
+    const updatedItem = {
       ...this.pkmiRows[pkmiRowIndex],
       ...this._getPkmiRow(plateMenuItem)
     };
+    // update fields to refresh row
+    this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
+    this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
+    this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
+    this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
+    this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
+    this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
+    this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
   }
 
   private _updateItems(ids: string[]) {
@@ -302,11 +295,13 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   }
 
   private _deleteItem(id: string) {
-    const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === id);
-    const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === id);
+    if (this.plateMenuItems && this.plateMenuItems.length) {
+      const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === id);
+      const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === id);
 
-    delete this.plateMenuItems[pkmiIndex];
-    delete this.pkmiRows[pkmiRowIndex];
+      delete this.plateMenuItems[pkmiIndex];
+      delete this.pkmiRows[pkmiRowIndex];
+    }
   }
 
   private _deleteItems(ids: string[]) {
@@ -323,7 +318,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       tableNumber: plateMenuItem.tableNumber,
       clientName: plateMenuItem.clientName,
       menuItem: menuItemNode,
-      insertDate: plateMenuItem.insertDate,
+      createdDate: plateMenuItem.createdDate,
       status: plateMenuItem.status,
       plate: plateMenuItem.plate?.name,
       notes: plateMenuItem.notes

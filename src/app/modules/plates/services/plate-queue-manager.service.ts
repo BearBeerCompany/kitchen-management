@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {Plate, PlateMenuItemAction, PlateItemStatus} from "../plate.interface";
+import {Plate, PlateItemStatus, PlateMenuItemAction} from "../plate.interface";
 import {BehaviorSubject} from "rxjs";
 import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {PlateService} from "./plate.service";
@@ -26,10 +26,14 @@ export class PlateQueueManagerService {
   }
 
   public initQueue(id: string, items: PlateMenuItem[]) {
-    if (items?.length)
+    if (items?.length) {
+      items.forEach(item => {
+        item.plate = (!item.plate) ? {id} : null;
+      });
       this._plates.set(id, new ReactiveQueue(items));
-    else
+    } else {
       this._plates.set(id, new ReactiveQueue());
+    }
   }
 
   public getQueue(id: string): ReactiveQueue<PlateMenuItem> {
@@ -62,7 +66,6 @@ export class PlateQueueManagerService {
     item.status = Status.Todo;
     this._getQueue(id).enqueue(item);
     this._changes$.next(this._changes$.value + 1);
-    //TODO: call api for save plate status
   }
 
   public removeFromQueue(id: string, item: PlateMenuItem): void {
@@ -72,36 +75,16 @@ export class PlateQueueManagerService {
       return i.id != item.id;
     });
     this._changes$.next(this._changes$.value - 1);
-    //TODO: call api for save plate status
   }
 
-  public onItemAction(id: string, item: PlateMenuItem, action: PlateMenuItemAction, nextId?: string): void {
+  public onItemAction(plateId: string, item: PlateMenuItem, action: PlateMenuItemAction, nextPlateId?: string): void {
     this._validateItem(item);
 
-    switch (action) {
-      case PlateItemStatus.Moved:
-        if (!nextId) throw new Error("No queue selected to move the item");
-        this.sendToQueue(nextId, item);
-        this.onItemAction(id, item, Status.Cancelled);
-        break;
-      case Status.Todo:
-        this._resetItem(id, item);
-        break;
-      case Status.Cancelled:
-      case Status.Done:
-        this.removeFromQueue(id, item);
-        //TODO: Invoke order service
-        break;
-      case Status.Progress:
-        item.plate = {
-          id
-        }
-        this._runItemProgress(id, item);
-        break;
-      default:
-        console.warn("[QueueManager] Action not found");
-        break;
+    item.status = (action != PlateItemStatus.Moved) ? action : Status.Progress;
+    if (action === PlateItemStatus.Moved) {
+      item.plate = nextPlateId ? {id: nextPlateId} : {id: plateId};
     }
+    this._plateMenuItemsService.update(item).subscribe();
   }
 
   private _resetItem(id: string, item: PlateMenuItem) {
@@ -112,7 +95,6 @@ export class PlateQueueManagerService {
     } else {
       queue.enqueue(item);
     }
-    //TODO: call api for save plate status
   }
 
   private _runItemProgress(id: string, item: PlateMenuItem): void {

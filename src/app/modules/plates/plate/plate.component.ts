@@ -134,7 +134,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public handleItemEvent(event: ItemEvent) {
-    event.plateId = this.config.name!;
+    event.plateId = this.config.id!;
 
     this.onItemEvent.emit(event);
   }

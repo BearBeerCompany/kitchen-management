@@ -15,7 +15,7 @@
          [filterDelay]="0"
          [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName']"
          editMode="row"
-         sortField="insertDate"
+         sortField="createdDate"
          [sortOrder]="-1"
 >
   <ng-template pTemplate="caption">
@@ -77,11 +77,11 @@
           <p-columnFilter type="text" field="clientName" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="insertDate">
+      <th pSortableColumn="createdDate">
         <div class="p-d-flex p-jc-between p-ai-center">
           Date
-          <p-sortIcon field="insertDate"></p-sortIcon>
-          <p-columnFilter type="date" field="insertDate" display="menu"></p-columnFilter>
+          <p-sortIcon field="createdDate"></p-sortIcon>
+          <p-columnFilter type="date" field="createdDate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="status">
@@ -175,7 +175,7 @@
       </td>
       <td>
         <span class="p-column-title">Date</span>
-        {{this.datePipe.transform(plateMenuItem?.insertDate, this.DATE_FORMAT)}}
+        {{this.datePipe.transform(plateMenuItem?.createdDate, this.DATE_FORMAT)}}
       </td>
       <td>
         <p-cellEditor>
