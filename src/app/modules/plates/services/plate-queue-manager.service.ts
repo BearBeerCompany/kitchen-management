@@ -81,6 +81,7 @@ export class PlateQueueManagerService {
     this._validateItem(item);
 
     item.status = (action != PlateItemStatus.Moved) ? action : Status.Progress;
+    item.plate = (plateId) ? {id: plateId} : null;
     if (action === PlateItemStatus.Moved) {
       item.plate = nextPlateId ? {id: nextPlateId} : {id: plateId};
     }
