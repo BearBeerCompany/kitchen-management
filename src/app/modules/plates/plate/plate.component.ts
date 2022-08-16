@@ -3,7 +3,7 @@ import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Routing} from "../../../app-routing.module";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
 import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {Subscription} from "rxjs";
@@ -48,7 +48,8 @@ export class PlateComponent implements OnInit, OnDestroy {
   private queue$: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,
-              private _route: ActivatedRoute) {
+              private _route: ActivatedRoute,
+              private _router: Router) {
     this.i18n = i18nService.instance;
   }
 
@@ -110,7 +111,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   }
 
   public expandTab(): void {
-    app.openNewTab(Routing.Plates, this.config.name!);
+    window.open(`#/${Routing.Plates}/${this.config.id!}`, '_blank');
   }
 
   public onBadgeMouseEnter(): void {
@@ -162,7 +163,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     ButtonModule,
     RippleModule,
     ItemComponentModule,
-    ItemsOverlayComponentModule
+    ItemsOverlayComponentModule, RouterModule
   ],
   declarations: [PlateComponent],
   exports: [PlateComponent]

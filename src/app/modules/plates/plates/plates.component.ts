@@ -77,10 +77,10 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
           switch (notification.type) {
             case PKMINotificationType.PKMI_ADD:
             case PKMINotificationType.PKMI_ADD_ALL:
-              this._addItemsToPlateQueues(notification.ids);
+              this._refreshPlateQueues();
               break;
             case PKMINotificationType.PKMI_UPDATE:
-              this._updateItemInQueue(notification);
+              this._refreshPlateQueues();
               break;
             case PKMINotificationType.PKMI_UPDATE_ALL:
               // todo
@@ -236,7 +236,8 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _loadPlatesConfig(): void {
     this.plateList = [];
-    this._plateService.plates$.subscribe((plates: Plate[]) => {
+    this._plateService.getAll().subscribe((plates: Plate[]) => {
+      this.plateQueueManagerService.load(plates);
       this.plateList = [
         ...plates,
         {
@@ -247,14 +248,6 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
       this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
       this.pages = Array.from(Array(this.totalPages).keys())
     });
-  }
-
-  private _addItemsToPlateQueues(ids: string[]) {
-    this._refreshPlateQueues();
-  }
-
-  private _updateItemInQueue(notification: PKMINotification ) {
-    this._refreshPlateQueues();
   }
 
   private _refreshPlateQueues() {

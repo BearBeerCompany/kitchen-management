@@ -10,7 +10,7 @@ import {HttpRestConnectorService} from "./services/http-rest-connector.service";
 import {SharedModule} from "./modules/shared/shared.module";
 import {I18nService} from "./services/i18n.service";
 import {HttpClientModule} from '@angular/common/http';
-import { WebSocketService } from './services/web-socket-service';
+import {WebSocketService} from './services/web-socket-service';
 
 @NgModule({
   declarations: [
