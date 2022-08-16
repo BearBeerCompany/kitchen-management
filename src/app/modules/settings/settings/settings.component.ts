@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.plates$ = this._platesService.plates$;
+    this.plates$ = this._platesService.getAll();
 
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
@@ -119,8 +119,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
         next: (plate: Plate) => {
           this._messageService.add({
             severity: 'success',
-            summary: `Piastra ${plate.enabled ? 'Accesa' : 'Spenta' }`,
-            detail: `${plate.name} è stata ${plate.enabled ? 'accesa' : 'spenta' } con successo`
+            summary: `Piastra ${plate.enabled ? 'Accesa' : 'Spenta'}`,
+            detail: `${plate.name} è stata ${plate.enabled ? 'accesa' : 'spenta'} con successo`
           });
           this._platesService.getAll().subscribe()
         },
@@ -137,14 +137,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private _loadDiagramData(stats: Stats[]) {
     this.showEmpty = false;
     this.selectedStats = stats[0];
+
+    if (this.selectedStats && stats.length > 1) {
+      stats.slice(1).forEach((stats: Stats) => {
+        this.selectedStats!.count! += stats.count;
+        this.selectedStats!.statusCount[Status.Todo] += stats.statusCount[Status.Todo];
+        this.selectedStats!.statusCount[Status.Progress] += stats.statusCount[Status.Progress];
+        this.selectedStats!.statusCount[Status.Done] += stats.statusCount[Status.Done];
+        this.selectedStats!.statusCount[Status.Cancelled] += stats.statusCount[Status.Cancelled];
+      });
+    }
     this.data = {
       labels: ['Attesa', 'In Corso', 'Completati', 'Cancellati'],
       datasets: [
         {
-          data: [this.selectedStats.statusCount[Status.Todo],
+          data: [
+            this.selectedStats.statusCount[Status.Todo],
             this.selectedStats.statusCount[Status.Progress],
             this.selectedStats.statusCount[Status.Done],
-            this.selectedStats.statusCount[Status.Cancelled]],
+            this.selectedStats.statusCount[Status.Cancelled]
+          ],
           backgroundColor: [
             "#0d91e8",
             "#f6dd38",

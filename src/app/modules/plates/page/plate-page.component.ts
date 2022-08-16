@@ -1,8 +1,8 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {Subscription} from "rxjs";
-import {ApiConnector} from "../../../services/api-connector";
 import {Plate} from "../plate.interface";
+import {PlateService} from "../services/plate.service";
 
 @Component({
   selector: 'page',
@@ -31,27 +31,17 @@ export class PlatePageComponent implements OnInit, OnDestroy {
   private _id?: string;
 
   constructor(private _route: ActivatedRoute,
-              @Inject('ApiConnector') private _apiConnector: ApiConnector) {
+              private _plateService: PlateService) {
   }
 
   public ngOnInit(): void {
-    const rootComponent: HTMLElement | null = document.getElementById("navbar-id");
-    if (rootComponent)
-      rootComponent.remove();
-
-    const appContainerList: HTMLCollectionOf<Element> = document.getElementsByClassName("app-container");
-    for (const container of appContainerList) {
-      (container as HTMLElement).classList.remove("app-container");
-    }
-
-
     this._subs.add(this._route.params.subscribe(
       params => {
         this._id = params["id"];
       }
     ));
 
-    this._subs.add(this._apiConnector.getPlate(this._id!)
+    this._subs.add(this._plateService.getById(this._id!)
       .subscribe((plate: Plate) => {
         this.config = plate;
       }));

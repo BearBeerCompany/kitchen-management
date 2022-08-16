@@ -32,8 +32,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: Routing.Plates,
-    pathMatch: 'full'
+    redirectTo: Routing.Plates
   }
 ];
 
