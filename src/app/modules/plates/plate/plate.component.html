@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="config.mode">
+<ng-container [ngSwitch]="config?.mode">
   <section *ngSwitchCase="plateMode.Skeleton" class="skeleton">
     <button (mouseenter)="onMouseEnter()"
             (mouseleave)="onMouseLeave()"
@@ -82,5 +82,9 @@
 <ng-template #overlay>
   <items-overlay (onClose)="onBadgeMouseClick()"
                  (onRun)="onItemStart($event)"
-                 [items]="todoItems"></items-overlay>
+                 (onActionEvent)="handleItemEvent($event)"
+                 [items]="todoItems"
+                 [enableActions]="true"
+                 [plateList]="plateList"
+  ></items-overlay>
 </ng-template>

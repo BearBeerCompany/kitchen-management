@@ -30,6 +30,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public showPlateList: boolean = false;
   public unassignedItems: PlateMenuItem[] = [];
   public pages: number[] = [];
+  public loading: boolean = true;
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
@@ -55,12 +56,12 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit(): void {
     this._loadPlatesConfig();
-    this._queue$.add(
-      this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
-        ?.values$?.subscribe((items: PlateMenuItem[]) => {
-        this.unassignedItems = items;
-      })
-    );
+    // this._queue$.add(
+    //   this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
+    //     ?.values$?.subscribe((items: PlateMenuItem[]) => {
+    //     this.unassignedItems = items;
+    //   })
+    // );
 
     this._queue$.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
@@ -236,37 +237,51 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _loadPlatesConfig(): void {
     this.plateList = [];
-    this._plateService.getAll().subscribe((plates: Plate[]) => {
-      this.plateQueueManagerService.load(plates);
-      this.plateList = [
-        ...plates,
-        {
-          mode: PlateInterface.Skeleton
-        }
-      ];
-      this._total = this.plateList.length;
-      this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
-      this.pages = Array.from(Array(this.totalPages).keys())
-    });
+    this._queue$.add(
+      this._plateService.getAll().subscribe((plates: Plate[]) => {
+        this.plateQueueManagerService.load(plates).subscribe((res) => {
+          console.log(res);
+          this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
+            ?.values$?.subscribe((items: PlateMenuItem[]) => {
+            this.unassignedItems = items;
+            this.loading = false;
+          })
+
+        });
+        this.plateList = [
+          ...plates,
+          {mode: PlateInterface.Skeleton}
+        ];
+        this._total = this.plateList.length;
+        this.totalPages = Math.ceil(this._total / this.DISPLAY_CHUNK);
+        this.pages = Array.from(Array(this.totalPages).keys())
+      })
+    );
   }
 
   private _refreshPlateQueues() {
-    this._plateService.getAll().subscribe((plates: Plate[]) => {
-      plates.forEach(plate => {
-        // refresh plate queues
-        this._plateService.getStatusById(plate.id!).subscribe(items => {
-          let queue = this.plateQueueManagerService.getQueue(plate.id!);
-          queue.values = items;
-          queue.refresh();
-        });
+    this._queue$.add(
+      this._plateService.getAll().subscribe((plates: Plate[]) => {
+        this.plateList = [
+          ...plates,
+          {mode: PlateInterface.Skeleton}
+        ];
+        plates.forEach(plate => {
+          // refresh plate queues
+          this._plateService.getStatusById(plate.id!).subscribe(items => {
+            let queue = this.plateQueueManagerService.getQueue(plate.id!);
+            queue.values = items;
+            queue.refresh();
+          });
 
-        // refresh unsigned queue
-        this._plateMenuItemService.getUnassigned().subscribe(items => {
-          let queue = this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
-          queue.values = items;
-          queue.refresh();
-        });
+          // refresh unsigned queue
+          this._plateMenuItemService.getUnassigned().subscribe(items => {
+            let queue = this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
+            queue.values = items;
+            queue.refresh();
+          });
+        })
       })
-    });
+    );
   }
 }

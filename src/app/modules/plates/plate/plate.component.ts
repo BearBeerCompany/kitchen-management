@@ -18,6 +18,7 @@ import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {ItemComponentModule} from "../item/item.component";
 import {ItemsOverlayComponentModule} from "../items-overlay/items-overlay.component";
+import {ItemOverlayRowComponentModule} from "../item-overlay-row/item-overlay-row.component";
 
 @Component({
   selector: 'plate',
@@ -152,7 +153,8 @@ export class PlateComponent implements OnInit, OnDestroy {
 }
 
 @NgModule({
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     TooltipModule,
     TagModule,
     BadgeModule,
@@ -163,7 +165,9 @@ export class PlateComponent implements OnInit, OnDestroy {
     ButtonModule,
     RippleModule,
     ItemComponentModule,
-    ItemsOverlayComponentModule, RouterModule
+    ItemsOverlayComponentModule,
+    ItemOverlayRowComponentModule,
+    RouterModule
   ],
   declarations: [PlateComponent],
   exports: [PlateComponent]
