@@ -5,19 +5,28 @@
           icon="pi pi-times"
           pButton
           pRipple
-          type="button"></button>
+          type="button"
+  ></button>
   <p *ngIf="items.length > 0">Ordini in Attesa</p>
   <div class="items-overlay__rows-container">
-    <div *ngFor="let i of items" class="items-overlay__row">
-      <span class="item_title">{{i.menuItem?.name}}</span>
-      <span class="item_order">ORDINE {{i.orderNumber}}</span>
-      <button (click)="onRun.emit(i)"
-              class="play-button p-button-success"
-              icon="pi pi-play play-button"
-              pButton
-              [showDelay]="500"
-              pTooltip="Avvia"></button>
-    </div>
+    <ng-container *ngFor="let i of items">
+<!--    <div *ngFor="let i of items" class="items-overlay__row">-->
+<!--      <span class="item_title">{{i.menuItem?.name}}</span>-->
+<!--      <span class="item_order">ORDINE {{i.orderNumber}}</span>-->
+<!--      <button (click)="onRun.emit(i)"-->
+<!--              class="play-button p-button-success"-->
+<!--              icon="pi pi-play play-button"-->
+<!--              pButton-->
+<!--              [showDelay]="500"-->
+<!--              pTooltip="Avvia"></button>-->
+
+      <item-overlay-row [item]="i"
+                        [plateList]="plateList"
+                        [enableActions]="enableActions"
+                        (onRun)="onRun.emit($event)"
+                        (onActionEvent)="onActionEvent.emit($event)"
+      ></item-overlay-row>
+    </ng-container>
   </div>
   <div *ngIf="items.length == 0" class="items-overlay__empty-container">
     <i class="pi pi-book"></i>

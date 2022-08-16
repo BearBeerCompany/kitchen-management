@@ -35,22 +35,24 @@ section {
     justify-content: space-evenly;
     row-gap: 10px;
 
-    .items-overlay__row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
+    ::ng-deep {
+      .items-overlay__row {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
 
-      padding: 10px;
-      text-transform: uppercase;
+        padding: 10px;
+        text-transform: uppercase;
 
-      background-color: gainsboro;
-      border: 1px solid gainsboro;
-      border-radius: 10px;
-      width: 95%;
-      margin: auto;
+        background-color: gainsboro;
+        border: 1px solid gainsboro;
+        border-radius: 10px;
+        width: 95%;
+        margin: auto;
 
-      .play-button {
-        height: 10px;
+        .play-button {
+          height: 10px;
+        }
       }
     }
   }

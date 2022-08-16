@@ -82,5 +82,9 @@
 <ng-template #overlay>
   <items-overlay (onClose)="onBadgeMouseClick()"
                  (onRun)="onItemStart($event)"
-                 [items]="todoItems"></items-overlay>
+                 (onActionEvent)="handleItemEvent($event)"
+                 [items]="todoItems"
+                 [enableActions]="true"
+                 [plateList]="plateList"
+  ></items-overlay>
 </ng-template>

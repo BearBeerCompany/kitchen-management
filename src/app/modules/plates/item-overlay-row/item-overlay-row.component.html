@@ -1,0 +1,34 @@
+<div class="items-overlay__row">
+  <span class="item_title">{{item.menuItem?.name}}</span>
+  <span class="item_order">ORDINE {{item.orderNumber}}</span>
+  <button (click)="onRun.emit(item)"
+          class="play-button p-button-success"
+          icon="pi pi-play play-button"
+          pButton
+          [showDelay]="500"
+          pTooltip="Avvia"></button>
+  <ng-container *ngIf="enableActions">
+    <button (click)="toggleOverlay()"
+            class="p-button-rounded p-button-text"
+            icon="pi pi-ellipsis-v"
+            pButton
+            pRipple></button>
+    <ng-container *ngIf="deleteOverlay" [ngTemplateOutlet]="overlay"></ng-container>
+  </ng-container>
+
+  <ng-template #overlay>
+    <div class="delete-options__container">
+      <ng-container *ngIf="!showPlateList">
+        <span (click)="opt.command!()" *ngFor="let opt of actionOptions">
+          <i [class]="opt.icon"></i>
+          <label>{{opt.label}}</label>
+        </span>
+      </ng-container>
+      <ng-container *ngIf="showPlateList">
+        <span (click)="onPlateMoved(p)" *ngFor="let p of plateList">
+          <label>{{p.name}}</label>
+        </span>
+      </ng-container>
+    </div>
+  </ng-template>
+</div>

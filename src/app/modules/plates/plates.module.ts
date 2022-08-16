@@ -6,9 +6,9 @@ import {PlateComponentModule} from './plate/plate.component';
 import {PlatePageComponent} from "./page/plate-page.component";
 import {ItemComponentModule} from './item/item.component';
 import {BadgeModule} from "primeng/badge";
-import {ItemsOverlayComponentModule} from './items-overlay/items-overlay.component';
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from "primeng/api";
+import {ItemsOverlayComponentModule} from "./items-overlay/items-overlay.component";
 
 const routes: Routes = [
   {
