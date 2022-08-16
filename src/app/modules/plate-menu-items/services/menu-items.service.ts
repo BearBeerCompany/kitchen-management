@@ -50,11 +50,4 @@ export class MenuItemsService extends RequestService implements CRUDService<Menu
   public delete(id: string): Observable<any> {
     return this._http.delete(this._getUrl(id), RequestService.baseHttpOptions);
   }
-
-  // getMenuItems(): Observable<TreeNode[]> {
-  //   return this.http.get<any>('assets/menu-items.json')
-  //     .pipe(
-  //       map(res => res.data as TreeNode[])
-  //     );
-  // }
 }

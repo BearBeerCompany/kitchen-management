@@ -34,7 +34,7 @@
   </div>
   <h3>Modifica Piastre</h3>
   <section id="plate-settings__container">
-    <ng-container *ngFor="let plate of plates$ | async">
+    <ng-container *ngFor="let plate of plates">
       <plate-info [config]="plate"
                   (delete)="onDelete($event)"
                   (edit)="showDialog($event)"

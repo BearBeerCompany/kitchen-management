@@ -20,7 +20,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public display: boolean = false;
   public selectedPlate?: Plate;
-  public plates$: Observable<Plate[]> = new Observable<[]>();
+  public plates: Plate[] = [];
   public form?: FormGroup | undefined;
   public selectedStats?: Stats;
   public data: StatsChart | undefined;
@@ -39,7 +39,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.plates$ = this._platesService.getAll();
+    this._platesService.getAll().subscribe(plates => this.plates = plates);
 
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
@@ -58,7 +58,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public onDelete(id: string): void {
     this._platesService.delete(id).subscribe(
-      () => this._platesService.getAll().subscribe());
+      () => this._platesService.getAll().subscribe(plates => this.plates = plates));
   }
 
   public onSubmit(): void {
@@ -68,7 +68,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
       slot: [0, this.form?.get("number")?.value],
       id: this.selectedPlate?.id
     }).subscribe(
-      _ => this._platesService.getAll().subscribe(_ => this.display = false));
+      _ => this._platesService.getAll().subscribe(plates => {
+        this.plates = plates;
+        this.display = false;
+      }));
   }
 
   public discardForm(): void {
@@ -122,7 +125,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
             summary: `Piastra ${plate.enabled ? 'Accesa' : 'Spenta'}`,
             detail: `${plate.name} è stata ${plate.enabled ? 'accesa' : 'spenta'} con successo`
           });
-          this._platesService.getAll().subscribe()
+          this._platesService.getAll().subscribe(plates => this.plates = plates)
         },
         error: (error) => {
           this._messageService.add({
