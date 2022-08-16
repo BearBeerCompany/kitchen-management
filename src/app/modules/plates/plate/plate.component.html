@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="config.mode">
+<ng-container [ngSwitch]="config?.mode">
   <section *ngSwitchCase="plateMode.Skeleton" class="skeleton">
     <button (mouseenter)="onMouseEnter()"
             (mouseleave)="onMouseLeave()"

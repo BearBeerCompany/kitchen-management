@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
 import {Plate, PlateItemStatus, PlateMenuItemAction} from "../plate.interface";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, forkJoin, Observable, Observer} from "rxjs";
 import {PlateMenuItem, Status} from "../../plate-menu-items/plate-menu-item";
 import {PlateService} from "./plate.service";
 import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
@@ -20,9 +20,22 @@ export class PlateQueueManagerService {
               private _plateMenuItemsService: PlateMenuItemsService) {
   }
 
-  public load(plates: Plate[]) {
-    for (const plate of plates) this.addQueue(plate.id!);
-    this.addQueue(PlateQueueManagerService.UNASSIGNED_QUEUE);
+  public load(plates: Plate[]): Observable<boolean> {
+    return new Observable((observer: Observer<boolean>) => {
+      const tasks$ = [];
+      for (const plate of plates) {
+        tasks$.push(this.addQueue(plate.id!));
+      }
+      tasks$.push(this.addQueue(PlateQueueManagerService.UNASSIGNED_QUEUE));
+
+      forkJoin(tasks$).subscribe((results) => {
+        results.forEach((items, i) => {
+          const plateId = (i === results.length - 1) ? PlateQueueManagerService.UNASSIGNED_QUEUE : plates[i].id!;
+          this.initQueue(plateId, items);
+        })
+        observer.next(true);
+      });
+    });
   }
 
   public initQueue(id: string, items: PlateMenuItem[]) {
@@ -40,16 +53,11 @@ export class PlateQueueManagerService {
     return this._plates.get(id)!;
   }
 
-  public addQueue(id: string): void {
-
+  public addQueue(id: string): Observable<PlateMenuItem[]> {
     if (id === PlateQueueManagerService.UNASSIGNED_QUEUE) {
-      this._plateMenuItemsService.getUnassigned().subscribe(items => {
-        this.initQueue(id, items);
-      });
+      return this._plateMenuItemsService.getUnassigned();
     } else {
-      this._plateService.getStatusById(id!).subscribe(items => {
-        this.initQueue(id, items);
-      });
+      return this._plateService.getStatusById(id!);
     }
   }
 

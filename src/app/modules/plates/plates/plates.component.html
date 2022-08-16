@@ -1,13 +1,16 @@
 <p-toast></p-toast>
 <h3>
   <span>{{i18n.PLATE.TITLE}}</span>
-  <button (click)="toggleNoQueuedItemsOverlay()"
-          [ngClass]="showOverlay ? 'button__active-overlay' : ''">
-    <span>Ordini non assegnati</span>
-    <p-badge *ngIf="unassignedItems.length > 0" [value]="unassignedItems.length + ''"></p-badge>
-  </button>
-  <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
-  <ng-container *ngIf="showPlateList" [ngTemplateOutlet]="plate_overlay"></ng-container>
+  <!-- todo add spinner -->
+  <ng-container *ngIf="!loading">
+    <button (click)="toggleNoQueuedItemsOverlay()"
+            [ngClass]="showOverlay ? 'button__active-overlay' : ''">
+      <span>Ordini non assegnati</span>
+      <p-badge *ngIf="unassignedItems.length > 0" [value]="unassignedItems.length + ''"></p-badge>
+    </button>
+    <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
+    <ng-container *ngIf="showPlateList" [ngTemplateOutlet]="plate_overlay"></ng-container>
+  </ng-container>
 </h3>
 <div class="plates-carousel">
   <button (click)="onPreviousPage()"
@@ -19,14 +22,16 @@
           id="carousel__previous-page">
     <i [hidden]="hidePrevious" class="pi pi-angle-left"></i>
   </button>
-  <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
+  <ng-container *ngIf="!loading">
+    <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
                                                      currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
-    <plate (onNew)="onNewPlate($event)"
-           (onItemEvent)="handleItemEvent($event)"
-           [config]="plate"
-           [plateList]="getEnabledPlateList(plate)"
-           [queue]="plateQueueManagerService.getQueue(plate.id!)">
-    </plate>
+      <plate (onNew)="onNewPlate($event)"
+             (onItemEvent)="handleItemEvent($event)"
+             [config]="plate"
+             [plateList]="getEnabledPlateList(plate)"
+             [queue]="plateQueueManagerService.getQueue(plate.id!)">
+      </plate>
+    </ng-container>
   </ng-container>
   <button (click)="onNextPage()"
           (mouseleave)="hideNext = true"
@@ -41,6 +46,7 @@
 <div *ngIf="totalPages > 0" id="paginator">
   <span *ngFor="let p of pages" [ngClass]="p == currentPage ? 'active' : ''" class="circle"></span>
 </div>
+
 <ng-template #overlay>
   <items-overlay (onRun)="onUnassignedSelected($event)"
                  [hideCloseButton]="true"
