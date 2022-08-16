@@ -13,8 +13,6 @@ import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 })
 export class PlateService extends RequestService implements CRUDService<Plate> {
 
-  public plates$: BehaviorSubject<Plate[]> = new BehaviorSubject([] as Plate[]);
-
   private readonly _i18n: any;
 
   constructor(private _http: HttpClient, private _i18nService: I18nService) {
@@ -37,12 +35,9 @@ export class PlateService extends RequestService implements CRUDService<Plate> {
   public getAll(): Observable<Array<Plate>> {
     return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        const plates: Plate[] = ((res || []) as Plate[]).map(p => {
+        return ((res || []) as Plate[]).map(p => {
           return this._evaluateStatus(p);
         });
-
-        this.plates$.next(plates);
-        return plates;
       })
     );
   }
