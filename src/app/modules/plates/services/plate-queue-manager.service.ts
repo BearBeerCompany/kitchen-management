@@ -69,22 +69,6 @@ export class PlateQueueManagerService {
     return this._changes$.value > 0;
   }
 
-  public sendToQueue(id: string, item: PlateMenuItem): void {
-    this._validateItem(item);
-    item.status = Status.Todo;
-    this._getQueue(id).enqueue(item);
-    this._changes$.next(this._changes$.value + 1);
-  }
-
-  public removeFromQueue(id: string, item: PlateMenuItem): void {
-    this._validateItem(item);
-    const queue: ReactiveQueue<PlateMenuItem> = this._getQueue(id);
-    queue.values = queue.values.filter((i: PlateMenuItem) => {
-      return i.id != item.id;
-    });
-    this._changes$.next(this._changes$.value - 1);
-  }
-
   public onItemAction(plateId: string, item: PlateMenuItem, action: PlateMenuItemAction, nextPlateId?: string): void {
     this._validateItem(item);
 
@@ -93,23 +77,6 @@ export class PlateQueueManagerService {
     if (action === PlateItemStatus.Moved) {
       item.plate = nextPlateId ? {id: nextPlateId} : {id: plateId};
     }
-    this._plateMenuItemsService.update(item).subscribe();
-  }
-
-  private _resetItem(id: string, item: PlateMenuItem) {
-    const queue: ReactiveQueue<PlateMenuItem> = this._getQueue(id);
-    const foundItem: PlateMenuItem | undefined = queue.values.find(i => item.id === i.id);
-    if (foundItem) {
-      foundItem.status = Status.Todo
-    } else {
-      queue.enqueue(item);
-    }
-  }
-
-  private _runItemProgress(id: string, item: PlateMenuItem): void {
-    const queue: ReactiveQueue<PlateMenuItem> = this._getQueue(id);
-    queue.values.find(i => item.id === i.id)!.status = Status.Progress;
-
     this._plateMenuItemsService.update(item).subscribe();
   }
 

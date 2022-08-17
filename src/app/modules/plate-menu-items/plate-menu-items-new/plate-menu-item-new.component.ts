@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
 import {MenuItemsService} from "../services/menu-items.service";
-import {TreeNode} from "primeng/api";
+import {MessageService, TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {I18nService} from "../../../services/i18n.service";
 import {Category, MenuItemExtended, PlateMenuItem, Status} from "../plate-menu-item";
@@ -11,6 +11,8 @@ import {Router} from "@angular/router";
 import {Plate} from "../../plates/plate.interface";
 import {CategoryService} from "../services/category.service";
 import {PlateService} from "../../plates/services/plate.service";
+import {Error} from "../../shared/interface/error.interface";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'plate-menu-items-new',
@@ -44,7 +46,8 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
               private _datePipe: DatePipe,
               private _router: Router,
               private _categoryService: CategoryService,
-              private _plateService: PlateService) {
+              private _plateService: PlateService,
+              private _messageService: MessageService) {
 
     this.i18n = _i18nService.instance;
     this.statuses = [
@@ -126,15 +129,26 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
       return pkmi;
     });
 
-    this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe(data => {
-      // fixme, @boz move logic inside the websocket notification subscription
-      // data.forEach(pkmi => {
-      //   if (pkmi.plate)
-      //     this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
-      //   else
-      //     this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, pkmi);
-      // });
-      this._router.navigate(['/plate-menu-items']);
+    this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe({
+      next: data => {
+        // fixme, @boz move logic inside the websocket notification subscription
+        // data.forEach(pkmi => {
+        //   if (pkmi.plate)
+        //     this._plateQueueManagerService.sendToQueue(pkmi.plate?.name!, pkmi);
+        //   else
+        //     this._plateQueueManagerService.sendToQueue(PlateQueueManagerService.UNASSIGNED_QUEUE, pkmi);
+        // });
+        this._router.navigate(['/plate-menu-items']);
+      },
+      error: (errorResponse: HttpErrorResponse) => {
+        const plateName: string = this.plates.find(p => p.id === (errorResponse.error as Error).causeId)?.name!;
+
+        this._messageService.add({
+          severity: 'error',
+          summary: 'Errore Creazione',
+          detail: `${plateName} è spenta o non disponibile, selezionare un\' altra piastra per l\'ordine`
+        });
+      }
     });
   }
 

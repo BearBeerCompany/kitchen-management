@@ -13,6 +13,8 @@ import {PKMINotification, PKMINotificationType} from 'src/app/services/pkmi-noti
 import {Plate} from "../../plates/plate.interface";
 import {PlateService} from "../../plates/services/plate.service";
 import {CategoryService} from "../services/category.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Error} from "../../shared/interface/error.interface";
 
 @Component({
   selector: 'orders',
@@ -105,7 +107,12 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       console.log('plate - menuitem page notification: ' + notification?.type);
       if (notification) {
         const msgData = WebSocketService.getNotificationMsgData(notification);
-        this._messageService.add({ severity: msgData.severity, summary: msgData.summary, detail: msgData.detail, life: 3000 });
+        this._messageService.add({
+          severity: msgData.severity,
+          summary: msgData.summary,
+          detail: msgData.detail,
+          life: 3000
+        });
 
         switch (notification.type) {
           case PKMINotificationType.PKMI_ADD:
@@ -192,7 +199,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this._clonedPkmis[pkmi.id] = {...pkmi};
   }
 
-  onRowEditSave(pkmiRow: any) {
+  onRowEditSave(pkmiRow: any, index: number) {
     let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow.id);
 
     if (plateMenuItem) {
@@ -215,7 +222,18 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         plate
       };
 
-      this._plateMenuItemsService.update(plateMenuItem).subscribe();
+      this._plateMenuItemsService.update(plateMenuItem)
+        .subscribe({
+          error: (errorResponse: HttpErrorResponse) => {
+            const plateName: string = this.plates.find(p => p.id === (errorResponse.error as Error).causeId)?.name!;
+            this.pkmiRows[index].plate = this.plateMenuItems.find(p => p.id === this.pkmiRows[index].id)?.plate?.name;
+            this._messageService.add({
+              severity: 'error',
+              summary: 'Errore Creazione',
+              detail: `${plateName} è spenta o non disponibile, selezionare un\' altra piastra per l\'ordine`
+            });
+          }
+        });
     }
   }
 
@@ -271,7 +289,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === updItemId);
     const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
 
-    this.plateMenuItems[pkmiIndex] = { ...this.plateMenuItems[pkmiIndex], ...plateMenuItem };
+    this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
     const updatedItem = {
       ...this.pkmiRows[pkmiRowIndex],
       ...this._getPkmiRow(plateMenuItem)
