@@ -14,8 +14,8 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
     super(ApiResourceEnum.PLATE_MENU_ITEM);
   }
 
-  public getAll(parentId?: string): Observable<PlateMenuItem[]> {
-    return this._http.get(this._getUrl(), RequestService.baseHttpOptions).pipe(
+  public getAll(completed: boolean = false): Observable<PlateMenuItem[]> {
+    return this._http.get(this._getUrl() + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}`, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
         return (res || []) as PlateMenuItem[];
       })
