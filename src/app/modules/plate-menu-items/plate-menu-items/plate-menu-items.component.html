@@ -1,5 +1,5 @@
 <p-toast></p-toast>
-
+<h3>Gestione Ordini</h3>
 <p-table #dt
          [value]="pkmiRows"
          [(selection)]="selectedPlateMenuItems"
@@ -11,7 +11,7 @@
          [rowsPerPageOptions]="[10,25,50]"
          [loading]="loading"
          [paginator]="true"
-         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         currentPageReportTemplate="{last} di {totalRecords} trovati"
          [filterDelay]="0"
          [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName']"
          editMode="row"
@@ -20,7 +20,7 @@
 >
   <ng-template pTemplate="caption">
     <div class="table-header">
-      List of Burgers
+      {{toggleCompleted ? 'Ordini Completati - Chiusi' : 'Ordini Da Completare - In Corso'}}
       <div class="table-header-buttons">
         <div>
           <button pButton pRipple [label]="toggleCompleted ? 'In Corso' : 'Completati'" icon="pi pi-eye" class="p-mr-2" (click)="viewCompletedPlateMenuItems()"></button>
@@ -30,7 +30,7 @@
         <div class="ml-4">
           <span class="p-input-icon-left">
               <i class="pi pi-search"></i>
-              <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Global Search" />
+              <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Ricerca" />
           </span>
         </div>
       </div>
@@ -44,49 +44,49 @@
       </th>
       <th pSortableColumn="menuItem.name">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Menu Item
+          Prodotto
           <p-sortIcon field="menuItem.label"></p-sortIcon>
           <p-columnFilter type="text" field="menuItem.label" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="menuItem.category.name">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Category
+          Categoria
           <p-sortIcon field="menuItem.parent.data.name"></p-sortIcon>
           <p-columnFilter type="text" field="menuItem.parent.data.name" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="orderNumber">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Order #
+          Ordine #
           <p-sortIcon field="orderNumber"></p-sortIcon>
           <p-columnFilter type="numeric" field="orderNumber" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="tableNumber">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Table #
+          Tavolo #
           <p-sortIcon field="tableNumber"></p-sortIcon>
           <p-columnFilter type="numeric" field="tableNumber" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="clientName">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Client Name
+          Nome Cliente
           <p-sortIcon field="clientName"></p-sortIcon>
           <p-columnFilter type="text" field="clientName" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="createdDate">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Date
+          Data
           <p-sortIcon field="createdDate"></p-sortIcon>
           <p-columnFilter type="date" field="createdDate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="status">
         <div class="p-d-flex p-jc-between p-ai-center">
-          Status
+          Stato
           <p-sortIcon field="status"></p-sortIcon>
           <p-columnFilter field="status" matchMode="equals" display="menu">
             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -102,13 +102,13 @@
       </th>
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
-          Plate
+          Piastra
           <p-columnFilter type="text" field="plate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
-          Notes
+          Note
           <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
         </div>
       </th>
@@ -226,7 +226,7 @@
 
   <ng-template pTemplate="emptymessage">
     <tr>
-      <td colspan="11">No plate menu items found.</td>
+      <td colspan="11">Nessun ordine trovato.</td>
     </tr>
   </ng-template>
 
