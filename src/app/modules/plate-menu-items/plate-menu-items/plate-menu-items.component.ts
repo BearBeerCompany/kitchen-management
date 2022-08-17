@@ -45,6 +45,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   plates: Plate[] = [];
   categories: Category[] = [];
   menuItemOptions: TreeNode[] = [];
+  public toggleCompleted: boolean = false;
 
   platesOptions: any[] = [];
 
@@ -79,7 +80,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         this.menuItems = data;
         this.menuItemOptions = PlateMenuItemsService.getCategoryMenuItemTreeNodeOptions(this.categories, data);
 
-        this._loadPlateMenuItems();
+        this._loadPlateMenuItems(false);
         this.loading = false;
       });
     });
@@ -118,7 +119,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           case PKMINotificationType.PKMI_ADD:
           case PKMINotificationType.PKMI_ADD_ALL:
             this.loading = true;
-            this._loadPlateMenuItems();
+            this._loadPlateMenuItems(false);
             this.loading = false;
             break;
           case PKMINotificationType.PKMI_UPDATE:
@@ -159,7 +160,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   }
 
   viewCompletedPlateMenuItems() {
-    // todo show the list of completed associations
+    this.toggleCompleted = !this.toggleCompleted;
+    this._loadPlateMenuItems(this.toggleCompleted);
   }
 
   filterGlobal(event: any) {
@@ -274,8 +276,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     return color;
   }
 
-  private _loadPlateMenuItems() {
-    this._pkmisSub = this._plateMenuItemsService.getAll().subscribe(data => {
+  private _loadPlateMenuItems(completed: boolean) {
+    this._pkmisSub = this._plateMenuItemsService.getAll(completed).subscribe(data => {
       this.plateMenuItems = data;
 
       this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
