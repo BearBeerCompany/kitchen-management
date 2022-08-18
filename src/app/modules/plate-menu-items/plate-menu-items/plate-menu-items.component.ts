@@ -3,7 +3,7 @@ import {I18nService} from 'src/app/services/i18n.service';
 import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
 import {Table} from 'primeng/table';
 import {Category, MenuItem, PlateMenuItem, Status} from '../plate-menu-item';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {Router} from "@angular/router";
 import {ConfirmationService, MessageService, TreeNode} from "primeng/api";
 import {MenuItemsService} from "../services/menu-items.service";
@@ -115,34 +115,20 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           life: 3000
         });
 
+        this.loading = true;
         switch (notification.type) {
           case PKMINotificationType.PKMI_ADD:
           case PKMINotificationType.PKMI_ADD_ALL:
-            this.loading = true;
             this._loadPlateMenuItems(false);
-            this.loading = false;
             break;
           case PKMINotificationType.PKMI_UPDATE:
-            this.loading = true;
             this._updateItem(notification.plateKitchenMenuItem);
-            this.loading = false;
             break;
           case PKMINotificationType.PKMI_UPDATE_ALL:
-            this.loading = true;
             this._updateItems(notification.ids);
-            this.loading = false;
-            break;
-          case PKMINotificationType.PKMI_DELETE:
-            this.loading = true;
-            this._deleteItem(notification.plateKitchenMenuItem?.id!);
-            this.loading = false;
-            break;
-          case PKMINotificationType.PKMI_DELETE_ALL:
-            this.loading = true;
-            this._deleteItems(notification.ids);
-            this.loading = false;
             break;
         }
+        this.loading = false;
       }
     });
   }
@@ -178,15 +164,13 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   deleteSelectedPkmis() {
     this._confirmationService.confirm({
-      message: 'Sei sicuro di voler eliminare gli elementi selezionati?',
+      message: 'Confermi di eliminare i prodotti selezionati?',
       header: 'Conferma eliminazione',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         const ids = this.selectedPlateMenuItems.map(item => item.id!);
-        this._plateMenuItemsService.deleteAll(ids).subscribe((data) => {
-          this.plateMenuItems = this.plateMenuItems.filter(val => !this.selectedPlateMenuItems.includes(val));
-          this.pkmiRows = this.pkmiRows.filter(val => !this.selectedPlateMenuItems.includes(val));
-          this.selectedPlateMenuItems = [];
+        this._plateMenuItemsService.deleteAll(ids).subscribe(() => {
+          this._deleteItems(ids);
         })
       }
     });
@@ -201,11 +185,21 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this._clonedPkmis[pkmi.id] = {...pkmi};
   }
 
+  deletePkmi(pkmi: any) {
+    this._confirmationService.confirm({
+      message: 'Confermi di eliminare il prodotto?',
+      header: 'Conferma eliminazione',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this._plateMenuItemsService.delete(pkmi.id).subscribe(() => this._deleteItem(pkmi.id));
+      }
+    });
+  }
+
   onRowEditSave(pkmiRow: any, index: number) {
     let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow.id);
 
     if (plateMenuItem) {
-      const previousPlate = plateMenuItem.plate;
       const menuItem: MenuItem = {
         ...pkmiRow.menuItem.data,
         categoryId: pkmiRow.menuItem.parent.data.id
@@ -314,20 +308,16 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private _deleteItem(id: string) {
+  private _deleteItems(ids: string[]) {
     if (this.plateMenuItems && this.plateMenuItems.length) {
-      const pkmiIndex = this.plateMenuItems.findIndex(item => item?.id === id);
-      const pkmiRowIndex = this.pkmiRows.findIndex(item => item?.id === id);
-
-      delete this.plateMenuItems[pkmiIndex];
-      delete this.pkmiRows[pkmiRowIndex];
+      this.plateMenuItems = this.plateMenuItems.filter(val => !ids.includes(val.id!));
+      this.pkmiRows = this.pkmiRows.filter(val => !ids.includes(val.id));
+      this.selectedPlateMenuItems = [];
     }
   }
 
-  private _deleteItems(ids: string[]) {
-    ids.forEach(id => {
-      this._deleteItem(id);
-    });
+  private _deleteItem(id: string) {
+    this._deleteItems([id]);
   }
 
   private _getPkmiRow(plateMenuItem: PlateMenuItem) {

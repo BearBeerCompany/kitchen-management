@@ -214,6 +214,8 @@
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
         ></button>
+        <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
+                (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"></button>
         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
                 (click)="onRowEditSave(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-success p-mr-2"
         ></button>
