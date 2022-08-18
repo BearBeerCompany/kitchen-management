@@ -31,7 +31,9 @@
         <item (onCancelEvent)="handleItemEvent($event)"
               (onDoneEvent)="handleItemEvent($event)"
               [config]="item"
-              [plateList]="plateList"></item>
+              [plateList]="plateList"
+              [readonly]="readonly"
+        ></item>
       </ng-container>
     </div>
     <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>

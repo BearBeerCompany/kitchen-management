@@ -40,6 +40,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   public plateMode: typeof PlateInterface = mode();
   public form?: FormGroup | undefined;
   public showExpand: boolean = true;
+  public readonly: boolean = false;
   public badgeSize: string = "large";
   public badgeColor: string = "info";
   public showOverlay: boolean = false;
@@ -58,6 +59,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     this._route.params.subscribe(
       params => {
         this.showExpand = !params["id"];
+        this.readonly = !this.showExpand;
       }
     );
 
