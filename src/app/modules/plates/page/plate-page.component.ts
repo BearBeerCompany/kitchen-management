@@ -78,24 +78,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
             life: 3000
           });
 
-          switch (notification.type) {
-            case PKMINotificationType.PKMI_ADD:
-            case PKMINotificationType.PKMI_ADD_ALL:
-              this._refreshPlateQueue();
-              break;
-            case PKMINotificationType.PKMI_UPDATE:
-              this._refreshPlateQueue();
-              break;
-            case PKMINotificationType.PKMI_UPDATE_ALL:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE_ALL:
-              // todo
-              break;
-          }
+          this._refreshPlateQueue();
         }
       })
     );
@@ -111,7 +94,6 @@ export class PlatePageComponent implements OnInit, OnDestroy {
         this.config = { ...config, ...plate};
         // refresh plate queue
         this._plateService.getStatusById(this.config.id!).subscribe(items => {
-          // let queue = this._plateQueueManagerService.getQueue(this.config.id!);
           this.queue.values = items;
           this.queue.refresh();
         })

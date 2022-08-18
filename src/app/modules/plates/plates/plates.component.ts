@@ -69,24 +69,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
             life: 3000
           });
 
-          switch (notification.type) {
-            case PKMINotificationType.PKMI_ADD:
-            case PKMINotificationType.PKMI_ADD_ALL:
-              this._refreshPlateQueues();
-              break;
-            case PKMINotificationType.PKMI_UPDATE:
-              this._refreshPlateQueues();
-              break;
-            case PKMINotificationType.PKMI_UPDATE_ALL:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE_ALL:
-              // todo
-              break;
-          }
+          this._refreshPlateQueues();
         }
       })
     );
