@@ -56,12 +56,6 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit(): void {
     this._loadPlatesConfig();
-    // this._queue$.add(
-    //   this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
-    //     ?.values$?.subscribe((items: PlateMenuItem[]) => {
-    //     this.unassignedItems = items;
-    //   })
-    // );
 
     this._queue$.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
