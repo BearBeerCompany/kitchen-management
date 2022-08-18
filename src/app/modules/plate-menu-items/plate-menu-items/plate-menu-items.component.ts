@@ -28,7 +28,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   private _platesSub: Subscription = new Subscription();
   private _categoriesSub: Subscription = new Subscription();
   private _pkmiNotificationSub: Subscription = new Subscription();
-  private _clonedPkmis: PlateMenuItem[] = [];
+  private _editablePkmiMap: Map<string, PlateMenuItem> = new Map<string, PlateMenuItem>();
   private _pkmiNotification$: Observable<PKMINotification | null>;
 
   public readonly DATE_FORMAT = 'dd-MM-yyyy HH:mm:ss';
@@ -176,15 +176,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     });
   }
 
-  hideDialog() {
-    this.pkmiDialog = false;
-    this.submitted = false;
-  }
-
-  onRowEditInit(pkmi: any) {
-    this._clonedPkmis[pkmi.id] = {...pkmi};
-  }
-
   deletePkmi(pkmi: any) {
     this._confirmationService.confirm({
       message: 'Confermi di eliminare il prodotto?',
@@ -194,6 +185,15 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         this._plateMenuItemsService.delete(pkmi.id).subscribe(() => this._deleteItem(pkmi.id));
       }
     });
+  }
+
+  hideDialog() {
+    this.pkmiDialog = false;
+    this.submitted = false;
+  }
+
+  onRowEditInit(pkmi: any) {
+    this._editablePkmiMap.set(pkmi.id, {...pkmi});
   }
 
   onRowEditSave(pkmiRow: any, index: number) {
@@ -228,14 +228,17 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
               summary: 'Errore Creazione',
               detail: `${plateName} è spenta o non disponibile, selezionare un\' altra piastra per l\'ordine`
             });
+          }, next: () => {
+            this._editablePkmiMap.delete(pkmiRow.id);
           }
         });
     }
   }
 
   onRowEditCancel(pkmi: any, index: number) {
-    this.pkmiRows[index] = this._clonedPkmis[pkmi.id];
-    delete this._clonedPkmis[pkmi.id];
+    this.pkmiRows = this.pkmiRows.filter(val => pkmi.id !== val.id);
+    this.pkmiRows.splice(index, 0, this._editablePkmiMap.get(pkmi.id));
+    this._editablePkmiMap.delete(pkmi.id);
   }
 
   getPlateColor(pkmiPlate: string): string {

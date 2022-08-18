@@ -42,14 +42,14 @@
       <th style="width: 3rem">
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
-      <th pSortableColumn="menuItem.name">
+      <th pSortableColumn="menuItem.label">
         <div class="p-d-flex p-jc-between p-ai-center">
           Prodotto
           <p-sortIcon field="menuItem.label"></p-sortIcon>
           <p-columnFilter type="text" field="menuItem.label" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="menuItem.category.name">
+      <th pSortableColumn="menuItem.parent.data.name">
         <div class="p-d-flex p-jc-between p-ai-center">
           Categoria
           <p-sortIcon field="menuItem.parent.data.name"></p-sortIcon>
