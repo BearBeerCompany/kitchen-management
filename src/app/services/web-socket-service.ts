@@ -100,7 +100,7 @@ export class WebSocketService {
       case PKMINotificationType.PKMI_DELETE:
         severity = 'error';
         summary = 'Cancellato panino';
-        detail = 'Cancellato panino id ' + notification?.ids[0];
+        detail = 'Cancellato panino ' + notification?.plateKitchenMenuItem?.menuItem.name + ' per ordine ' + notification?.plateKitchenMenuItem?.orderNumber;
         break;
       case PKMINotificationType.PKMI_DELETE_ALL:
         severity = 'error';
