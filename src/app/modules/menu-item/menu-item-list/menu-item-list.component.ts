@@ -14,23 +14,21 @@ export class MenuItemListComponent {
   @Output() public edit: EventEmitter<MenuItem> = new EventEmitter<MenuItem>(false);
   @Output() public delete: EventEmitter<MenuItem> = new EventEmitter<MenuItem>(false);
 
-  public editing: boolean = false;
-
-  private selectedItem?: MenuItem;
+  private _editableMenuItemMap: Map<string, MenuItem> = new Map<string, MenuItem>();
 
   public onRowEditInit(item: MenuItem) {
-    this.selectedItem = {...item};
-    this.editing = true;
+    this._editableMenuItemMap.set(item.id!, {...item});
   }
 
   public onRowEditSave(item: MenuItem): void {
-    if (JSON.stringify(item) !== JSON.stringify(this.selectedItem))
+    if (JSON.stringify(item) !== JSON.stringify(this._editableMenuItemMap.get(item.id!))) {
+      this._editableMenuItemMap.delete(item.id!);
       this.edit.emit(item);
-    this.editing = false;
+    }
   }
 
   public onRowEditCancel(item: MenuItem, index: number): void {
-    this.items[index] = this.selectedItem!;
-    this.editing = false;
+    this.items[index] = this._editableMenuItemMap.get(item.id!)!;
+    this._editableMenuItemMap.delete(item.id!);
   }
 }
