@@ -86,7 +86,7 @@
                  (onRun)="onItemStart($event)"
                  (onActionEvent)="handleItemEvent($event)"
                  [items]="todoItems"
-                 [enableActions]="true"
+                 [enableActions]="!readonly"
                  [plateList]="plateList"
   ></items-overlay>
 </ng-template>
