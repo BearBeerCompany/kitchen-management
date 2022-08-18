@@ -178,7 +178,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   deleteSelectedPkmis() {
     this._confirmationService.confirm({
-      message: 'Are you sure you want to delete the selected plate menu items?',
+      message: 'Sei sicuro di voler cancellare gli elementi selezionati?',
       header: 'Confirm',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
@@ -316,8 +316,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   private _deleteItem(id: string) {
     if (this.plateMenuItems && this.plateMenuItems.length) {
-      const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === id);
-      const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === id);
+      const pkmiIndex = this.plateMenuItems.findIndex(item => item?.id === id);
+      const pkmiRowIndex = this.pkmiRows.findIndex(item => item?.id === id);
 
       delete this.plateMenuItems[pkmiIndex];
       delete this.pkmiRows[pkmiRowIndex];
