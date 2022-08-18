@@ -178,8 +178,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   deleteSelectedPkmis() {
     this._confirmationService.confirm({
-      message: 'Sei sicuro di voler cancellare gli elementi selezionati?',
-      header: 'Confirm',
+      message: 'Sei sicuro di voler eliminare gli elementi selezionati?',
+      header: 'Conferma eliminazione',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         const ids = this.selectedPlateMenuItems.map(item => item.id!);
