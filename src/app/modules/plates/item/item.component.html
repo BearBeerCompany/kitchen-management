@@ -4,7 +4,7 @@
   <span class="item_note">
     {{config.notes}}
   </span>
-  <span class="item_actions">
+  <span class="item_actions" *ngIf="!readonly">
     <button (click)="onDone()"
             class="p-button-rounded p-button-text p-button-success"
             icon="pi pi-check"

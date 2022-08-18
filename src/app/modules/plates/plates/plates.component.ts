@@ -56,12 +56,6 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit(): void {
     this._loadPlatesConfig();
-    // this._queue$.add(
-    //   this.plateQueueManagerService.getQueue(PlateQueueManagerService.UNASSIGNED_QUEUE)
-    //     ?.values$?.subscribe((items: PlateMenuItem[]) => {
-    //     this.unassignedItems = items;
-    //   })
-    // );
 
     this._queue$.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
@@ -75,24 +69,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
             life: 3000
           });
 
-          switch (notification.type) {
-            case PKMINotificationType.PKMI_ADD:
-            case PKMINotificationType.PKMI_ADD_ALL:
-              this._refreshPlateQueues();
-              break;
-            case PKMINotificationType.PKMI_UPDATE:
-              this._refreshPlateQueues();
-              break;
-            case PKMINotificationType.PKMI_UPDATE_ALL:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE:
-              // todo
-              break;
-            case PKMINotificationType.PKMI_DELETE_ALL:
-              // todo
-              break;
-          }
+          this._refreshPlateQueues();
         }
       })
     );

@@ -1,13 +1,13 @@
 <div class="items-overlay__row">
   <span class="item_title">{{item.menuItem?.name}}</span>
   <span class="item_order">ORDINE {{item.orderNumber}}</span>
-  <button (click)="onRun.emit(item)"
-          class="play-button p-button-success"
-          icon="pi pi-play play-button"
-          pButton
-          [showDelay]="500"
-          pTooltip="Avvia"></button>
   <ng-container *ngIf="enableActions">
+    <button (click)="onRun.emit(item)"
+            class="play-button p-button-success"
+            icon="pi pi-play play-button"
+            pButton
+            [showDelay]="500"
+            pTooltip="Avvia"></button>
     <button (click)="toggleOverlay()"
             class="p-button-rounded p-button-text"
             icon="pi pi-ellipsis-v"

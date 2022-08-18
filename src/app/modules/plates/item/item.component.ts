@@ -15,6 +15,7 @@ export class ItemComponent implements OnInit {
 
   @Input() public config!: PlateMenuItem;
   @Input() public plateList: Plate[] = [];
+  @Input() public readonly: boolean = false;
 
   @Output() public onDoneEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
   @Output() public onCancelEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
