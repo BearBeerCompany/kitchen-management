@@ -24,9 +24,15 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
       height: 100vh !important;
       max-height: 100vh !important;
 
-      padding: 3%;
+      padding: 1% 3%;
 
       overflow-y: hidden;
+
+      ::ng-deep {
+        plate section {
+          height: 90%;
+        }
+      }
     }
   `]
 })
