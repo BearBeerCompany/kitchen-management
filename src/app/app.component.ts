@@ -5,7 +5,7 @@ import {WebSocketService} from './services/web-socket-service';
 @Component({
   selector: 'app-root',
   template: `
-    <div class="app-container">
+    <div id="app-container-id" class="app-container">
       <router-outlet></router-outlet>
     </div>
     <navbar id="navbar-id"></navbar>
@@ -13,7 +13,6 @@ import {WebSocketService} from './services/web-socket-service';
   styles: [`
     .app-container {
       height: 90vh;
-      max-height: 90vh;
 
       overflow-y: auto;
     }

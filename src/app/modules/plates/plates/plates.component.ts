@@ -7,7 +7,7 @@ import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 import {MessageService} from "primeng/api";
 import {PlateService} from "../services/plate.service";
 import {WebSocketService} from "../../../services/web-socket-service";
-import {PKMINotification, PKMINotificationType} from "../../../services/pkmi-notification";
+import {PKMINotification} from "../../../services/pkmi-notification";
 import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
 
 @Component({
