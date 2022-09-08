@@ -33,9 +33,13 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
       ::ng-deep {
         plate section {
           height: 95vh;
-          
+
           header {
-            h3 { font-size: 40px; }
+            h3 {
+              font-size: 40px;
+              margin-bottom: 0;
+              margin-top: 0;
+            }
             p-tag span {
               font-size: 20px;
             }
