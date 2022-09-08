@@ -132,11 +132,7 @@ section {
   overflow-x: hidden;
 
   item {
-    //flex-basis: calc(100% / 4);
     flex: 1 0 calc(1% * var(--items-chunk));
-
-    //height: 20%;
-    //min-height: 20%;
 
     margin: 10px
   }
