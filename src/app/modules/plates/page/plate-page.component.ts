@@ -5,7 +5,7 @@ import {Plate} from "../plate.interface";
 import {PlateService} from "../services/plate.service";
 import {PlateMenuItem} from "../../plate-menu-items/plate-menu-item";
 import {ReactiveQueue} from "../../shared/class/reactive-queue";
-import {PKMINotification, PKMINotificationType} from "../../../services/pkmi-notification";
+import {PKMINotification} from "../../../services/pkmi-notification";
 import {WebSocketService} from "../../../services/web-socket-service";
 import {MessageService} from "primeng/api";
 import {PlateQueueManagerService} from "../services/plate-queue-manager.service";
@@ -15,7 +15,7 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
   template: `
     <p-toast></p-toast>
     <div class="page-container">
-      <plate [config]="config" [queue]="queue"></plate>
+      <plate [config]="config" [queue]="queue" [chunk]="10"></plate>
     </div>
   `,
   styles: [`
@@ -30,7 +30,7 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
 
       ::ng-deep {
         plate section {
-          height: 90%;
+          height: 95vh;
         }
       }
     }
@@ -54,6 +54,14 @@ export class PlatePageComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    const rootComponent: HTMLElement | null = document.getElementById("navbar-id");
+    if (rootComponent)
+      rootComponent.remove();
+
+    const appComponent: HTMLElement | null = document.getElementById("app-container-id");
+    if (appComponent)
+      appComponent.style.minHeight = '100vh';
+
     this._subs.add(this._route.params.subscribe(
       params => {
         this._id = params["id"];
@@ -97,7 +105,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
   private _refreshPlateQueue() {
     this._subs.add(
       this._plateService.getById(this.config.id!).subscribe(plate => {
-        this.config = { ...config, ...plate};
+        this.config = {...config, ...plate};
         // refresh plate queue
         this._plateService.getStatusById(this.config.id!).subscribe(items => {
           this.queue.values = items;

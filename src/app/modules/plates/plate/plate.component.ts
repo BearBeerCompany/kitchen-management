@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, NgModule, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, NgModule, OnDestroy, OnInit, Output} from '@angular/core';
 import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -31,6 +31,14 @@ export class PlateComponent implements OnInit, OnDestroy {
   @Input() public plateList: Plate[] = [];
   @Input() public queue!: ReactiveQueue<PlateMenuItem>;
 
+  get chunk(): number {
+    return this._display_chunk;
+  }
+  @Input() set chunk(value: number) {
+    this._display_chunk = value;
+    this._elementRef.nativeElement.style.setProperty("--items-chunk", value);
+  }
+
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
   @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
 
@@ -48,11 +56,14 @@ export class PlateComponent implements OnInit, OnDestroy {
   public todoItems: PlateMenuItem[] = [];
 
   private queue$: Subscription = new Subscription();
+  private _display_chunk: number = 20;
 
   constructor(public i18nService: I18nService,
               private _route: ActivatedRoute,
+              private _elementRef: ElementRef,
               private _router: Router) {
     this.i18n = i18nService.instance;
+    this._elementRef.nativeElement.style.setProperty("--items-chunk", this._display_chunk);
   }
 
   public ngOnInit(): void {
