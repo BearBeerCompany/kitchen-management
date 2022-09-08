@@ -28,9 +28,18 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
 
       overflow-y: hidden;
 
+      font-size: 30px;
+
       ::ng-deep {
         plate section {
           height: 95vh;
+          
+          header {
+            h3 { font-size: 40px; }
+            p-tag span {
+              font-size: 20px;
+            }
+          }
         }
       }
     }
