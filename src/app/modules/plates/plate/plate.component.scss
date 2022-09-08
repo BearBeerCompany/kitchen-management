@@ -133,6 +133,7 @@ section {
 
   item {
     flex: 1 0 calc(1% * var(--items-chunk));
+    max-height: 20%;
 
     margin: 10px
   }
