@@ -15,10 +15,17 @@
   .item_title {
     grid-column: 1/1;
     grid-row: 1/2;
+    position: relative;
 
     text-transform: uppercase;
     font-weight: bold;
     border-bottom: 1px solid black;
+
+    i {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
 
     @include center-flex;
   }

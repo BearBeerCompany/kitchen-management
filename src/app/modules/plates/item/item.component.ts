@@ -5,6 +5,7 @@ import {MenuItem as PrimeMenuItem} from 'primeng/api';
 import {CommonModule} from "@angular/common";
 import {RippleModule} from "primeng/ripple";
 import {ButtonModule} from "primeng/button";
+import {TooltipModule} from "primeng/tooltip";
 
 @Component({
   selector: 'item',
@@ -92,7 +93,7 @@ export class ItemComponent implements OnInit {
 }
 
 @NgModule({
-  imports: [CommonModule, RippleModule, ButtonModule],
+  imports: [CommonModule, RippleModule, ButtonModule, TooltipModule],
   declarations: [ItemComponent],
   exports: [ItemComponent]
 })
