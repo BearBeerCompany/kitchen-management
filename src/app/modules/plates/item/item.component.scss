@@ -9,6 +9,7 @@
   border-radius: 20px;
 
   display: grid;
+  grid-template-columns: 1fr 60px;
   position: relative;
 
   .item_title {
