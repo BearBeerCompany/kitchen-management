@@ -17,18 +17,11 @@
         </div>
         <div class="field col-4 ml-3">
           <label for="tableNumber">Numero Tavolo</label>
-          <p-inputNumber [max]="1000"
-                         [min]="0"
-                         [showButtons]="true"
-                         [inputStyle]="{'width': '100px'}"
-                         formControlName="tableNumber"
-                         id="tableNumber"
-                         class="ml-4"
-          ></p-inputNumber>
+          <input pInputText type="text" id="tableNumber" formControlName="tableNumber" placeholder="Numero Tavolo" class="ml-4" />
         </div>
         <div class="field col-4 ml-3">
           <label for="clientName">Nome Cliente</label>
-          <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Client Name" class="ml-4" />
+          <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Nome Cliente" class="ml-4" />
         </div>
       </div>
 

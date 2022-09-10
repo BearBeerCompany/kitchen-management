@@ -12,7 +12,7 @@ export interface PlateMenuItem {
   createdDate: string | null,
   notes?: string,
   clientName: string,
-  tableNumber: number,
+  tableNumber: string,
   source?: PlateMenuItemSource
 }
 

@@ -13,7 +13,7 @@
          [paginator]="true"
          currentPageReportTemplate="{last} di {totalRecords} trovati"
          [filterDelay]="0"
-         [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName']"
+         [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName','tableNumber']"
          editMode="row"
          sortField="createdDate"
          [sortOrder]="-1"
@@ -67,7 +67,7 @@
         <div class="p-d-flex p-jc-between p-ai-center">
           Tavolo #
           <p-sortIcon field="tableNumber"></p-sortIcon>
-          <p-columnFilter type="numeric" field="tableNumber" display="menu"></p-columnFilter>
+          <p-columnFilter type="text" field="tableNumber" display="menu"></p-columnFilter>
         </div>
       </th>
       <th pSortableColumn="clientName">
@@ -156,7 +156,7 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <input pInputText type="number" [(ngModel)]="plateMenuItem.tableNumber">
+            <input pInputText type="text" [(ngModel)]="plateMenuItem.tableNumber">
           </ng-template>
           <ng-template pTemplate="output">
             {{plateMenuItem?.tableNumber}}
