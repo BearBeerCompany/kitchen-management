@@ -59,7 +59,7 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       orderNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
       menuItem: new FormControl("", Validators.required),
-      tableNumber: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      tableNumber: new FormControl("", Validators.required),
       clientName: new FormControl("", Validators.required)
     });
   }
