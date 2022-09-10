@@ -68,7 +68,20 @@ section {
     text-transform: uppercase;
   }
 
-  p-badge {
+  .items-sort-badge {
+    height: 2rem !important;
+    width: 2rem !important;
+
+    position: absolute;
+    left: -10px;
+    bottom: -10px;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .items-queue-badge {
     position: absolute;
     right: -10px;
     bottom: -10px;
@@ -76,6 +89,13 @@ section {
     &:hover {
       cursor: pointer;
     }
+  }
+
+  .sort-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   items-overlay {
@@ -96,6 +116,10 @@ section {
 
 .on {
   @include grey-glass;
+
+  header {
+    height: 20%;
+  }
 
   #empty-container {
 

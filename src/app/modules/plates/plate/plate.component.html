@@ -36,8 +36,16 @@
         ></item>
       </ng-container>
     </div>
+    <ng-container *ngIf="showSortOverlay" [ngTemplateOutlet]="sortingOverlay"></ng-container>
+    <button pButton
+            class="p-button-rounded p-button-info items-sort-badge"
+            type="button"
+            icon="pi pi-sort-alt"
+            (click)="showSortOverlay = !showSortOverlay">
+    </button>
     <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
-    <p-badge (click)="onBadgeMouseClick()"
+    <p-badge class="items-queue-badge"
+             (click)="onBadgeMouseClick()"
              (mouseenter)="onBadgeMouseEnter()"
              (mouseleave)="onBadgeMouseLeave()"
              *ngIf="todoItems.length > 0"
@@ -81,6 +89,11 @@
     </form>
   </section>
 </ng-container>
+<ng-template #sortingOverlay>
+  <div class="sort-overlay">
+    <p-menu [model]="sortingOptions"></p-menu>
+  </div>
+</ng-template>
 <ng-template #overlay>
   <items-overlay (onClose)="onBadgeMouseClick()"
                  (onRun)="onItemStart($event)"
