@@ -19,6 +19,8 @@ import {RippleModule} from "primeng/ripple";
 import {ItemComponentModule} from "../item/item.component";
 import {ItemsOverlayComponentModule} from "../items-overlay/items-overlay.component";
 import {ItemOverlayRowComponentModule} from "../item-overlay-row/item-overlay-row.component";
+import {MenuModule} from "primeng/menu";
+import {MenuItem} from 'primeng/api';
 
 @Component({
   selector: 'plate',
@@ -34,6 +36,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   get chunk(): number {
     return this._display_chunk;
   }
+
   @Input() set chunk(value: number) {
     this._display_chunk = value;
     this._elementRef.nativeElement.style.setProperty("--items-chunk", value);
@@ -52,8 +55,11 @@ export class PlateComponent implements OnInit, OnDestroy {
   public badgeSize: string = "large";
   public badgeColor: string = "info";
   public showOverlay: boolean = false;
+  public showSortOverlay: boolean = false;
   public progressItems: PlateMenuItem[] = [];
   public todoItems: PlateMenuItem[] = [];
+  public sortingOptions: MenuItem[] = [];
+  public selectedSortingType: SortType = "DATE_ASC";
 
   private queue$: Subscription = new Subscription();
   private _display_chunk: number = 20;
@@ -88,6 +94,37 @@ export class PlateComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.sortingOptions = [{
+      label: 'Ordine',
+      items: [
+        {
+          label: 'Crescente',
+          icon: 'pi pi-sort-numeric-down',
+          command: event => this.sort('ORDER_ASC'),
+        },
+        {
+          label: 'Decrescente',
+          icon: 'pi pi-sort-numeric-up-alt',
+          command: event => this.sort('ORDER_DESC'),
+        }
+      ]
+    },
+      {
+        label: 'Data Creazione',
+        items: [
+          {
+            label: 'Crescente',
+            icon: 'pi pi-sort-amount-up',
+            command: event => this.sort('DATE_ASC'),
+          },
+          {
+            label: 'Decrescente',
+            icon: 'pi pi-sort-amount-down-alt',
+            command: event => this.sort('DATE_DESC'),
+          }
+        ]
+      }];
   }
 
   public ngOnDestroy(): void {
@@ -100,6 +137,73 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   public onMouseLeave(): void {
     setTimeout(() => this.icon = "pi-plus", 500);
+  }
+
+  public sort(type: SortType) {
+    this.selectedSortingType = type;
+    switch (type) {
+      case "DATE_ASC":
+        this.progressItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (new Date(a.createdDate!) < new Date(b.createdDate!))
+            return -1;
+          else
+            return 1;
+        })
+        this.todoItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (new Date(a.createdDate!) < new Date(b.createdDate!))
+            return -1;
+          else
+            return 1;
+        })
+        break;
+      case "DATE_DESC":
+        this.progressItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (new Date(a.createdDate!) > new Date(b.createdDate!))
+            return -1;
+          else
+            return 1;
+        })
+        this.todoItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (new Date(a.createdDate!) > new Date(b.createdDate!))
+            return -1;
+          else
+            return 1;
+        })
+        break;
+      case "ORDER_ASC":
+        this.progressItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (a.orderNumber! < b.orderNumber!)
+            return -1;
+          else
+            return 1;
+        })
+        this.todoItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (a.orderNumber! < b.orderNumber!)
+            return -1;
+          else
+            return 1;
+        })
+        break;
+      case "ORDER_DESC":
+        this.progressItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (a.orderNumber! > b.orderNumber!)
+            return -1;
+          else
+            return 1;
+        })
+        this.todoItems.sort((a: PlateMenuItem, b: PlateMenuItem) => {
+          if (a.orderNumber! > b.orderNumber!)
+            return -1;
+          else
+            return 1;
+        })
+        break;
+      default:
+        break;
+    }
+
+    if (this.showSortOverlay)
+      this.showSortOverlay = false;
   }
 
   public onSubmit(): void {
@@ -180,10 +284,13 @@ export class PlateComponent implements OnInit, OnDestroy {
     ItemComponentModule,
     ItemsOverlayComponentModule,
     ItemOverlayRowComponentModule,
-    RouterModule
+    RouterModule,
+    MenuModule,
   ],
   declarations: [PlateComponent],
   exports: [PlateComponent]
 })
 export class PlateComponentModule {
 }
+
+export type SortType = 'ORDER_DESC' | 'ORDER_ASC' | 'DATE_DESC' | 'DATE_ASC';
