@@ -45,6 +45,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   plates: Plate[] = [];
   categories: Category[] = [];
   menuItemOptions: TreeNode[] = [];
+  totalRecords: number = 0;
   public toggleCompleted: boolean = false;
 
   platesOptions: any[] = [];
@@ -154,6 +155,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     if (this.table) {
       this.table.filterGlobal(event.target.value, 'contains');
     }
+  }
+
+  loadItems(event: any) {
+    this._loadPlateMenuItems(this.toggleCompleted, event.first, event.rows);
   }
 
   openNew() {
@@ -273,9 +278,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     return color;
   }
 
-  private _loadPlateMenuItems(completed: boolean) {
-    this._pkmisSub = this._plateMenuItemsService.getAll(completed).subscribe(data => {
-      this.plateMenuItems = data;
+  private _loadPlateMenuItems(completed: boolean, offset?: number, size?: number) {
+    this._pkmisSub = this._plateMenuItemsService.getAllPaged(completed, offset ?? 0, size ?? 10).subscribe(data => {
+      this.plateMenuItems = data.elements;
+      this.totalRecords = data.totalSize;
 
       this.pkmiRows = this.plateMenuItems.map((plateMenuItem: PlateMenuItem) => {
         return this._getPkmiRow(plateMenuItem);

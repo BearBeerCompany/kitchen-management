@@ -1,4 +1,4 @@
-import {map, Observable} from "rxjs";
+import {map, Observable, of} from "rxjs";
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Category, MenuItem, MenuItemExtended, PlateMenuItem} from '../../plate-menu-items/plate-menu-item';
@@ -6,6 +6,7 @@ import { CRUDService } from "../interface/crud-service.interface";
 import { RequestService } from "./request.service";
 import { ApiResourceEnum } from "./api-resource.enum";
 import {TreeNode} from "primeng/api";
+import { Page } from "../interface/page.interface";
 
 @Injectable()
 export class PlateMenuItemsService extends RequestService implements CRUDService<PlateMenuItem> {
@@ -15,9 +16,17 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   }
 
   public getAll(completed: boolean = false): Observable<PlateMenuItem[]> {
-    return this._http.get(this._getUrl() + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}`, RequestService.baseHttpOptions).pipe(
+    return of([] as PlateMenuItem[]);
+  }
+
+  public getAllPaged(completed: boolean = false, offset: number, size: number): Observable<Page<PlateMenuItem>> {
+    const uri: string = this._getUrl() + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}` 
+      + `&size=${size}`
+      + `&page=${offset > 0 ? size / offset : 0}`;
+
+    return this._http.get(uri, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
-        return (res || []) as PlateMenuItem[];
+        return (res || {});
       })
     );
   }
