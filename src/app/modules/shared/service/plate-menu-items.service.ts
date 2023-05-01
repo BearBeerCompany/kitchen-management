@@ -22,7 +22,7 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   public getAllPaged(completed: boolean = false, offset: number, size: number): Observable<Page<PlateMenuItem>> {
     const uri: string = this._getUrl() + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}` 
       + `&size=${size}`
-      + `&page=${offset > 0 ? size / offset : 0}`;
+      + `&page=${offset > 0 ? offset / size : 0}`;
 
     return this._http.get(uri, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
