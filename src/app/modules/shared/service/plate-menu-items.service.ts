@@ -1,11 +1,11 @@
-import {map, Observable, of} from "rxjs";
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Category, MenuItem, MenuItemExtended, PlateMenuItem} from '../../plate-menu-items/plate-menu-item';
+import { map, Observable, of } from "rxjs";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Category, MenuItem, MenuItemExtended, PlateMenuItem } from '../../plate-menu-items/plate-menu-item';
 import { CRUDService } from "../interface/crud-service.interface";
 import { RequestService } from "./request.service";
 import { ApiResourceEnum } from "./api-resource.enum";
-import {TreeNode} from "primeng/api";
+import { TreeNode } from "primeng/api";
 import { Page } from "../interface/page.interface";
 
 @Injectable()
@@ -15,14 +15,35 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
     super(ApiResourceEnum.PLATE_MENU_ITEM);
   }
 
+  /* 
+    @deprecated since version 2.0, use method getAllPaged instead.
+  */
   public getAll(completed: boolean = false): Observable<PlateMenuItem[]> {
     return of([] as PlateMenuItem[]);
   }
 
-  public getAllPaged(completed: boolean = false, offset: number, size: number): Observable<Page<PlateMenuItem>> {
-    const uri: string = this._getUrl() + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}` 
-      + `&size=${size}`
-      + `&page=${offset > 0 ? offset / size : 0}`;
+  public getAllPaged(completed: boolean = false, event: any): Observable<Page<PlateMenuItem>> {
+    let uri: string = this._getUrl()
+      + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}`
+      + `&offset=${event?.first ?? 0}`
+      + `&size=${event?.rows ?? 10}`;
+
+    if (event?.filters?.tableNumber?.[0]?.value != undefined) {
+      uri = uri + `&tableNumber=${event.filters.tableNumber[0].value}`
+    }
+
+    if (event?.filters?.clientName?.[0]?.value != undefined) {
+      uri = uri + `&clientName=${event.filters.clientName[0].value}`
+    }
+
+    if (event?.filters?.menuItemId?.[0]?.value != undefined) {
+      uri = uri + `&itemId=${event.filters.menuItemId[0].value}`
+    }
+
+    if (event?.filters?.orderNumber?.[0]?.value != undefined) {
+      uri = uri + `&orderNumber=${event.filters.orderNumber[0].value}`
+    }
+
 
     return this._http.get(uri, RequestService.baseHttpOptions).pipe(
       map((res: any) => {
@@ -123,7 +144,7 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   public static getCategoryMenuItemTreeNodeOptions(categories: Category[], items: MenuItem[]): TreeNode[] {
     const optionsTree: TreeNode[] = [];
     optionsTree.push(...categories.map(category => {
-      return  {
+      return {
         key: category.id,
         label: category.name,
         data: category,
@@ -153,7 +174,7 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
   public static getCategoryMenuItemTreeNodes(categories: Category[], items: MenuItem[]): Category[] {
     const treeNodes: any[] = [];
     treeNodes.push(...categories.map(category => {
-      return  {
+      return {
         ...category,
         menuItems: []
       } as TreeNode;

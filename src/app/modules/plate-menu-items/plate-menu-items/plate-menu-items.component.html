@@ -45,52 +45,44 @@
       <th style="width: 3rem">
         <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
       </th>
-      <th pSortableColumn="menuItem.label">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Prodotto
-          <p-sortIcon field="menuItem.label"></p-sortIcon>
-          <p-columnFilter type="text" field="menuItem.label" display="menu"></p-columnFilter>
+          <p-columnFilter type="text" field="menuItemId" display="menu" [showAddButton]="false"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="menuItem.parent.data.name">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Categoria
-          <p-sortIcon field="menuItem.parent.data.name"></p-sortIcon>
-          <p-columnFilter type="text" field="menuItem.parent.data.name" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="orderNumber">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
-          Ordine #
-          <p-sortIcon field="orderNumber"></p-sortIcon>
-          <p-columnFilter type="numeric" field="orderNumber" display="menu"></p-columnFilter>
+          Ordine
+          <p-columnFilter type="numeric" field="orderNumber" display="menu" [showAddButton]="false"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="tableNumber">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
-          Tavolo #
-          <p-sortIcon field="tableNumber"></p-sortIcon>
-          <p-columnFilter type="text" field="tableNumber" display="menu"></p-columnFilter>
+          Tavolo
+          <p-columnFilter type="text" field="tableNumber" display="menu" [showAddButton]="false"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="clientName">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Nome Cliente
-          <p-sortIcon field="clientName"></p-sortIcon>
-          <p-columnFilter type="text" field="clientName" display="menu"></p-columnFilter>
+          <p-columnFilter type="text" field="clientName" display="menu" [showAddButton]="false"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="createdDate">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Data
-          <p-sortIcon field="createdDate"></p-sortIcon>
-          <p-columnFilter type="date" field="createdDate" display="menu"></p-columnFilter>
         </div>
       </th>
-      <th pSortableColumn="status">
+      <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Stato
-          <p-sortIcon field="status"></p-sortIcon>
+          <!--
           <p-columnFilter field="status" matchMode="equals" display="menu">
             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
               <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
@@ -101,18 +93,17 @@
               </p-dropdown>
             </ng-template>
           </p-columnFilter>
+          -->
         </div>
       </th>
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Piastra
-          <p-columnFilter type="text" field="plate" display="menu"></p-columnFilter>
         </div>
       </th>
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
           Note
-          <p-columnFilter type="text" field="notes" display="menu"></p-columnFilter>
         </div>
       </th>
       <th style="width: 8rem"></th>

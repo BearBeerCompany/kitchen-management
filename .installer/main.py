@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 import requests
 import tarfile
+from docker import check_if_installed, check_if_mongo
 
 sg.theme("Reddit")
 layout = [
@@ -16,7 +17,7 @@ layout = [
 window = sg.Window('Gestione Piastre Installer', layout, size=(600, 600))
 folder = ""
 log = ""
-release_detail = "https://api.github.com/repos/bozzelliandrea/kitchen-management/releases/tags/v0.0.1-RC1"
+release_detail = "https://api.github.com/repos/BearBeerCompany/kitchen-management/releases/tags/v0.0.1-RC1"
 current_size = 0
 file_total_size = 0
 file_chunk_size = 500000
@@ -66,6 +67,8 @@ def extract_tar(file_path):
 
 
 if __name__ == "__main__":
+    print(check_if_installed())
+    print(check_if_mongo())
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:

@@ -81,7 +81,6 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         this.menuItems = data;
         this.menuItemOptions = PlateMenuItemsService.getCategoryMenuItemTreeNodeOptions(this.categories, data);
 
-        this._loadPlateMenuItems(false);
         this.loading = false;
       });
     });
@@ -120,7 +119,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         switch (notification.type) {
           case PKMINotificationType.PKMI_ADD:
           case PKMINotificationType.PKMI_ADD_ALL:
-            this._loadPlateMenuItems(false);
+            this._loadPlateMenuItems(false, null);
             break;
           case PKMINotificationType.PKMI_UPDATE:
             this._updateItem(notification.plateKitchenMenuItem);
@@ -148,7 +147,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
 
   viewCompletedPlateMenuItems() {
     this.toggleCompleted = !this.toggleCompleted;
-    this._loadPlateMenuItems(this.toggleCompleted);
+    this._loadPlateMenuItems(this.toggleCompleted, null);
   }
 
   filterGlobal(event: any) {
@@ -158,7 +157,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   }
 
   loadItems(event: any) {
-    this._loadPlateMenuItems(this.toggleCompleted, event.first, event.rows);
+    console.log(event);
+    this._loadPlateMenuItems(this.toggleCompleted, event);
   }
 
   openNew() {
@@ -278,8 +278,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     return color;
   }
 
-  private _loadPlateMenuItems(completed: boolean, offset?: number, size?: number) {
-    this._pkmisSub = this._plateMenuItemsService.getAllPaged(completed, offset ?? 0, size ?? 10).subscribe(data => {
+  private _loadPlateMenuItems(completed: boolean, event: any) {
+
+    this._pkmisSub = this._plateMenuItemsService.getAllPaged(completed, event).subscribe(data => {
       this.plateMenuItems = data.elements;
       this.totalRecords = data.totalSize;
 
