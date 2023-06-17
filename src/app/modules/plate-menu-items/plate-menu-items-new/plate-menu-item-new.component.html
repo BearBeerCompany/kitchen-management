@@ -58,10 +58,12 @@
     </p-toolbar>
 
     <p-table #dt
-             [value]="plateMenuItems" [(selection)]="selectedPlateMenuItems" dataKey="id" styleClass="p-datatable-orders"
+             [value]="plateMenuItems" 
+             selectionMode="multiple"
+             [(selection)]="selectedPlateMenuItems" 
+             dataKey="id" 
+             styleClass="p-datatable-orders"
              [rowHover]="true"
-             [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]"
-             [paginator]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
              [filterDelay]="0"
              editMode="row"
     >
@@ -95,7 +97,7 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
-        <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
+        <tr [pEditableRow]="plateMenuItem" [pSelectableRow]="plateMenuItem" [pSelectableRowIndex]="ri" class="p-selectable-row">
           <td>
             <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
           </td>
