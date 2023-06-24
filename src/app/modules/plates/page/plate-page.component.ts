@@ -44,6 +44,10 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
               font-size: 20px;
             }
           }
+
+          .item_container {
+            font-size: 40px;
+          }
         }
       }
     }

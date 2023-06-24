@@ -38,13 +38,23 @@
 
     text-transform: capitalize;
     font-weight: bold;
-    color: #F11919;
 
     @include center-flex;
 
-    background: rgba(241, 25, 25, 0.3);
     border-radius: 0 20px 0 0;
     border-bottom: 1px solid black;
+  }
+
+  .item_order_exp {
+    width: 100%;
+    height: 100%;
+    grid-column: 2/2;
+    grid-row: 1/2;
+
+    text-transform: capitalize;
+    font-weight: bold;
+
+    @include center-flex;
   }
 
   .item_note {

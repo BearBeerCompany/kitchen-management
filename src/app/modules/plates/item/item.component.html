@@ -5,7 +5,10 @@
        tooltipPosition="top"></i>
     {{config.menuItem.name}}
   </span>
-  <span class="item_order">#{{config.orderNumber}}</span>
+  <span class="item_order" *ngIf="!readonly; else itemOrderExpanded">#{{config.orderNumber}}</span>
+  <ng-template #itemOrderExpanded>
+    <span class="item_order_exp">#{{config.orderNumber}}, {{config.tableNumber}}, {{config.clientName}}</span>
+  </ng-template>
   <span class="item_note">
     {{config.notes}}
   </span>
