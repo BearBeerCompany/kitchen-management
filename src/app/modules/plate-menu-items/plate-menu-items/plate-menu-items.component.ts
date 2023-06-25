@@ -294,20 +294,21 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     const updItemId = plateMenuItem.id;
     const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === updItemId);
     const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
-
-    this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
-    const updatedItem = {
-      ...this.pkmiRows[pkmiRowIndex],
-      ...this._getPkmiRow(plateMenuItem)
-    };
-    // update fields to refresh row
-    this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
-    this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
-    this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
-    this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
-    this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
-    this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
-    this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
+    if (pkmiRowIndex > -1) {
+      this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
+      const updatedItem = {
+        ...this.pkmiRows[pkmiRowIndex],
+        ...this._getPkmiRow(plateMenuItem)
+      };
+      // update fields to refresh row
+      this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
+      this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
+      this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
+      this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
+      this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
+      this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
+      this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
+    }
   }
 
   private _updateItems(ids: string[]) {
