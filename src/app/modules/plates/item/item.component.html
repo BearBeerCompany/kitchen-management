@@ -7,7 +7,7 @@
   </span>
   <span class="item_order" *ngIf="!readonly; else itemOrderExpanded">#{{config.orderNumber}}</span>
   <ng-template #itemOrderExpanded>
-    <span class="item_order_exp">#{{config.orderNumber}}, {{config.tableNumber}}, {{config.clientName}}</span>
+    <span class="item_order_exp">#{{config.orderNumber}}, T: {{config.tableNumber}}</span>
   </ng-template>
   <span class="item_note">
     {{config.notes}}
