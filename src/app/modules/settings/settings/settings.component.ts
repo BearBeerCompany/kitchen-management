@@ -7,7 +7,9 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {StatsService} from "../../shared/service/stats.service";
 import {Stats, StatsChart} from "../../shared/interface/stats.interface";
 import {Status} from "../../plate-menu-items/plate-menu-item";
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
+import { GsgIntegrationService } from '../../shared/service/gsg-integration.service';
+import { GsgIntegrationResult } from '../../shared/interface/gsg-integration.interface';
 
 @Component({
   selector: 'settings',
@@ -29,12 +31,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public loading: boolean = false;
   public showEmpty: boolean = false;
 
-  private statsSub: Subscription = new Subscription();
+  private subs: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,
               private _platesService: PlateService,
               private _statsService: StatsService,
-              private _messageService: MessageService) {
+              private _messageService: MessageService,
+              private _gsgIntegrationService: GsgIntegrationService,
+              private _confirmationService: ConfirmationService) {
     this.i18n = i18nService.instance;
   }
 
@@ -47,13 +51,30 @@ export class SettingsComponent implements OnInit, OnDestroy {
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
 
-    this.statsSub = this._statsService.getTodayStats().subscribe((stats: Stats[]) => {
-      this._loadDiagramData(stats);
-    });
+    this.subs.add(
+      this._statsService.getTodayStats().subscribe((stats: Stats[]) => {
+        this._loadDiagramData(stats);
+      })
+    );
   }
 
   public ngOnDestroy(): void {
-    this.statsSub.unsubscribe();
+    this.subs.unsubscribe();
+  }
+
+  public onGSGInit() {
+    this._confirmationService.confirm({
+      message: `Confermi di voler inizializzare categorie e voci di menù da GSG? 
+      Così perderai i dati di ordini, categorie e voci di menù!`,
+      accept: () => {
+        // todo call init service
+        this.subs.add(
+          this._gsgIntegrationService.initGsg().subscribe((res: GsgIntegrationResult) => {
+            console.log(res);
+          })
+        );
+      }
+    });
   }
 
   public onDelete(id: string): void {
@@ -95,7 +116,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public searchByDate(): void {
     this.loading = true;
-    this.statsSub = this._statsService.getStats(StatsService.getDateFormatted(this.dateFrom),
+    this.subs.add(
+      this._statsService.getStats(StatsService.getDateFormatted(this.dateFrom),
       StatsService.getDateFormatted(this.dateTo))
       .subscribe({
         next: (stats: Stats[]) => {
@@ -113,7 +135,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
           });
           this.loading = false;
         }
-      });
+      })
+    );
   }
 
   public onSwitchPlate(event: { id: string, enable: boolean }) {

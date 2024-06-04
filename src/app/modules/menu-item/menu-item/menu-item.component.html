@@ -1,13 +1,5 @@
 <p-toast></p-toast>
 <h3>Gestione Menù</h3>
-<div style="display: flex; justify-content: flex-start; margin-left: 3rem">
-  <button pButton pRipple label="Inizializzazione GSG"
-  icon="pi pi-plus"
-  class="p-button-info"
-  (click)="onGSGInit()">
-</button>
-</div>
-
 <section>
   <category [categories]="(categories$ | async)!"
             [active]="selectedCategory"
@@ -101,7 +93,7 @@
     </div>
   </form>
 </p-dialog>
-<p-confirmDialog header="Conferma"
+<p-confirmDialog header="Conferma eliminazione"
                  icon="pi pi-exclamation-triangle"
                  acceptLabel="Si"
                  rejectLabel="No">

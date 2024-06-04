@@ -53,15 +53,6 @@ export class MenuItemComponent implements OnInit {
     });
   }
 
-  public onGSGInit() {
-    this._confirmationService.confirm({
-      message: 'Confermi di voler inizializzare categorie e voci di menù da GSG?',
-      accept: () => {
-        // todo call init service
-      }
-    });
-  }
-
   public onCategorySelect(category: Category) {
     this.items$ = this._categoryService.getItemsByCategoryId(category.id!);
     this.selectedCategory = category;
