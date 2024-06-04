@@ -4,6 +4,7 @@
       <tr>
         <th [style]="{'width':'50%'}">Nome</th>
         <th>Descrizione</th>
+        <th>Id esterno (GSG)</th>
         <th></th>
       </tr>
     </ng-template>
@@ -26,6 +27,16 @@
             </ng-template>
             <ng-template pTemplate="output">
               {{item.description}}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="number" [(ngModel)]="item.externalId">
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{item.externalId}}
             </ng-template>
           </p-cellEditor>
         </td>

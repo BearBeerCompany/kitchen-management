@@ -1,5 +1,13 @@
 <p-toast></p-toast>
 <h3>Gestione Menù</h3>
+<div style="display: flex; justify-content: flex-start; margin-left: 3rem">
+  <button pButton pRipple label="Inizializzazione GSG"
+  icon="pi pi-plus"
+  class="p-button-info"
+  (click)="onGSGInit()">
+</button>
+</div>
+
 <section>
   <category [categories]="(categories$ | async)!"
             [active]="selectedCategory"
@@ -46,8 +54,11 @@
            pInputText
            type="text">
     <label>Colore</label>
-    <p-colorPicker [inline]="true"
-                   formControlName="color"></p-colorPicker>
+    <p-colorPicker [inline]="true" formControlName="color"></p-colorPicker>
+    <label>Identificativo esterno</label>
+    <input formControlName="externalId"
+           pInputText
+           type="number">
     <div class="confirm-form">
       <button (click)="discardCategoryForm()"
               [label]="i18n.COMMON.UNDO"
@@ -74,6 +85,10 @@
            pInputText
            type="text">
     <p class="form-category_title">Categoria: <span>{{selectedCategory?.name}}</span></p>
+    <label>Identificativo esterno</label>
+    <input formControlName="externalId"
+           pInputText
+           type="number">
     <div class="confirm-form">
       <button (click)="discardMenuItemForm()"
               [label]="i18n.COMMON.UNDO"
@@ -86,7 +101,7 @@
     </div>
   </form>
 </p-dialog>
-<p-confirmDialog header="Conferma Eliminazione"
+<p-confirmDialog header="Conferma"
                  icon="pi pi-exclamation-triangle"
                  acceptLabel="Si"
                  rejectLabel="No">
