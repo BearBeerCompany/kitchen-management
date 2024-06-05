@@ -40,14 +40,16 @@ export class MenuItemComponent implements OnInit {
       name: new FormControl("", Validators.required),
       description: new FormControl("", Validators.required),
       color: new FormControl("", Validators.required),
-      id: new FormControl(null)
+      id: new FormControl(null),
+      externalId: new FormControl(-1)
     });
 
     this.menuItemForm = new FormGroup({
       name: new FormControl("", Validators.required),
       description: new FormControl("", Validators.required),
       id: new FormControl(null),
-      categoryId: new FormControl(null)
+      categoryId: new FormControl(null),
+      externalId: new FormControl(-1)
     });
   }
 
@@ -114,6 +116,7 @@ export class MenuItemComponent implements OnInit {
     this.categoryForm!.get('description')?.setValue(this.selectedCategory?.description);
     this.categoryForm!.get('color')?.setValue(this.selectedCategory?.color);
     this.categoryForm!.get('id')?.setValue(this.selectedCategory?.id);
+    this.categoryForm!.get('externalId')?.setValue(this.selectedCategory?.externalId);
     this.categoryDisplay = true;
     this.isEdit = true;
   }
@@ -152,6 +155,7 @@ export class MenuItemComponent implements OnInit {
     this.menuItemForm?.get("name")?.setValue(item.name);
     this.menuItemForm?.get("description")?.setValue(item.description);
     this.menuItemForm?.get("id")?.setValue(item.id);
+    this.menuItemForm?.get("externalId")?.setValue(item.externalId);
     this.onMenuItemSubmit();
   }
 

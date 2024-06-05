@@ -3,5 +3,6 @@ export enum ApiResourceEnum {
     KITCHEN_MENU_ITEM = "item",
     PLATE = "plate",
     PLATE_MENU_ITEM = "plate-item",
-    STATS = "stats"
+    STATS = "stats",
+    GSG_INTEGRATION = "gsg"
 }

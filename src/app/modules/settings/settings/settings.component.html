@@ -1,6 +1,14 @@
 <p-toast></p-toast>
 <h3>{{i18n.SETTINGS.TITLE}}</h3>
 <main>
+  <div style="display: flex; justify-content: flex-start;">
+    <button pButton pRipple label="Inizializzazione GSG"
+      icon="pi pi-plus"
+      class="p-button-info"
+      (click)="onGSGInit()">
+    </button>
+  </div>
+  <h3>Statistiche</h3>
   <div class="stats_container">
     <div class="stats_numbers_container">
       <span>Selezionata una data per vedere le statistiche degli ordini</span>
@@ -73,3 +81,8 @@
     </div>
   </form>
 </p-dialog>
+<p-confirmDialog header="Conferma"
+                 icon="pi pi-exclamation-triangle"
+                 acceptLabel="Si"
+                 rejectLabel="No">
+</p-confirmDialog>

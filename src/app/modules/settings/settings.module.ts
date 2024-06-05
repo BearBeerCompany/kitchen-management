@@ -11,8 +11,9 @@ import {InputNumberModule} from "primeng/inputnumber";
 import {ColorPickerModule} from "primeng/colorpicker";
 import {ChartModule} from 'primeng/chart';
 import {CalendarModule} from 'primeng/calendar';
-import {MessageService} from "primeng/api";
+import {ConfirmationService, MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 const routes: Routes = [
   {
@@ -38,9 +39,10 @@ const routes: Routes = [
     ChartModule,
     CalendarModule,
     FormsModule,
-    ToastModule
+    ToastModule,
+    ConfirmDialogModule
   ],
-  providers: [MessageService]
+  providers: [MessageService, ConfirmationService]
 })
 export class SettingsModule {
 }

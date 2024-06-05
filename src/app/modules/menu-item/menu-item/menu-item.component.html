@@ -46,8 +46,11 @@
            pInputText
            type="text">
     <label>Colore</label>
-    <p-colorPicker [inline]="true"
-                   formControlName="color"></p-colorPicker>
+    <p-colorPicker [inline]="true" formControlName="color"></p-colorPicker>
+    <label>Identificativo esterno</label>
+    <input formControlName="externalId"
+           pInputText
+           type="number">
     <div class="confirm-form">
       <button (click)="discardCategoryForm()"
               [label]="i18n.COMMON.UNDO"
@@ -74,6 +77,10 @@
            pInputText
            type="text">
     <p class="form-category_title">Categoria: <span>{{selectedCategory?.name}}</span></p>
+    <label>Identificativo esterno</label>
+    <input formControlName="externalId"
+           pInputText
+           type="number">
     <div class="confirm-form">
       <button (click)="discardMenuItemForm()"
               [label]="i18n.COMMON.UNDO"
@@ -86,7 +93,7 @@
     </div>
   </form>
 </p-dialog>
-<p-confirmDialog header="Conferma Eliminazione"
+<p-confirmDialog header="Conferma eliminazione"
                  icon="pi pi-exclamation-triangle"
                  acceptLabel="Si"
                  rejectLabel="No">
