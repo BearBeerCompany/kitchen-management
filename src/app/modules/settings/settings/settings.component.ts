@@ -64,13 +64,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public onGSGInit() {
     this._confirmationService.confirm({
-      message: `Confermi di voler inizializzare categorie e voci di menù da GSG? 
-      Così perderai i dati di ordini, categorie e voci di menù!`,
+      message: `Confermi di voler inizializzare categorie e voci di menù da GSG?\nCosì perderai i dati di ordini, categorie e voci di menù!`,
       accept: () => {
-        // todo call init service
         this.subs.add(
           this._gsgIntegrationService.initGsg().subscribe((res: GsgIntegrationResult) => {
             console.log(res);
+            this._messageService.add({
+              severity: 'success',
+              summary: 'App inizializzata',
+              detail: `L'applicazione è stata inizializzata da GSG correttamente`
+            });
           })
         );
       }
