@@ -9,8 +9,10 @@ export interface PlateMenuItem {
   menuItem: MenuItem;
   plate?: Plate | null;
   status: PlateMenuItemAction;
+  takeAway?: boolean;
   createdDate: string | null;
   notes?: string;
+  orderNotes?: string;
   clientName: string;
   tableNumber: string;
   source?: PlateMenuItemSource;
