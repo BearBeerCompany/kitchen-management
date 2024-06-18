@@ -90,6 +90,18 @@ export class ItemComponent implements OnInit {
     this.onCancelEvent.emit(event);
     this.toggleOverlay();
   }
+
+  public getNotes(config: PlateMenuItem): string {
+    let result = '';
+    if (config.orderNotes && config.orderNotes.length) {
+      result = config.orderNotes.trim();
+    }
+    if (config.notes && config.notes.length) {
+      if (result.length) result += ' / ';
+      result += config.notes.trim();
+    }
+    return result;
+  }
 }
 
 @NgModule({
