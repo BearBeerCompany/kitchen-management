@@ -49,6 +49,10 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   public toggleCompleted: boolean = false;
 
   platesOptions: any[] = [];
+  takeAwayOptions: any[] = [
+    { code: true, label: 'SI', value: true },
+    { code: false, label: 'NO', value: false }, 
+  ];
 
   @ViewChild('dt') table: Table | undefined;
 
@@ -219,7 +223,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         menuItem,
         createdDate: pkmiRow.createdDate,
         status: pkmiRow.status,
+        takeAway: pkmiRow.takeAway,
         notes: pkmiRow.notes,
+        orderNotes: pkmiRow.orderNotes,
         plate
       };
 
@@ -308,6 +314,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
       this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
       this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
+      this.pkmiRows[pkmiRowIndex].orderNotes = updatedItem.orderNotes;
+      this.pkmiRows[pkmiRowIndex].takeAway = updatedItem.takeAway;
     }
   }
 
@@ -342,7 +350,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       createdDate: plateMenuItem.createdDate,
       status: plateMenuItem.status,
       plate: plateMenuItem.plate?.name,
-      notes: plateMenuItem.notes
+      takeAway: plateMenuItem.takeAway,
+      notes: plateMenuItem.notes,
+      orderNotes: plateMenuItem.orderNotes
     };
   }
 

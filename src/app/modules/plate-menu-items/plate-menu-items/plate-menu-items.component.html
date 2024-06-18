@@ -103,7 +103,17 @@
       </th>
       <th>
         <div class="p-d-flex p-jc-between p-ai-center">
-          Note
+          Asporto
+        </div>
+      </th>
+      <th>
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Note Panino
+        </div>
+      </th>
+      <th>
+        <div class="p-d-flex p-jc-between p-ai-center">
+          Note Ordine
         </div>
       </th>
       <th style="width: 8rem"></th>
@@ -191,6 +201,26 @@
           </ng-template>
           <ng-template pTemplate="output">
             <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem?.plate)}">{{plateMenuItem?.plate}}</span>
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <p-dropdown [options]="takeAwayOptions" [(ngModel)]="plateMenuItem.takeAway" [style]="{'width':'100%'}"></p-dropdown>
+          </ng-template>
+          <ng-template pTemplate="output">
+            <span>{{plateMenuItem?.takeAway ? 'SI' : ''}}</span>
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td>
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <input pInputText type="text" [(ngModel)]="plateMenuItem.orderNotes">
+          </ng-template>
+          <ng-template pTemplate="output">
+            {{plateMenuItem?.orderNotes}}
           </ng-template>
         </p-cellEditor>
       </td>
