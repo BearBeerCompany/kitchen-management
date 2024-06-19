@@ -13,6 +13,7 @@ export class WebSocketService {
   greetingsTopic: string = environment.webSocket.defaultTopic;
   pkmiTopic: string = environment.webSocket.pkmiTopic;
   stompClient: any;
+  interval: any;
 
   private _pkmiNotifications$: BehaviorSubject<PKMINotification | null> = new BehaviorSubject<PKMINotification | null>(null);
 
@@ -26,6 +27,9 @@ export class WebSocketService {
     this.stompClient = Stomp.over(ws);
     const _this = this;
     _this.stompClient.connect({}, () => {
+      //if (!!this.interval) {
+      //  clearInterval(this.interval);
+      //}
       _this.stompClient.subscribe(_this.greetingsTopic, (event: any) => {
         _this.onNotificationReceived(event);
       });
@@ -34,7 +38,9 @@ export class WebSocketService {
         _this.onPKMINotificationReceived(event);
       });
       //_this.stompClient.reconnect_delay = 2000;
-    }, this.errorCallback);
+    }, (error: any) => {
+      this.errorCallback(error);
+    });
   };
 
   disconnect() {
@@ -48,9 +54,10 @@ export class WebSocketService {
   errorCallback(error: any) {
     console.log("errorCallBack -> " + error);
     const _this = this;
-    setTimeout(() => {
-      _this.connect();
-    }, 5000);
+    this.interval = setTimeout(() => {
+      //_this.connect();
+      location.reload();
+    }, 10000);
   }
 
   /**
