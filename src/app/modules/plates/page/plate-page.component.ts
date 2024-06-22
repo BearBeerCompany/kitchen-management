@@ -57,6 +57,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
 
   public config!: Plate;
   public queue: ReactiveQueue<PlateMenuItem> = new ReactiveQueue<PlateMenuItem>();
+  public showNotify: boolean = false;
 
   private _subs: Subscription = new Subscription();
   private _id?: string;
@@ -99,15 +100,17 @@ export class PlatePageComponent implements OnInit, OnDestroy {
 
     this._subs.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
-        console.log('plate page notification: ' + notification?.type);
+        console.log('plate page notification: ' + notification);
         if (notification) {
-          const msgData = WebSocketService.getNotificationMsgData(notification);
-          this._messageService.add({
-            severity: msgData.severity,
-            summary: msgData.summary,
-            detail: msgData.detail,
-            life: 3000
-          });
+          if (this.showNotify) {
+            const msgData = WebSocketService.getNotificationMsgData(notification);
+            this._messageService.add({
+              severity: msgData.severity,
+              summary: msgData.summary,
+              detail: msgData.detail,
+              life: 3000
+            });
+          }
 
           this._refreshPlateQueue();
         }

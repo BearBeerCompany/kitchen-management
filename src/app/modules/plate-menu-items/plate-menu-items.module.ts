@@ -22,6 +22,7 @@ import {CardModule} from "primeng/card";
 import {TabViewModule} from "primeng/tabview";
 import {SplitButtonModule} from "primeng/splitbutton";
 import {DragDropModule} from "primeng/dragdrop";
+import { InputSwitchModule } from 'primeng/inputswitch';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,9 @@ import {DragDropModule} from "primeng/dragdrop";
     CardModule,
     TabViewModule,
     SplitButtonModule,
-    DragDropModule
+    DragDropModule,
+    InputSwitchModule,
+    FormsModule
   ],
   providers: [MessageService, ConfirmationService, DatePipe]
 })

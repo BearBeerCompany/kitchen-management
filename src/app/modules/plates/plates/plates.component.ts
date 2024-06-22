@@ -31,6 +31,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public unassignedItems: PlateMenuItem[] = [];
   public pages: number[] = [];
   public loading: boolean = true;
+  public showNotify: boolean = false;
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
@@ -61,13 +62,15 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
         console.log('plate page notification: ' + notification?.type);
         if (notification) {
-          const msgData = WebSocketService.getNotificationMsgData(notification);
-          this._messageService.add({
-            severity: msgData.severity,
-            summary: msgData.summary,
-            detail: msgData.detail,
-            life: 3000
-          });
+          if (this.showNotify) {
+            const msgData = WebSocketService.getNotificationMsgData(notification);
+            this._messageService.add({
+              severity: msgData.severity,
+              summary: msgData.summary,
+              detail: msgData.detail,
+              life: 3000
+            });
+          }
 
           this._refreshPlateQueues();
         }

@@ -9,6 +9,8 @@ import {BadgeModule} from "primeng/badge";
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from "primeng/api";
 import {ItemsOverlayComponentModule} from "./items-overlay/items-overlay.component";
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { FormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -33,7 +35,9 @@ const routes: Routes = [
     PlateComponentModule,
     ItemComponentModule,
     ItemsOverlayComponentModule,
-    ToastModule
+    ToastModule,
+    InputSwitchModule,
+    FormsModule
   ],
   providers: [MessageService]
 })
