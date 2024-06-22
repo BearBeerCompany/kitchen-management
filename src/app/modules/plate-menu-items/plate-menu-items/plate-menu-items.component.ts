@@ -47,6 +47,7 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   menuItemOptions: TreeNode[] = [];
   totalRecords: number = 0;
   public toggleCompleted: boolean = false;
+  public showNotify: boolean = false;
 
   platesOptions: any[] = [];
   takeAwayOptions: any[] = [
@@ -111,13 +112,15 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this._pkmiNotificationSub = this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
       console.log('plate - menuitem page notification: ' + notification?.type);
       if (notification) {
-        const msgData = WebSocketService.getNotificationMsgData(notification);
-        this._messageService.add({
-          severity: msgData.severity,
-          summary: msgData.summary,
-          detail: msgData.detail,
-          life: 3000
-        });
+        if (this.showNotify) {
+          const msgData = WebSocketService.getNotificationMsgData(notification);
+          this._messageService.add({
+            severity: msgData.severity,
+            summary: msgData.summary,
+            detail: msgData.detail,
+            life: 3000
+          });
+        }
 
         this.loading = true;
         switch (notification.type) {
