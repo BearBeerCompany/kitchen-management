@@ -12,6 +12,8 @@
   grid-template-columns: 1fr;
   position: relative;
 
+  padding-right: 5px;
+
   .item_title {
     grid-column: 1/1;
     grid-row: 1/2;
