@@ -18,7 +18,7 @@ import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.servi
 export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public readonly i18n: any;
-  public readonly DISPLAY_CHUNK = 4;
+  public readonly DISPLAY_CHUNK = 5;
 
   public plateMode: typeof PlateInterface = mode();
   public hidePrevious: boolean = true;
