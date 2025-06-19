@@ -6,13 +6,13 @@
     {{config.menuItem.name}}
   </span>
   <span class="item_order" *ngIf="!readonly; else itemOrderExpanded">
-    <img src="favicon.ico" *ngIf="config.takeAway" style="margin-right: 3rem;">
-    #{{config.orderNumber}}
+    <img src="assets/img/takeaway.png" *ngIf="config.takeAway" style="margin-right: 1rem; height: 30px;">
+    #{{config.orderNumber}} - T: {{config.tableNumber}}
   </span>
   <ng-template #itemOrderExpanded>
     <span class="item_order_exp">
-      <img src="favicon.ico" *ngIf="config.takeAway" style="margin-right: 3rem;">
-      #{{config.orderNumber}}, T: {{config.tableNumber}}
+      <img src="assets/img/takeaway.png" *ngIf="config.takeAway" style="margin-right: 1.5rem; height: 60px;">
+      #{{config.orderNumber}} - T: {{config.tableNumber}}
     </span>
   </ng-template>
   <span class="item_note">{{ getNotes(config) }}</span>
