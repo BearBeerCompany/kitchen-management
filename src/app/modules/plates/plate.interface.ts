@@ -33,6 +33,7 @@ export interface Plate {
   description?: string;
   label?: string;
   slot?: [number, number];
+  viewMode?: 'rows' | 'columns';
   _severity?: string;
   _status?: string;
 }

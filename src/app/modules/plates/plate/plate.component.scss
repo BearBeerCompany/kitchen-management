@@ -29,6 +29,28 @@ section {
         font-size: 25px;
       }
     }
+    .view-mode-button-container {
+      position: absolute;
+      top: 35px;
+      right: 270px;
+      width: 75px;
+      display: flex;
+      justify-content: space-between;
+
+      &.expanded {
+        top: 23px;
+        right: 180px;
+      }
+
+      .view-mode-button {
+        border: none;
+        background: none;
+        cursor: pointer;
+        i {
+          font-size: 25px;
+        }
+      }
+    }
   }
 
   #add-plate {
@@ -147,20 +169,27 @@ section {
   bottom: 0;
   top: auto;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
   item {
     flex: 1 0 calc(1% * var(--items-chunk));
-    max-height: 15%;
-
-    margin: 10px
+    margin: 10px;
   }
+
+  &.rows {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    item {
+      max-height: 15%;   
+    }
+  }
+  &.columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  overflow-y: auto;
+  overflow-x: hidden;  
 }
 
 .skeleton {

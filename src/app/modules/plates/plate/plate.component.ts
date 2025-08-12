@@ -44,6 +44,7 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   @Output() public onNew: EventEmitter<Plate> = new EventEmitter<Plate>(true);
   @Output() public onItemEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
+  @Output() public viewModeChange: EventEmitter<'rows'|'columns'> = new EventEmitter<'rows'|'columns'>();
 
   public readonly i18n: any;
 
@@ -60,6 +61,7 @@ export class PlateComponent implements OnInit, OnDestroy {
   public todoItems: PlateMenuItem[] = [];
   public sortingOptions: MenuItem[] = [];
   public selectedSortingType: SortType = "DATE_ASC";
+  public viewMode: 'rows' | 'columns' = 'rows';
 
   private queue$: Subscription = new Subscription();
   private _display_chunk: number = 20;
@@ -70,6 +72,7 @@ export class PlateComponent implements OnInit, OnDestroy {
               private _router: Router) {
     this.i18n = i18nService.instance;
     this._elementRef.nativeElement.style.setProperty("--items-chunk", this._display_chunk);
+    this.viewMode = this.showExpand ? 'rows' : 'columns';
   }
 
   public ngOnInit(): void {
@@ -77,6 +80,7 @@ export class PlateComponent implements OnInit, OnDestroy {
       params => {
         this.showExpand = !params["id"];
         this.readonly = !this.showExpand;
+        this.viewMode = 'columns'; // default is columns view mode for expanded plate
       }
     );
 
@@ -125,6 +129,8 @@ export class PlateComponent implements OnInit, OnDestroy {
           }
         ]
       }];
+
+      this.viewMode = this.config.viewMode || 'rows';
   }
 
   public ngOnDestroy(): void {
@@ -267,6 +273,13 @@ export class PlateComponent implements OnInit, OnDestroy {
 
     this.onItemEvent.emit(event);
   }
+
+  public onViewMode(mode: 'rows' | 'columns') {
+    this.viewMode = mode;
+    if (this.showExpand) {
+      this.viewModeChange.emit(mode);
+    }
+  }
 }
 
 @NgModule({
@@ -285,7 +298,7 @@ export class PlateComponent implements OnInit, OnDestroy {
     ItemsOverlayComponentModule,
     ItemOverlayRowComponentModule,
     RouterModule,
-    MenuModule,
+    MenuModule
   ],
   declarations: [PlateComponent],
   exports: [PlateComponent]

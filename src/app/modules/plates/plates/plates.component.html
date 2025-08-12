@@ -32,6 +32,7 @@
                                                      currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
       <plate (onNew)="onNewPlate($event)"
              (onItemEvent)="handleItemEvent($event)"
+             (viewModeChange)="onPlateViewModeChange($event, plate)"
              [config]="plate"
              [plateList]="getEnabledPlateList(plate)"
              [queue]="plateQueueManagerService.getQueue(plate.id!)">
