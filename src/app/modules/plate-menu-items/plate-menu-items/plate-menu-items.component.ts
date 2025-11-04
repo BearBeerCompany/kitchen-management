@@ -88,6 +88,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load settings from localStorage
+    this._loadSettingsFromLocalStorage();
+    
     this._categoriesSub = this._categoryService.getAll().subscribe(data => {
       this.categories = data;
 
@@ -522,6 +525,17 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  private _loadSettingsFromLocalStorage(): void {
+    const savedShowNotify = localStorage.getItem('plates_showNotify');
+    if (savedShowNotify !== null) {
+      this.showNotify = savedShowNotify === 'true';
+    }
+  }
+
+  onShowNotifyChange(): void {
+    localStorage.setItem('plates_showNotify', this.showNotify.toString());
   }
 
 }
