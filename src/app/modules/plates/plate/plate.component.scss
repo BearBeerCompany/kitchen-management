@@ -9,46 +9,178 @@ section {
 
   user-select: none;
 
+  // Stile generale per tutti i p-tag nella section
+  ::ng-deep p-tag {
+    .p-tag {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+
   header {
     position: fixed;
     top: 0;
+    z-index: 10;
+    
+    // Base styling from mixin
+    width: 100%;
+    height: 10%;
+    border-radius: 16px 16px 0 0;
+    opacity: 0.9;
+    
+    // Grid layout: singola riga
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-rows: 1fr;
+    gap: 0;
+    align-items: flex-start;
+    padding: 0.75rem 1rem;
 
-    @include info-plate;
+    .header-content {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding-top: 0.25rem;
 
-    .expand-button {
-      position: absolute;
-      right: 5px;
-      top: 20px;
+      h3 {
+        margin: 0;
+        padding: 0;
+        text-transform: uppercase;
+        font-size: 1.4rem;
+        font-weight: 700;
+        line-height: 1.1;
+        white-space: nowrap;
+      }
 
-      border: none;
-      background: none;
+      .header-badges {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        padding-top: 0.1rem;
 
-      cursor: pointer;
+        ::ng-deep .p-tag {
+          font-size: 0.8rem;
+          font-weight: 600;
+          padding: 0.35rem 0.65rem;
+          white-space: nowrap;
+          cursor: default;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+          border: 1.5px solid rgba(255, 255, 255, 0.6);
+          transition: all 0.15s ease;
+          line-height: 1.1;
 
-      i {
-        font-size: 25px;
+          &[data-tooltip] {
+            cursor: help;
+          }
+        }
       }
     }
-    .view-mode-button-container {
-      position: absolute;
-      top: 35px;
-      right: 270px;
-      width: 75px;
-      display: flex;
-      justify-content: space-between;
 
-      &.expanded {
-        top: 23px;
-        right: 180px;
+    // Quando la plate è espansa, centra il badge
+    &.expanded {
+      .header-content {
+        grid-column: 1 / 4;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+
+        h3 {
+          font-size: 1.6rem;
+        }
+
+        .header-badges {
+          align-items: center;
+          padding-top: 0;
+
+          ::ng-deep .p-tag {
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.45rem 0.85rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+
+            &:hover {
+              transform: translateY(-2px) scale(1.05);
+              box-shadow: 0 5px 14px rgba(0, 0, 0, 0.5);
+            }
+          }
+        }
+      }
+    }
+
+    .view-mode-button {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+      align-self: flex-start;
+      margin-top: 0.25rem;
+      border: none;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
       }
 
-      .view-mode-button {
-        border: none;
-        background: none;
-        cursor: pointer;
-        i {
-          font-size: 25px;
-        }
+      &:active {
+        transform: scale(0.95);
+      }
+
+      &.active {
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      i {
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.85);
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .expand-button {
+      grid-column: 3 / 4;
+      grid-row: 1 / 2;
+      border: none;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      padding: 0.4rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      align-self: flex-start;
+      margin-top: 0.25rem;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.08);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      i {
+        font-size: 18px;
+        color: rgba(0, 0, 0, 0.85);
       }
     }
   }
@@ -82,25 +214,7 @@ section {
     }
   }
 
-  p-tag {
-    position: fixed;
-    right: 50px;
-    top: 20px;
 
-    text-transform: uppercase;
-
-    &.delay-tag {
-      right: 200px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: help;
-      
-      &:hover {
-        transform: scale(1.05);
-        transition: transform 0.2s ease;
-      }
-    }
-  }
 
   .items-sort-badge {
     height: 2rem !important;
@@ -180,6 +294,7 @@ section {
   position: fixed;
   bottom: 0;
   top: auto;
+  z-index: 50;
 
   item {
     flex: 1 0 calc(1% * var(--items-chunk));

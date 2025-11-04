@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, NgModule, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, NgModule, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -27,7 +27,7 @@ import {MenuItem} from 'primeng/api';
   templateUrl: './plate.component.html',
   styleUrls: ['./plate.component.scss']
 })
-export class PlateComponent implements OnInit, OnDestroy {
+export class PlateComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() public config!: Plate;
   @Input() public plateList: Plate[] = [];
@@ -78,15 +78,30 @@ export class PlateComponent implements OnInit, OnDestroy {
               private _router: Router) {
     this.i18n = i18nService.instance;
     this._elementRef.nativeElement.style.setProperty("--items-chunk", this._display_chunk);
-    this.viewMode = this.showExpand ? 'rows' : 'columns';
+  }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    // Quando config viene settato o cambia, carica la view mode
+    if (changes['config'] && changes['config'].currentValue) {
+      this.loadViewModeFromStorage();
+    }
   }
 
   public ngOnInit(): void {
+    // Carica view mode da localStorage se config è già disponibile
+    if (this.config?.id) {
+      this.loadViewModeFromStorage();
+    }
+    
     this._route.params.subscribe(
       params => {
         this.showExpand = !params["id"];
         this.readonly = !this.showExpand;
-        this.viewMode = 'columns'; // default is columns view mode for expanded plate
+        
+        // Ricarica view mode dopo aver settato showExpand
+        if (this.config?.id) {
+          this.loadViewModeFromStorage();
+        }
       }
     );
 
@@ -291,10 +306,35 @@ export class PlateComponent implements OnInit, OnDestroy {
     this.onItemEvent.emit(event);
   }
 
-  public onViewMode(mode: 'rows' | 'columns') {
-    this.viewMode = mode;
+  public onViewMode(mode?: 'rows' | 'columns') {
+    // Se non è specificato il mode, togglea tra rows e columns
+    if (!mode) {
+      this.viewMode = this.viewMode === 'rows' ? 'columns' : 'rows';
+    } else {
+      this.viewMode = mode;
+    }
+    
+    // Salva in localStorage
+    localStorage.setItem(`plate_viewMode_${this.config?.id || 'default'}`, this.viewMode);
+    
     if (this.showExpand) {
-      this.viewModeChange.emit(mode);
+      this.viewModeChange.emit(this.viewMode);
+    }
+  }
+
+  private loadViewModeFromStorage(): void {
+    if (!this.config?.id) {
+      // Se non c'è ancora config, usa default
+      this.viewMode = 'columns';
+      return;
+    }
+    
+    const savedViewMode = localStorage.getItem(`plate_viewMode_${this.config.id}`);
+    if (savedViewMode === 'rows' || savedViewMode === 'columns') {
+      this.viewMode = savedViewMode;
+    } else {
+      // Default: columns per vista espansa, rows per carousel
+      this.viewMode = this.showExpand ? 'rows' : 'columns';
     }
   }
 
