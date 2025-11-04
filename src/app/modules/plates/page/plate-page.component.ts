@@ -15,7 +15,7 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
   template: `
     <p-toast></p-toast>
     <div class="page-container">
-      <plate [config]="config" [queue]="queue" [chunk]="10"></plate>
+      <plate [config]="config" [queue]="queue" [chunk]="10" [showItemDelays]="true"></plate>
     </div>
   `,
   styles: [`
