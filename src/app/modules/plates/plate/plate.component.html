@@ -26,6 +26,12 @@
         class="expand-button">
         <i class="pi pi-external-link"></i>
       </button>
+      <p-tag *ngIf="maxDelayMinutes > 0"
+             [severity]="delaySeverity"
+             [value]="'⏱ ' + getDelayLabel()"
+             [pTooltip]="getDelayTooltip()"
+             tooltipPosition="bottom"
+             styleClass="mr-2 delay-tag"></p-tag>
       <p-tag [severity]="config._severity!"
              [value]="config._status!"
              styleClass="mr-2"></p-tag>

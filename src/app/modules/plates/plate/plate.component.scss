@@ -88,6 +88,18 @@ section {
     top: 20px;
 
     text-transform: uppercase;
+
+    &.delay-tag {
+      right: 200px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: help;
+      
+      &:hover {
+        transform: scale(1.05);
+        transition: transform 0.2s ease;
+      }
+    }
   }
 
   .items-sort-badge {

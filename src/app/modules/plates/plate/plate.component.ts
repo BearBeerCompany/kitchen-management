@@ -62,9 +62,15 @@ export class PlateComponent implements OnInit, OnDestroy {
   public sortingOptions: MenuItem[] = [];
   public selectedSortingType: SortType = "DATE_ASC";
   public viewMode: 'rows' | 'columns' = 'rows';
+  
+  // Delay tracking
+  public maxDelayMinutes: number = 0;
+  public avgDelayMinutes: number = 0;
+  public delaySeverity: 'success' | 'warning' | 'danger' = 'success';
 
   private queue$: Subscription = new Subscription();
   private _display_chunk: number = 20;
+  private _delayUpdateInterval: any;
 
   constructor(public i18nService: I18nService,
               private _route: ActivatedRoute,
@@ -96,8 +102,16 @@ export class PlateComponent implements OnInit, OnDestroy {
         if (this.todoItems.length == 0) {
           this.showOverlay = false;
         }
+        
+        // Calcola il ritardo ogni volta che cambiano gli items
+        this.calculateDelay();
       })
     );
+
+    // Aggiorna il ritardo ogni minuto
+    this._delayUpdateInterval = setInterval(() => {
+      this.calculateDelay();
+    }, 60000); // 60 secondi
 
     this.sortingOptions = [{
       label: 'Ordine',
@@ -135,6 +149,9 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.queue$.unsubscribe();
+    if (this._delayUpdateInterval) {
+      clearInterval(this._delayUpdateInterval);
+    }
   }
 
   public onMouseEnter(): void {
@@ -278,6 +295,92 @@ export class PlateComponent implements OnInit, OnDestroy {
     this.viewMode = mode;
     if (this.showExpand) {
       this.viewModeChange.emit(mode);
+    }
+  }
+
+  /**
+   * Calcola il ritardo degli ordini in Progress
+   * Ritardo = tempo trascorso dalla creazione dell'ordine
+   */
+  public calculateDelay(): void {
+    if (!this.progressItems || this.progressItems.length === 0) {
+      this.maxDelayMinutes = 0;
+      this.avgDelayMinutes = 0;
+      this.delaySeverity = 'success';
+      return;
+    }
+
+    const now = new Date().getTime();
+    const delays: number[] = [];
+
+    for (const item of this.progressItems) {
+      if (item.createdDate) {
+        const createdTime = new Date(item.createdDate).getTime();
+        const delayMs = now - createdTime;
+        const delayMinutes = Math.floor(delayMs / 60000); // converti in minuti
+        delays.push(delayMinutes);
+      }
+    }
+
+    if (delays.length === 0) {
+      this.maxDelayMinutes = 0;
+      this.avgDelayMinutes = 0;
+      this.delaySeverity = 'success';
+      return;
+    }
+
+    // Calcola max e media
+    this.maxDelayMinutes = Math.max(...delays);
+    this.avgDelayMinutes = Math.floor(delays.reduce((a, b) => a + b, 0) / delays.length);
+
+    // Determina il colore in base al ritardo massimo
+    // Verde: < 10 minuti, Giallo: 10-20 minuti, Rosso: > 20 minuti
+    if (this.maxDelayMinutes < 10) {
+      this.delaySeverity = 'success';
+    } else if (this.maxDelayMinutes < 20) {
+      this.delaySeverity = 'warning';
+    } else {
+      this.delaySeverity = 'danger';
+    }
+  }
+
+  /**
+   * Formatta il tempo in formato leggibile (es. "15min" o "1h 30min")
+   */
+  public getDelayLabel(): string {
+    if (this.maxDelayMinutes === 0) {
+      return '';
+    }
+
+    const hours = Math.floor(this.maxDelayMinutes / 60);
+    const minutes = this.maxDelayMinutes % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else {
+      return `${minutes}min`;
+    }
+  }
+
+  /**
+   * Ottiene il tooltip con informazioni dettagliate sul ritardo
+   */
+  public getDelayTooltip(): string {
+    if (this.progressItems.length === 0) {
+      return '';
+    }
+
+    return `Ritardo Max: ${this.getDelayLabel()}\nRitardo Medio: ${this.formatMinutes(this.avgDelayMinutes)}\nOrdini in Corso: ${this.progressItems.length}`;
+  }
+
+  private formatMinutes(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${mins}min`;
+    } else {
+      return `${mins}min`;
     }
   }
 }
