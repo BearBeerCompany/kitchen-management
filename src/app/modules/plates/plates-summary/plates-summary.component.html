@@ -1,0 +1,202 @@
+<div class="summary-container">
+  <div class="summary-header">
+    <h2>
+      <i class="pi pi-chart-bar"></i>
+      Riepilogo Piastre e Tempi
+    </h2>
+    <div class="header-actions">
+      <button pButton pRipple 
+              icon="pi pi-refresh" 
+              label="Aggiorna" 
+              class="p-button-sm p-button-outlined"
+              (click)="refreshData()"
+              [loading]="loading">
+      </button>
+      <button pButton pRipple 
+              icon="pi pi-times" 
+              label="Chiudi" 
+              class="p-button-sm p-button-text"
+              routerLink="/plates">
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+    <p>Caricamento dati...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Statistiche Globali -->
+    <div class="global-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon success">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.totalProgress}}</h3>
+          <p>Ordini in Corso</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon info">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.totalTodo}}</h3>
+          <p>Ordini in Coda</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon warning">
+          <i class="pi pi-fire"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.activePlates}}/{{globalStats.totalPlates}}</h3>
+          <p>Piastre Attive</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" [ngClass]="getDelaySeverity(globalStats.maxDelayAllPlates)">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{formatTime(globalStats.maxDelayAllPlates)}}</h3>
+          <p>Ritardo Massimo</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" [ngClass]="getDelaySeverity(globalStats.avgDelayAllPlates)">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{formatTime(globalStats.avgDelayAllPlates)}}</h3>
+          <p>Ritardo Medio</p>
+        </div>
+      </div>
+
+      <div class="stat-card" *ngIf="globalStats.criticalOrders > 0">
+        <div class="stat-icon danger">
+          <i class="pi pi-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.criticalOrders}}</h3>
+          <p>Ordini Critici (>20min)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabella Dettagli Piastre -->
+    <div class="plates-table-container">
+      <h3>Dettaglio Piastre</h3>
+      
+      <p-table [value]="platesStats" 
+               styleClass="p-datatable-sm p-datatable-striped"
+               [paginator]="true"
+               [rows]="10"
+               [showCurrentPageReport]="true"
+               currentPageReportTemplate="{totalRecords} piastre totali">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Piastra</th>
+            <th>In Corso</th>
+            <th>In Coda</th>
+            <th>Ritardo Max</th>
+            <th>Ritardo Medio</th>
+            <th>Ordine Più Vecchio</th>
+            <th>Stato</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-stat>
+          <tr>
+            <td>
+              <div class="plate-name" [style.border-left-color]="stat.plate.color">
+                <strong>{{stat.plate.name}}</strong>
+              </div>
+            </td>
+            <td>
+              <p-badge [value]="stat.progressCount + ''" 
+                       [severity]="stat.progressCount > 0 ? 'info' : 'secondary'">
+              </p-badge>
+            </td>
+            <td>
+              <p-badge [value]="stat.todoCount + ''" 
+                       [severity]="stat.todoCount > 0 ? 'warning' : 'secondary'">
+              </p-badge>
+            </td>
+            <td>
+              <p-tag *ngIf="stat.maxDelayMinutes > 0"
+                     [value]="formatTime(stat.maxDelayMinutes)"
+                     [severity]="getDelaySeverity(stat.maxDelayMinutes)">
+              </p-tag>
+              <span *ngIf="stat.maxDelayMinutes === 0" class="no-delay">-</span>
+            </td>
+            <td>
+              <span *ngIf="stat.avgDelayMinutes > 0">{{formatTime(stat.avgDelayMinutes)}}</span>
+              <span *ngIf="stat.avgDelayMinutes === 0" class="no-delay">-</span>
+            </td>
+            <td>
+              <span class="time-badge">{{formatDateTime(stat.oldestOrderTime)}}</span>
+            </td>
+            <td>
+              <i *ngIf="stat.maxDelayMinutes === 0" 
+                 class="pi pi-check-circle" 
+                 style="color: var(--green-500); font-size: 1.2rem"
+                 pTooltip="Nessun ritardo">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes > 0 && stat.maxDelayMinutes < 10" 
+                 class="pi pi-thumbs-up" 
+                 style="color: var(--green-500); font-size: 1.2rem"
+                 pTooltip="Tempi buoni">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes >= 10 && stat.maxDelayMinutes < 20" 
+                 class="pi pi-exclamation-triangle" 
+                 style="color: var(--orange-500); font-size: 1.2rem"
+                 pTooltip="Attenzione ai tempi">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes >= 20" 
+                 class="pi pi-times-circle" 
+                 style="color: var(--red-500); font-size: 1.2rem"
+                 pTooltip="Ritardo critico!">
+              </i>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="empty-message">
+              <i class="pi pi-inbox"></i>
+              <p>Nessuna piastra attiva al momento</p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Legenda -->
+    <div class="legend-container">
+      <h4>Legenda Ritardi</h4>
+      <div class="legend-items">
+        <div class="legend-item">
+          <p-tag severity="success" value="< 10 min"></p-tag>
+          <span>Ottimo</span>
+        </div>
+        <div class="legend-item">
+          <p-tag severity="warning" value="10-20 min"></p-tag>
+          <span>Attenzione</span>
+        </div>
+        <div class="legend-item">
+          <p-tag severity="danger" value="> 20 min"></p-tag>
+          <span>Critico</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
