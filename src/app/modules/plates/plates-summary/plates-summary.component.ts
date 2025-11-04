@@ -83,6 +83,9 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       plates.forEach(plate => {
         if (plate.id && plate.enabled) {
           const queue = this._plateQueueManager.getQueue(plate.id);
+          if (!queue) {
+            return; // Skip if queue is not initialized
+          }
           const items = queue.values;
           
           const progressItems = items.filter((i: PlateMenuItem) => i.status === Status.Progress);
