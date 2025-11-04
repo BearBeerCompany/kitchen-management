@@ -32,6 +32,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public pages: number[] = [];
   public loading: boolean = true;
   public showNotify: boolean = false;
+  public showItemDelays: boolean = false;
 
   private readonly _MIN_DELTA_SWIPE = 90;
 

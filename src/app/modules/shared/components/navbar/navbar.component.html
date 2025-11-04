@@ -16,6 +16,11 @@
                  [title]="i18n.ORDERS.TITLE"
                  icon="pi-shopping-cart">
   </navbar-button>
+  <navbar-button (onClick)="onNavClick(routing.PlatesSummary)"
+                 [active]="selectedRoute === routing.PlatesSummary"
+                 [title]="'Riepilogo'"
+                 icon="pi-chart-bar">
+  </navbar-button>
   <navbar-button (onClick)="onNavClick(routing.Settings)"
                  [active]="selectedRoute === routing.Settings"
                  [title]="i18n.SETTINGS.TITLE"
