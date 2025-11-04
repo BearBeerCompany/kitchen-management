@@ -1,4 +1,10 @@
 <div class="item_container">
+  <p-tag *ngIf="delayMinutes > 0 && showDelay"
+         class="item-delay-badge"
+         [severity]="delaySeverity"
+         [value]="'⏱ ' + getDelayLabel()"
+         [pTooltip]="'In lavorazione da ' + getDelayLabel()"
+         tooltipPosition="top"></p-tag>
   <span class="item_title">
     <i class="pi pi-info-circle"
        [pTooltip]="config.createdDate + '\n Tavolo: ' + config.tableNumber + '\n Cliente: ' + config.clientName + '\n Ordine: ' + config.orderNumber"
