@@ -32,6 +32,7 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
   @Input() public config!: Plate;
   @Input() public plateList: Plate[] = [];
   @Input() public queue!: ReactiveQueue<PlateMenuItem>;
+  @Input() public showItemDelays: boolean = false;
 
   get chunk(): number {
     return this._display_chunk;
@@ -329,12 +330,19 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
     
+    // Se è nella vista carousel (showExpand = true), forza sempre rows
+    if (this.showExpand) {
+      this.viewMode = 'rows';
+      return;
+    }
+    
+    // Se è espansa, carica da localStorage
     const savedViewMode = localStorage.getItem(`plate_viewMode_${this.config.id}`);
     if (savedViewMode === 'rows' || savedViewMode === 'columns') {
       this.viewMode = savedViewMode;
     } else {
-      // Default: columns per vista espansa, rows per carousel
-      this.viewMode = this.showExpand ? 'rows' : 'columns';
+      // Default per vista espansa: columns
+      this.viewMode = 'columns';
     }
   }
 

@@ -23,7 +23,8 @@
         </div>
       </div>
       
-      <button [pTooltip]="viewMode === 'rows' ? 'Vista Colonne' : 'Vista Righe'" 
+      <button *ngIf="!showExpand"
+              [pTooltip]="viewMode === 'rows' ? 'Vista Colonne' : 'Vista Righe'" 
               tooltipPosition="bottom"
               class="view-mode-button" 
               [class.active]="viewMode === 'columns'"
@@ -51,6 +52,7 @@
               [config]="item"
               [plateList]="plateList"
               [readonly]="readonly"
+              [showDelay]="!showExpand || showItemDelays"
         ></item>
       </ng-container>
     </div>
