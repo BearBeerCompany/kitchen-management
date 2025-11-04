@@ -7,6 +7,7 @@ import {RippleModule} from "primeng/ripple";
 import {ButtonModule} from "primeng/button";
 import {TooltipModule} from "primeng/tooltip";
 import {TagModule} from "primeng/tag";
+import {DelayThresholdsService} from "../../../services/delay-thresholds.service";
 
 @Component({
   selector: 'item',
@@ -30,6 +31,8 @@ export class ItemComponent implements OnInit {
   // Delay tracking per item
   public delayMinutes: number = 0;
   public delaySeverity: 'success' | 'warning' | 'danger' = 'success';
+
+  constructor(private _delayThresholdsService: DelayThresholdsService) {}
 
   public ngOnInit(): void {
     this.calculateItemDelay();
@@ -125,14 +128,8 @@ export class ItemComponent implements OnInit {
     const delayMs = now - createdTime;
     this.delayMinutes = Math.floor(delayMs / 60000);
 
-    // Determina la severità
-    if (this.delayMinutes < 10) {
-      this.delaySeverity = 'success';
-    } else if (this.delayMinutes < 20) {
-      this.delaySeverity = 'warning';
-    } else {
-      this.delaySeverity = 'danger';
-    }
+    // Determina la severità usando le soglie configurabili
+    this.delaySeverity = this._delayThresholdsService.getSeverity(this.delayMinutes);
   }
 
   /**

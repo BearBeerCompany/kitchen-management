@@ -5,6 +5,7 @@ import {Plate} from '../plate.interface';
 import {PlateMenuItem, Status} from '../../plate-menu-items/plate-menu-item';
 import {Subscription} from 'rxjs';
 import {I18nService} from '../../../services/i18n.service';
+import {DelayThresholdsService} from '../../../services/delay-thresholds.service';
 
 interface PlateStats {
   plate: Plate;
@@ -46,19 +47,45 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     criticalOrders: 0
   };
 
+  // Soglie dinamiche per la leggenda
+  public get warningThreshold(): number {
+    return this._delayThresholdsService.getThresholds().warning;
+  }
+
+  public get dangerThreshold(): number {
+    return this._delayThresholdsService.getThresholds().danger;
+  }
+
   private _updateInterval: any;
   private _subscriptions: Subscription = new Subscription();
 
   constructor(
     private _plateService: PlateService,
     private _plateQueueManager: PlateQueueManagerService,
-    private _i18nService: I18nService
+    private _i18nService: I18nService,
+    private _delayThresholdsService: DelayThresholdsService
   ) {
     this.i18n = _i18nService.instance;
   }
 
   ngOnInit(): void {
-    this.loadData();
+    // Carica le piastre e inizializza le code prima di caricare i dati
+    this._plateService.getAll().subscribe(plates => {
+      // Controlla se le code sono già inizializzate
+      const queuesInitialized = plates.every(plate => 
+        plate.id ? this._plateQueueManager.getQueue(plate.id) : true
+      );
+
+      if (!queuesInitialized) {
+        // Inizializza le code se non sono state ancora caricate
+        this._plateQueueManager.load(plates).subscribe(() => {
+          this.loadData();
+        });
+      } else {
+        // Le code sono già inizializzate, carica direttamente i dati
+        this.loadData();
+      }
+    });
     
     // Aggiorna ogni 30 secondi
     this._updateInterval = setInterval(() => {
@@ -80,40 +107,58 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       this.platesStats = [];
       let totalDelays: number[] = [];
       
-      plates.forEach(plate => {
-        if (plate.id && plate.enabled) {
-          const queue = this._plateQueueManager.getQueue(plate.id);
-          if (!queue) {
-            return; // Skip if queue is not initialized
-          }
-          const items = queue.values;
-          
-          const progressItems = items.filter((i: PlateMenuItem) => i.status === Status.Progress);
-          const todoItems = items.filter((i: PlateMenuItem) => i.status === Status.Todo);
-          
-          const stats = this.calculatePlateStats(plate, progressItems);
-          this.platesStats.push({
-            plate,
-            progressCount: progressItems.length,
-            todoCount: todoItems.length,
-            ...stats
-          });
-          
-          // Aggiungi ai ritardi totali
-          if (stats.maxDelayMinutes > 0) {
-            totalDelays.push(stats.maxDelayMinutes);
-          }
-        }
-      });
+      const enabledPlates = plates.filter(p => p.id && p.enabled);
       
-      // Calcola statistiche globali
-      this.calculateGlobalStats(totalDelays);
+      // Verifica che tutte le code siano inizializzate
+      const allQueuesReady = enabledPlates.every(plate => 
+        this._plateQueueManager.getQueue(plate.id!)
+      );
       
-      // Ordina per ritardo massimo decrescente
-      this.platesStats.sort((a, b) => b.maxDelayMinutes - a.maxDelayMinutes);
-      
-      this.loading = false;
+      if (!allQueuesReady) {
+        // Se le code non sono pronte, ricaricale
+        this._plateQueueManager.load(plates).subscribe(() => {
+          this.processPlatesData(enabledPlates, totalDelays);
+        });
+      } else {
+        this.processPlatesData(enabledPlates, totalDelays);
+      }
     });
+  }
+
+  private processPlatesData(plates: Plate[], totalDelays: number[]): void {
+    plates.forEach(plate => {
+      if (plate.id) {
+        const queue = this._plateQueueManager.getQueue(plate.id);
+        if (!queue) {
+          return; // Skip if queue is not initialized
+        }
+        const items = queue.values;
+        
+        const progressItems = items.filter((i: PlateMenuItem) => i.status === Status.Progress);
+        const todoItems = items.filter((i: PlateMenuItem) => i.status === Status.Todo);
+        
+        const stats = this.calculatePlateStats(plate, progressItems);
+        this.platesStats.push({
+          plate,
+          progressCount: progressItems.length,
+          todoCount: todoItems.length,
+          ...stats
+        });
+        
+        // Aggiungi ai ritardi totali
+        if (stats.maxDelayMinutes > 0) {
+          totalDelays.push(stats.maxDelayMinutes);
+        }
+      }
+    });
+    
+    // Calcola statistiche globali
+    this.calculateGlobalStats(totalDelays);
+    
+    // Ordina per ritardo massimo decrescente
+    this.platesStats.sort((a, b) => b.maxDelayMinutes - a.maxDelayMinutes);
+    
+    this.loading = false;
   }
 
   private calculatePlateStats(plate: Plate, progressItems: PlateMenuItem[]): {
@@ -169,15 +214,14 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
         sum + s.progressItems.filter(item => {
           if (!item.createdDate) return false;
           const delayMinutes = Math.floor((new Date().getTime() - new Date(item.createdDate).getTime()) / 60000);
-          return delayMinutes > 20;
+          const thresholds = this._delayThresholdsService.getThresholds();
+          return delayMinutes >= thresholds.danger;
         }).length, 0)
     };
   }
 
   getDelaySeverity(minutes: number): 'success' | 'warning' | 'danger' {
-    if (minutes < 10) return 'success';
-    if (minutes < 20) return 'warning';
-    return 'danger';
+    return this._delayThresholdsService.getSeverity(minutes);
   }
 
   formatTime(minutes: number): string {

@@ -15,6 +15,7 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { ButtonModule } from 'primeng/button';
 
 const routes: Routes = [
   {
@@ -42,7 +43,8 @@ const routes: Routes = [
     FormsModule,
     ToastModule,
     ConfirmDialogModule,
-    InputSwitchModule
+    InputSwitchModule,
+    ButtonModule
   ],
   providers: [MessageService, ConfirmationService]
 })

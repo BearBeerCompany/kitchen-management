@@ -185,15 +185,15 @@
       <h4>Legenda Ritardi</h4>
       <div class="legend-items">
         <div class="legend-item">
-          <p-tag severity="success" value="< 10 min"></p-tag>
+          <p-tag severity="success" [value]="'< ' + warningThreshold + ' min'"></p-tag>
           <span>Ottimo</span>
         </div>
         <div class="legend-item">
-          <p-tag severity="warning" value="10-20 min"></p-tag>
+          <p-tag severity="warning" [value]="warningThreshold + '-' + dangerThreshold + ' min'"></p-tag>
           <span>Attenzione</span>
         </div>
         <div class="legend-item">
-          <p-tag severity="danger" value="> 20 min"></p-tag>
+          <p-tag severity="danger" [value]="'> ' + dangerThreshold + ' min'"></p-tag>
           <span>Critico</span>
         </div>
       </div>

@@ -21,6 +21,7 @@ import {ItemsOverlayComponentModule} from "../items-overlay/items-overlay.compon
 import {ItemOverlayRowComponentModule} from "../item-overlay-row/item-overlay-row.component";
 import {MenuModule} from "primeng/menu";
 import {MenuItem} from 'primeng/api';
+import {DelayThresholdsService} from "../../../services/delay-thresholds.service";
 
 @Component({
   selector: 'plate',
@@ -76,7 +77,8 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
   constructor(public i18nService: I18nService,
               private _route: ActivatedRoute,
               private _elementRef: ElementRef,
-              private _router: Router) {
+              private _router: Router,
+              private _delayThresholdsService: DelayThresholdsService) {
     this.i18n = i18nService.instance;
     this._elementRef.nativeElement.style.setProperty("--items-chunk", this._display_chunk);
   }
@@ -381,15 +383,8 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
     this.maxDelayMinutes = Math.max(...delays);
     this.avgDelayMinutes = Math.floor(delays.reduce((a, b) => a + b, 0) / delays.length);
 
-    // Determina il colore in base al ritardo massimo
-    // Verde: < 10 minuti, Giallo: 10-20 minuti, Rosso: > 20 minuti
-    if (this.maxDelayMinutes < 10) {
-      this.delaySeverity = 'success';
-    } else if (this.maxDelayMinutes < 20) {
-      this.delaySeverity = 'warning';
-    } else {
-      this.delaySeverity = 'danger';
-    }
+    // Determina il colore in base al ritardo massimo usando le soglie configurabili
+    this.delaySeverity = this._delayThresholdsService.getSeverity(this.maxDelayMinutes);
   }
 
   /**

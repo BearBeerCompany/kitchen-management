@@ -26,6 +26,48 @@
       <p-inputSwitch inputId="showItemDelays" [(ngModel)]="showItemDelays" (onChange)="onShowItemDelaysChange()"></p-inputSwitch>
     </div>
   </div>
+
+  <h3>Soglie Ritardi</h3>
+  <div class="settings-section">
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="warningThreshold">Soglia Avviso (Giallo)</label>
+        <small>Tempo in minuti prima che un ordine diventi giallo</small>
+      </div>
+      <p-inputNumber 
+        inputId="warningThreshold"
+        [(ngModel)]="delayThresholds.warning"
+        [min]="1"
+        [max]="60"
+        [showButtons]="true"
+        suffix=" min"
+        (onBlur)="onDelayThresholdChange()">
+      </p-inputNumber>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="dangerThreshold">Soglia Pericolo (Rosso)</label>
+        <small>Tempo in minuti prima che un ordine diventi rosso</small>
+      </div>
+      <p-inputNumber 
+        inputId="dangerThreshold"
+        [(ngModel)]="delayThresholds.danger"
+        [min]="2"
+        [max]="120"
+        [showButtons]="true"
+        suffix=" min"
+        (onBlur)="onDelayThresholdChange()">
+      </p-inputNumber>
+    </div>
+    <div class="setting-row" style="justify-content: flex-end;">
+      <button pButton 
+        label="Ripristina Predefiniti" 
+        icon="pi pi-refresh"
+        class="p-button-secondary p-button-sm"
+        (click)="resetDelayThresholds()">
+      </button>
+    </div>
+  </div>
   
   <h3>Statistiche</h3>
   <div class="stats_container">

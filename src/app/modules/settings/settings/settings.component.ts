@@ -10,6 +10,7 @@ import {Status} from "../../plate-menu-items/plate-menu-item";
 import {ConfirmationService, MessageService} from "primeng/api";
 import { GsgIntegrationService } from '../../shared/service/gsg-integration.service';
 import { GsgIntegrationResult } from '../../shared/interface/gsg-integration.interface';
+import { DelayThresholdsService, DelayThresholds } from '../../../services/delay-thresholds.service';
 
 @Component({
   selector: 'settings',
@@ -32,6 +33,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public showEmpty: boolean = false;
   public showNotify: boolean = false;
   public showItemDelays: boolean = false;
+  public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
 
   private subs: Subscription = new Subscription();
 
@@ -40,13 +42,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
               private _statsService: StatsService,
               private _messageService: MessageService,
               private _gsgIntegrationService: GsgIntegrationService,
-              private _confirmationService: ConfirmationService) {
+              private _confirmationService: ConfirmationService,
+              private _delayThresholdsService: DelayThresholdsService) {
     this.i18n = i18nService.instance;
   }
 
   public ngOnInit(): void {
     this._platesService.getAll().subscribe(plates => this.plates = plates);
     this._loadSettingsFromLocalStorage();
+    this.delayThresholds = this._delayThresholdsService.getThresholds();
 
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
@@ -232,4 +236,39 @@ export class SettingsComponent implements OnInit, OnDestroy {
       life: 2000
     });
   }
+
+  public onDelayThresholdChange(): void {
+    // Validate that warning < danger
+    if (this.delayThresholds.warning >= this.delayThresholds.danger) {
+      this._messageService.add({
+        severity: 'error',
+        summary: 'Errore',
+        detail: 'La soglia di avviso deve essere inferiore alla soglia di pericolo',
+        life: 3000
+      });
+      // Reset to saved values
+      this.delayThresholds = this._delayThresholdsService.getThresholds();
+      return;
+    }
+
+    this._delayThresholdsService.setThresholds(this.delayThresholds);
+    this._messageService.add({
+      severity: 'success',
+      summary: 'Impostazioni salvate',
+      detail: `Soglie ritardi aggiornate: ${this.delayThresholds.warning}min (giallo), ${this.delayThresholds.danger}min (rosso)`,
+      life: 3000
+    });
+  }
+
+  public resetDelayThresholds(): void {
+    this._delayThresholdsService.resetToDefaults();
+    this.delayThresholds = this._delayThresholdsService.getThresholds();
+    this._messageService.add({
+      severity: 'info',
+      summary: 'Impostazioni ripristinate',
+      detail: 'Soglie ritardi ripristinate ai valori predefiniti',
+      life: 2000
+    });
+  }
+
 }
