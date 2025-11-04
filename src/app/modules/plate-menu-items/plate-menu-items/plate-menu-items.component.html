@@ -34,6 +34,7 @@
         <div>
           <button pButton pRipple [label]="toggleCompleted ? 'In Corso' : 'Completati'" icon="pi pi-eye" class="p-mr-2" (click)="viewCompletedPlateMenuItems()"></button>
           <button pButton pRipple label="Nuovo" icon="pi pi-plus" class="p-mr-2 ml-2" (click)="addPlateMenuItems()"></button>
+          <button pButton pRipple label="Modifica Batch" icon="pi pi-pencil" class="p-button-warning ml-2" (click)="openBatchEditDialog()" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length" pTooltip="Modifica i campi selezionati in blocco" tooltipPosition="bottom"></button>
           <button pButton pRipple label="Elimina" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedPkmis()" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
         </div>
         <div class="ml-4">
@@ -243,14 +244,19 @@
       <td style="text-align:center">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
+                pTooltip="Modifica" tooltipPosition="top"
         ></button>
         <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
-                (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"></button>
+                (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Elimina" tooltipPosition="top"
+        ></button>
         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
                 (click)="onRowEditSave(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-success p-mr-2"
+                pTooltip="Salva modifiche" tooltipPosition="top"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
                 (click)="onRowEditCancel(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Annulla" tooltipPosition="top"
         ></button>
       </td>
     </tr>
@@ -266,5 +272,97 @@
     <td></td>
   </ng-template>
 </p-table>
+
+<!-- Batch Edit Dialog -->
+<p-dialog [(visible)]="batchEditDialog" 
+          [style]="{width: '450px'}" 
+          header="Modifica Batch Ordini" 
+          [modal]="true" 
+          styleClass="p-fluid"
+          [closable]="true"
+          (onHide)="closeBatchEditDialog()">
+  <ng-template pTemplate="content">
+    <div class="batch-edit-info">
+      <i class="pi pi-info-circle"></i>
+      <div>
+        <span>Stai per modificare <strong>{{selectedPlateMenuItems.length}}</strong> ordini selezionati.</span>
+        <p class="batch-edit-note">Lascia vuoti i campi che non vuoi modificare.</p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="batchStatus">Stato</label>
+      <p-dropdown id="batchStatus"
+                  [(ngModel)]="batchEditData.status"
+                  [options]="statuses"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Seleziona nuovo stato"
+                  [showClear]="true">
+        <ng-template let-status pTemplate="item">
+          <span class="status-item-wrapper" [style]="{'color': status.color}">
+            <i [class]="'pi ' + status.icon"></i>
+            <span class="status-label">{{status.label}}</span>
+          </span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="field">
+      <label for="batchPlate">Piastra</label>
+      <p-dropdown id="batchPlate"
+                  [(ngModel)]="batchEditData.plate"
+                  [options]="platesOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Seleziona nuova piastra"
+                  [showClear]="true">
+        <ng-template let-plate pTemplate="item">
+          <span class="plate-badge" [style]="{'background-color': plate.color}">
+            {{plate.label}}
+          </span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div class="field">
+      <label for="batchTakeAway">Asporto</label>
+      <p-dropdown id="batchTakeAway"
+                  [(ngModel)]="batchEditData.takeAway"
+                  [options]="takeAwayOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Seleziona asporto"
+                  [showClear]="true">
+      </p-dropdown>
+    </div>
+
+    <div class="field">
+      <label for="batchOrderNotes">Note Ordine</label>
+      <textarea id="batchOrderNotes"
+                pInputTextarea
+                [(ngModel)]="batchEditData.orderNotes"
+                rows="3"
+                placeholder="Aggiungi note ordine (verrà applicato a tutti gli ordini selezionati)">
+      </textarea>
+      <small class="p-text-secondary">Se vuoi mantenere le note esistenti, lascia vuoto questo campo</small>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple 
+            label="Annulla" 
+            icon="pi pi-times" 
+            class="p-button-text" 
+            (click)="closeBatchEditDialog()">
+    </button>
+    <button pButton pRipple 
+            label="Applica Modifiche" 
+            icon="pi pi-check" 
+            class="p-button-primary" 
+            (click)="applyBatchEdit()">
+    </button>
+  </ng-template>
+</p-dialog>
 
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
