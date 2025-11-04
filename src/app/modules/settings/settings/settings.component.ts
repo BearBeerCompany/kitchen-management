@@ -30,6 +30,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public dateTo: Date = new Date()
   public loading: boolean = false;
   public showEmpty: boolean = false;
+  public showNotify: boolean = false;
+  public showItemDelays: boolean = false;
 
   private subs: Subscription = new Subscription();
 
@@ -44,6 +46,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this._platesService.getAll().subscribe(plates => this.plates = plates);
+    this._loadSettingsFromLocalStorage();
 
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
@@ -195,5 +198,38 @@ export class SettingsComponent implements OnInit, OnDestroy {
         }
       ]
     };
+  }
+
+  private _loadSettingsFromLocalStorage(): void {
+    const savedShowNotify = localStorage.getItem('plates_showNotify');
+    const savedShowItemDelays = localStorage.getItem('plates_showItemDelays');
+    
+    if (savedShowNotify !== null) {
+      this.showNotify = savedShowNotify === 'true';
+    }
+    
+    if (savedShowItemDelays !== null) {
+      this.showItemDelays = savedShowItemDelays === 'true';
+    }
+  }
+
+  public onShowNotifyChange(): void {
+    localStorage.setItem('plates_showNotify', this.showNotify.toString());
+    this._messageService.add({
+      severity: 'success',
+      summary: 'Impostazioni salvate',
+      detail: `Notifiche audio ${this.showNotify ? 'attivate' : 'disattivate'}`,
+      life: 2000
+    });
+  }
+
+  public onShowItemDelaysChange(): void {
+    localStorage.setItem('plates_showItemDelays', this.showItemDelays.toString());
+    this._messageService.add({
+      severity: 'success',
+      summary: 'Impostazioni salvate',
+      detail: `Visualizzazione ritardi item ${this.showItemDelays ? 'attivata' : 'disattivata'}`,
+      life: 2000
+    });
   }
 }

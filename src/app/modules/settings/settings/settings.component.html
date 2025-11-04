@@ -8,6 +8,25 @@
       (click)="onGSGInit()">
     </button>
   </div>
+  
+  <h3>Impostazioni Visualizzazione</h3>
+  <div class="settings-section">
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="showNotify">Notifiche Audio</label>
+        <small>Attiva le notifiche sonore per i nuovi ordini</small>
+      </div>
+      <p-inputSwitch inputId="showNotify" [(ngModel)]="showNotify" (onChange)="onShowNotifyChange()"></p-inputSwitch>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <label for="showItemDelays">Mostra Ritardi Item</label>
+        <small>Visualizza i badge di ritardo sugli item nel carousel delle piastre</small>
+      </div>
+      <p-inputSwitch inputId="showItemDelays" [(ngModel)]="showItemDelays" (onChange)="onShowItemDelaysChange()"></p-inputSwitch>
+    </div>
+  </div>
+  
   <h3>Statistiche</h3>
   <div class="stats_container">
     <div class="stats_numbers_container">
