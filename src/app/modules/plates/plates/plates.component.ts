@@ -58,6 +58,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit(): void {
     this._loadPlatesConfig();
+    this._loadSettingsFromLocalStorage();
 
     this._queue$.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
@@ -268,5 +269,26 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       })
     );
+  }
+
+  private _loadSettingsFromLocalStorage(): void {
+    const savedShowNotify = localStorage.getItem('plates_showNotify');
+    const savedShowItemDelays = localStorage.getItem('plates_showItemDelays');
+    
+    if (savedShowNotify !== null) {
+      this.showNotify = savedShowNotify === 'true';
+    }
+    
+    if (savedShowItemDelays !== null) {
+      this.showItemDelays = savedShowItemDelays === 'true';
+    }
+  }
+
+  public onShowNotifyChange(): void {
+    localStorage.setItem('plates_showNotify', this.showNotify.toString());
+  }
+
+  public onShowItemDelaysChange(): void {
+    localStorage.setItem('plates_showItemDelays', this.showItemDelays.toString());
   }
 }

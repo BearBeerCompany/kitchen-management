@@ -10,11 +10,6 @@
     </button>
     <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
     <ng-container *ngIf="showPlateList" [ngTemplateOutlet]="plate_overlay"></ng-container>
-    
-    <div class="show-notify-container">
-      <label for="showNotify">Notifiche</label>
-      <p-inputSwitch inputId="showNotify" [(ngModel)]="showNotify"></p-inputSwitch>
-    </div>
   </ng-container>
 </h3>
 <div class="plates-carousel">
@@ -35,7 +30,8 @@
              (viewModeChange)="onPlateViewModeChange($event, plate)"
              [config]="plate"
              [plateList]="getEnabledPlateList(plate)"
-             [queue]="plateQueueManagerService.getQueue(plate.id!)">
+             [queue]="plateQueueManagerService.getQueue(plate.id!)"
+             [showItemDelays]="showItemDelays">
       </plate>
     </ng-container>
   </ng-container>
