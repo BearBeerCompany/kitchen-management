@@ -16,7 +16,7 @@
 
   .item-delay-badge {
     position: absolute;
-    top: -8px;
+    bottom: -8px;
     right: -8px;
     z-index: 10;
     
@@ -33,6 +33,23 @@
         transform: scale(1.1);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
       }
+      
+      // Animazione pulsante per stati warning e danger
+      &.p-tag-warning,
+      &.p-tag-danger {
+        animation: pulse-badge 2s ease-in-out infinite;
+      }
+    }
+  }
+  
+  @keyframes pulse-badge {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+    }
+    50% {
+      transform: scale(1.08);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     }
   }
 
