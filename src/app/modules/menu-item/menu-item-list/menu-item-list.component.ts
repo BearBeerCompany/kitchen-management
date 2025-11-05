@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, OnChanges, SimpleChanges} from '@angular/core';
 import {MenuItem} from "../../plate-menu-items/plate-menu-item";
 
 @Component({
@@ -6,17 +6,43 @@ import {MenuItem} from "../../plate-menu-items/plate-menu-item";
   templateUrl: './menu-item-list.component.html',
   styleUrls: ['./menu-item-list.component.scss']
 })
-export class MenuItemListComponent {
+export class MenuItemListComponent implements OnChanges {
 
   @Input() public items: MenuItem[] = [];
   @Input() public categoryName?: string;
+  @Input() public categoryColor?: string;
 
   @Output() public edit: EventEmitter<MenuItem> = new EventEmitter<MenuItem>(false);
   @Output() public delete: EventEmitter<MenuItem> = new EventEmitter<MenuItem>(false);
 
+  public searchText: string = '';
+  public filteredItems: MenuItem[] = [];
+
   private _editableMenuItemMap: Map<string, MenuItem> = new Map<string, MenuItem>();
 
-  public onRowEditInit(item: MenuItem) {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['items']) {
+      this.filteredItems = [...this.items];
+    }
+  }
+
+  public onSearch(): void {
+    const search = this.searchText.toLowerCase().trim();
+    if (!search) {
+      this.filteredItems = [...this.items];
+    } else {
+      this.filteredItems = this.items.filter(item => 
+        item.name?.toLowerCase().includes(search) || 
+        item.description?.toLowerCase().includes(search)
+      );
+    }
+  }
+
+  public isEditing(item: MenuItem): boolean {
+    return this._editableMenuItemMap.has(item.id!);
+  }
+
+  public onRowEditInit(item: MenuItem): void {
     this._editableMenuItemMap.set(item.id!, {...item});
   }
 
@@ -24,11 +50,20 @@ export class MenuItemListComponent {
     if (JSON.stringify(item) !== JSON.stringify(this._editableMenuItemMap.get(item.id!))) {
       this._editableMenuItemMap.delete(item.id!);
       this.edit.emit(item);
+    } else {
+      this._editableMenuItemMap.delete(item.id!);
     }
   }
 
   public onRowEditCancel(item: MenuItem, index: number): void {
-    this.items[index] = this._editableMenuItemMap.get(item.id!)!;
-    this._editableMenuItemMap.delete(item.id!);
+    const originalItem = this._editableMenuItemMap.get(item.id!);
+    if (originalItem) {
+      Object.assign(this.items[index], originalItem);
+      this._editableMenuItemMap.delete(item.id!);
+    }
+  }
+
+  public onDelete(item: MenuItem): void {
+    this.delete.emit(item);
   }
 }

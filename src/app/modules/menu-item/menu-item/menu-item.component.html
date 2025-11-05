@@ -1,37 +1,81 @@
 <p-toast></p-toast>
-<h3>Gestione Menù</h3>
-<section>
-  <category [categories]="(categories$ | async)!"
-            [active]="selectedCategory"
-            (selected)="onCategorySelect($event)"
-            (create)="onCategoryCreate()">
-  </category>
-  <div id="right-panel" *ngIf="selectedCategory">
-    <div id="action-button_container">
-      <button pButton pRipple label="Aggiungi a Catalogo"
-              icon="pi pi-plus"
-              class="p-button-info ml-2"
-              (click)="onMenuItemCreate()">
-      </button>
-      <button pButton pRipple label="Elimina Categoria"
-              icon="pi pi-trash"
-              class="p-button-danger ml-2"
-              (click)="deleteCategory()">
-      </button>
-      <button pButton pRipple label="Modifica Categoria"
-              icon="pi pi-pencil"
-              class="p-button ml-2"
-              (click)="editCategory()">
-      </button>
+<div class="menu-management-container">
+  <div class="header-section">
+    <h2 class="page-title">
+      <i class="pi pi-book"></i>
+      Gestione Catalogo Menù
+    </h2>
+    <button pButton pRipple label="Nuova Categoria"
+            icon="pi pi-plus-circle"
+            class="p-button-rounded p-button-success"
+            (click)="onCategoryCreate()">
+    </button>
+  </div>
+
+  <div class="categories-tabs" *ngIf="(categories$ | async) as categories">
+    <p-scrollPanel [style]="{width: '100%', height: '80px'}">
+      <div class="tabs-container">
+        <button *ngFor="let category of categories"
+                class="category-tab"
+                [class.active]="selectedCategory?.id === category.id"
+                [style.--category-color]="category.color"
+                (click)="onCategorySelect(category)">
+          <span class="category-name">{{category.name}}</span>
+          <span class="category-description">{{category.description}}</span>
+        </button>
+      </div>
+    </p-scrollPanel>
+  </div>
+
+  <div class="content-section" *ngIf="selectedCategory">
+    <div class="category-header">
+      <div class="category-info">
+        <div class="category-badge" [style.background-color]="selectedCategory.color">
+          <i class="pi pi-tag"></i>
+        </div>
+        <div class="category-details">
+          <h3>{{selectedCategory.name}}</h3>
+          <p>{{selectedCategory.description}}</p>
+        </div>
+      </div>
+      <div class="category-actions">
+        <button pButton pRipple
+                icon="pi pi-pencil"
+                class="p-button-rounded p-button-text p-button-plain"
+                pTooltip="Modifica Categoria"
+                tooltipPosition="bottom"
+                (click)="editCategory()">
+        </button>
+        <button pButton pRipple
+                icon="pi pi-trash"
+                class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Elimina Categoria"
+                tooltipPosition="bottom"
+                (click)="deleteCategory()">
+        </button>
+        <button pButton pRipple label="Aggiungi Prodotto"
+                icon="pi pi-plus"
+                class="p-button-rounded p-button-success"
+                (click)="onMenuItemCreate()">
+        </button>
+      </div>
     </div>
+
     <menu-item-list
       [items]="(items$ | async)!"
       [categoryName]="selectedCategory?.name!"
+      [categoryColor]="selectedCategory?.color!"
       (edit)="onMenuItemEdit($event)"
       (delete)="onMenuItemDelete($event)">
     </menu-item-list>
   </div>
-</section>
+
+  <div class="empty-state" *ngIf="!selectedCategory">
+    <i class="pi pi-inbox"></i>
+    <h3>Seleziona una categoria</h3>
+    <p>Scegli una categoria dalla barra superiore per visualizzare e gestire i prodotti</p>
+  </div>
+</div>
 <p-dialog header="Creazione Categoria"
           [style]="{height: '80vh'}"
           [(visible)]="categoryDisplay"

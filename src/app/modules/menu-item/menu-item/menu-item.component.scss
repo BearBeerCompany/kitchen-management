@@ -1,72 +1,297 @@
 @import "mixins";
 
-h3 {
-  @include title-center;
+.menu-management-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  gap: 1.5rem;
 }
 
-section {
-
+.header-section {
   display: flex;
-  height: 90%;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  category {
-    width: 30%;
-    overflow-y: auto;
-    border-right: 1px solid rgba(96, 96, 96, 1);
+  .page-title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    i {
+      color: #3b82f6;
+      font-size: 1.5rem;
+    }
+  }
+}
+
+.categories-tabs {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+
+  .tabs-container {
+    display: flex;
+    gap: 0.75rem;
+    padding-bottom: 0.5rem;
   }
 
-  div#right-panel {
-    width: 70%;
-    overflow-y: auto;
+  .category-tab {
+    flex-shrink: 0;
+    padding: 0.875rem 1.5rem;
+    border: 2px solid var(--category-color, #e5e7eb);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 150px;
 
-    #action-button_container {
-      height: 10%;
+    &:hover {
+      background: var(--category-color, #f3f4f6);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
+    &.active {
+      background: var(--category-color, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+      .category-name,
+      .category-description {
+        color: white;
+      }
+    }
+
+    .category-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #2c3e50;
+    }
+
+    .category-description {
+      font-size: 0.8rem;
+      color: #6b7280;
+      text-transform: capitalize;
+    }
+  }
+}
+
+.content-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow: hidden;
+}
+
+.category-header {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .category-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .category-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
-      justify-content: flex-end;
       align-items: center;
-      flex-direction: row;
-
-      position: relative;
-
-      button {
-        margin: 0 10px;
-      }
-
-      & > button:first-of-type {
-        position: absolute;
-        left: 0;
-      }
+      justify-content: center;
+      color: white;
+      font-size: 1.25rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
-    menu-item-list {
-      height: 90%;
+    .category-details {
+      h3 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        text-transform: uppercase;
+      }
+
+      p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
     }
   }
 
+  .category-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 3rem;
+
+  i {
+    font-size: 4rem;
+    color: #d1d5db;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #6b7280;
+  }
+
+  p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 0.95rem;
+  }
 }
 
 form {
   height: 100%;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 1rem;
+
+  label {
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.95rem;
+
+    &:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  }
 
   .confirm-form {
     width: 100%;
-
-    display: inline-flex;
+    display: flex;
     justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f3f4f6;
+    margin-top: auto;
+
+    button {
+      flex: 1;
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+    }
   }
 
   .form-category_title {
     text-transform: capitalize;
-    font-size: 16px;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    background: #f3f4f6;
+    border-radius: 6px;
+    margin: 0.5rem 0;
 
     span {
       text-transform: uppercase;
       font-weight: bold;
+      color: #3b82f6;
+    }
+  }
+}
+
+::ng-deep {
+  .p-dialog {
+    .p-dialog-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      padding: 1.5rem;
+
+      .p-dialog-title {
+        font-weight: 600;
+        font-size: 1.25rem;
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-management-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    .page-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .category-header {
+    flex-direction: column;
+    gap: 1rem;
+
+    .category-actions {
+      width: 100%;
+      justify-content: space-between;
     }
   }
 }
