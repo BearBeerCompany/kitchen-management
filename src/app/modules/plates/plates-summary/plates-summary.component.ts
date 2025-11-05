@@ -58,6 +58,11 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
   public statsLoading: boolean = false;
   public showEmpty: boolean = false;
 
+  // Grafici aggiuntivi
+  public plateWorkloadChartData: any;
+  public plateDelayChartData: any;
+  public chartOptions: any;
+
   // Soglie dinamiche per la leggenda
   public get warningThreshold(): number {
     return this._delayThresholdsService.getThresholds().warning;
@@ -79,6 +84,58 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _messageService: MessageService
   ) {
     this.i18n = _i18nService.instance;
+    
+    // Opzioni comuni per i grafici
+    this.chartOptions = {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    };
   }
 
   ngOnInit(): void {
@@ -180,6 +237,9 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     // Ordina per ritardo massimo decrescente
     this.platesStats.sort((a, b) => b.maxDelayMinutes - a.maxDelayMinutes);
     
+    // Genera i grafici delle piastre
+    this.generatePlateCharts();
+    
     this.loading = false;
   }
 
@@ -266,6 +326,74 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadData();
+  }
+
+  private generatePlateCharts(): void {
+    if (this.platesStats.length === 0) {
+      this.plateWorkloadChartData = undefined;
+      this.plateDelayChartData = undefined;
+      return;
+    }
+
+    // Ordina le piastre per nome per una visualizzazione più ordinata
+    const sortedStats = [...this.platesStats].sort((a, b) => 
+      (a.plate.name || '').localeCompare(b.plate.name || '')
+    );
+
+    // Grafico 1: Carico di lavoro per piastra (ordini in corso + in coda)
+    const plateNames = sortedStats.map(s => s.plate.name);
+    const progressCounts = sortedStats.map(s => s.progressCount);
+    const todoCounts = sortedStats.map(s => s.todoCount);
+
+    this.plateWorkloadChartData = {
+      labels: plateNames,
+      datasets: [
+        {
+          label: 'In Corso',
+          backgroundColor: '#2196f3',
+          data: progressCounts
+        },
+        {
+          label: 'In Coda',
+          backgroundColor: '#ff9800',
+          data: todoCounts
+        }
+      ]
+    };
+
+    // Grafico 2: Ritardi medi per piastra
+    // Mostra solo le piastre con ordini attivi
+    const platesWithOrders = sortedStats.filter(s => s.progressCount > 0);
+    
+    if (platesWithOrders.length > 0) {
+      const plateNamesWithDelays = platesWithOrders.map(s => s.plate.name);
+      const avgDelays = platesWithOrders.map(s => s.avgDelayMinutes);
+      const maxDelays = platesWithOrders.map(s => s.maxDelayMinutes);
+
+      // Colori dinamici basati sulla severità del ritardo medio
+      const backgroundColors = avgDelays.map(delay => {
+        const severity = this.getDelaySeverity(delay);
+        switch (severity) {
+          case 'success': return '#4caf50';
+          case 'warning': return '#ff9800';
+          case 'danger': return '#f44336';
+          default: return '#9e9e9e';
+        }
+      });
+
+      this.plateDelayChartData = {
+        labels: plateNamesWithDelays,
+        datasets: [
+          {
+            label: 'Ritardo Medio (min)',
+            backgroundColor: backgroundColors,
+            data: avgDelays
+          }
+        ]
+      };
+    } else {
+      this.plateDelayChartData = undefined;
+    }
   }
 
   searchByDate(): void {

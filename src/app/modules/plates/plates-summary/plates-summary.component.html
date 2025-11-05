@@ -90,6 +90,43 @@
       </div>
     </div>
 
+    <!-- Grafici Analisi Piastre -->
+    <div class="charts-container" *ngIf="!loading">
+      <div class="chart-card" *ngIf="plateWorkloadChartData">
+        <div class="chart-header">
+          <h3>
+            <i class="pi pi-chart-bar"></i>
+            Carico di Lavoro per Piastra
+          </h3>
+          <p>Distribuzione degli ordini in corso e in coda per ogni piastra</p>
+        </div>
+        <div class="chart-content">
+          <p-chart type="bar" 
+                   [data]="plateWorkloadChartData" 
+                   [options]="chartOptions"
+                   height="300px">
+          </p-chart>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="plateDelayChartData">
+        <div class="chart-header">
+          <h3>
+            <i class="pi pi-clock"></i>
+            Ritardi Medi per Piastra
+          </h3>
+          <p>Tempo medio di ritardo per piastra (solo piastre con ordini attivi)</p>
+        </div>
+        <div class="chart-content">
+          <p-chart type="bar" 
+                   [data]="plateDelayChartData" 
+                   [options]="chartOptions"
+                   height="300px">
+          </p-chart>
+        </div>
+      </div>
+    </div>
+
     <!-- Tabella Dettagli Piastre -->
     <div class="plates-table-container">
       <div class="table-header-with-legend">
