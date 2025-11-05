@@ -1,12 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {I18nService} from "../../../services/i18n.service";
-import {Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
 import {Plate} from "../../plates/plate.interface";
 import {PlateService} from "../../plates/services/plate.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {StatsService} from "../../shared/service/stats.service";
-import {Stats, StatsChart} from "../../shared/interface/stats.interface";
-import {Status} from "../../plate-menu-items/plate-menu-item";
 import {ConfirmationService, MessageService} from "primeng/api";
 import { GsgIntegrationService } from '../../shared/service/gsg-integration.service';
 import { GsgIntegrationResult } from '../../shared/interface/gsg-integration.interface';
@@ -25,12 +22,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public selectedPlate?: Plate;
   public plates: Plate[] = [];
   public form?: FormGroup | undefined;
-  public selectedStats?: Stats;
-  public data: StatsChart | undefined;
-  public dateFrom: Date = new Date();
-  public dateTo: Date = new Date()
-  public loading: boolean = false;
-  public showEmpty: boolean = false;
   public showNotify: boolean = false;
   public showItemDelays: boolean = false;
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
@@ -39,7 +30,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(public i18nService: I18nService,
               private _platesService: PlateService,
-              private _statsService: StatsService,
               private _messageService: MessageService,
               private _gsgIntegrationService: GsgIntegrationService,
               private _confirmationService: ConfirmationService,
@@ -57,12 +47,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
     });
-
-    this.subs.add(
-      this._statsService.getTodayStats().subscribe((stats: Stats[]) => {
-        this._loadDiagramData(stats);
-      })
-    );
   }
 
   public ngOnDestroy(): void {
@@ -124,31 +108,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     );
   }
 
-  public searchByDate(): void {
-    this.loading = true;
-    this.subs.add(
-      this._statsService.getStats(StatsService.getDateFormatted(this.dateFrom),
-      StatsService.getDateFormatted(this.dateTo))
-      .subscribe({
-        next: (stats: Stats[]) => {
-          if (stats.length > 0)
-            this._loadDiagramData(stats);
-          else
-            this.showEmpty = true;
-
-          this.loading = false;
-        }, error: () => {
-          this._messageService.add({
-            severity: 'error',
-            summary: 'Caricamento Statistiche',
-            detail: `Errore durante il caricamento delle statistiche per i giorni selezionati`
-          });
-          this.loading = false;
-        }
-      })
-    );
-  }
-
   public onSwitchPlate(event: { id: string, enable: boolean }) {
     this._platesService.switch(event.id, event.enable)
       .subscribe({
@@ -168,40 +127,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
           });
         }
       })
-  }
-
-  private _loadDiagramData(stats: Stats[]) {
-    this.showEmpty = false;
-    this.selectedStats = stats[0];
-
-    if (this.selectedStats && stats.length > 1) {
-      stats.slice(1).forEach((stats: Stats) => {
-        this.selectedStats!.count! += stats.count;
-        this.selectedStats!.statusCount[Status.Todo] += stats.statusCount[Status.Todo];
-        this.selectedStats!.statusCount[Status.Progress] += stats.statusCount[Status.Progress];
-        this.selectedStats!.statusCount[Status.Done] += stats.statusCount[Status.Done];
-        this.selectedStats!.statusCount[Status.Cancelled] += stats.statusCount[Status.Cancelled];
-      });
-    }
-    this.data = {
-      labels: ['Attesa', 'In Corso', 'Completati', 'Cancellati'],
-      datasets: [
-        {
-          data: [
-            this.selectedStats.statusCount[Status.Todo],
-            this.selectedStats.statusCount[Status.Progress],
-            this.selectedStats.statusCount[Status.Done],
-            this.selectedStats.statusCount[Status.Cancelled]
-          ],
-          backgroundColor: [
-            "#0d91e8",
-            "#f6dd38",
-            "#5ff104",
-            "#f31919",
-          ]
-        }
-      ]
-    };
   }
 
   private _loadSettingsFromLocalStorage(): void {

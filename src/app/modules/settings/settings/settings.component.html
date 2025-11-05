@@ -69,38 +69,6 @@
     </div>
   </div>
   
-  <h3>Statistiche</h3>
-  <div class="stats_container">
-    <div class="stats_numbers_container">
-      <span>Selezionata una data per vedere le statistiche degli ordini</span>
-      <div class="stats-range-date_row">
-        <div class="field col-12 md:col-4">
-          <label for="dateFrom">Data Inizio</label>
-          <p-calendar id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-        </div>
-        <div class="field col-12 md:col-4">
-          <label for="dateTo">Data Fine</label>
-          <p-calendar id="dateTo" [(ngModel)]="dateTo" [minDate]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-        </div>
-        <p-button icon="pi pi-search" [loading]="loading" (onClick)="searchByDate()"></p-button>
-      </div>
-      <span id="stats-title">
-        Statistiche: {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}}
-        {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
-        ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) : ''}}
-      </span>
-      <span id="stats-total-count">
-      totale ordini
-      <p class="counter" *ngIf="!showEmpty">{{selectedStats?.count}}</p>
-      <p class="empty" *ngIf="showEmpty">Nessun ordine trovato</p>
-    </span>
-    </div>
-    <div class="pie_container" *ngIf="!showEmpty">
-      <p-chart type="doughnut"
-               [data]="data">
-      </p-chart>
-    </div>
-  </div>
   <h3>Modifica Piastre</h3>
   <section id="plate-settings__container">
     <ng-container *ngFor="let plate of plates">
