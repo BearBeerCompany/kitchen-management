@@ -14,6 +14,23 @@ section {
     .p-tag {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.3);
+      
+      // Animazione pulsante per stati warning e danger
+      &.p-tag-warning,
+      &.p-tag-danger {
+        animation: pulse-plate-badge 2s ease-in-out infinite;
+      }
+    }
+  }
+  
+  @keyframes pulse-plate-badge {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
   }
 
