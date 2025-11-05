@@ -47,6 +47,21 @@
     }
   }
 
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $radius-lg;
+    background: radial-gradient(ellipse at center, rgba(30, 41, 59, 0.25) 0%, rgba(51, 65, 85, 0.05) 100%);
+    box-shadow: $shadow-sm;
+
+    .logo-img {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+    }
+  }
+
   .navbar-items {
     display: flex;
     gap: $spacing-xs;
