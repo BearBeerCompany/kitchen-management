@@ -1,52 +1,83 @@
 <p-toast></p-toast>
-<h3>
-  <span>{{i18n.PLATE.TITLE}}</span>
-  <!-- todo add spinner -->
-  <ng-container *ngIf="!loading">
-    <button (click)="toggleNoQueuedItemsOverlay()"
-            [ngClass]="showOverlay ? 'button__active-overlay' : ''">
-      <span>Ordini non assegnati</span>
-      <p-badge *ngIf="unassignedItems.length > 0" [value]="unassignedItems.length + ''"></p-badge>
+
+<!-- Modern Page Header -->
+<div class="plates-page-header">
+  <div class="header-title">
+    <i class="pi pi-inbox"></i>
+    <div>
+      <h2>{{i18n.PLATE.TITLE}}</h2>
+      <p class="header-subtitle">Gestione piastre e ordini in tempo reale</p>
+    </div>
+  </div>
+  
+  <div class="header-actions" *ngIf="!loading">
+    <button pButton 
+            pRipple
+            [label]="'Ordini non assegnati' + (unassignedItems.length > 0 ? ' (' + unassignedItems.length + ')' : '')"
+            [icon]="showOverlay ? 'pi pi-times' : 'pi pi-list'"
+            [class]="showOverlay ? 'p-button-danger' : 'p-button-info'"
+            (click)="toggleNoQueuedItemsOverlay()">
     </button>
     <ng-container *ngIf="showOverlay" [ngTemplateOutlet]="overlay"></ng-container>
     <ng-container *ngIf="showPlateList" [ngTemplateOutlet]="plate_overlay"></ng-container>
-  </ng-container>
-</h3>
-<div class="plates-carousel">
-  <button (click)="onPreviousPage()"
+  </div>
+</div>
+<!-- Modern Plates Carousel -->
+<div class="modern-carousel-container">
+  <!-- Previous Button -->
+  <button pButton
+          pRipple
+          class="carousel-nav-button carousel-nav-previous"
+          icon="pi pi-chevron-left"
+          (click)="onPreviousPage()"
+          (mouseenter)="hidePrevious = false"
           (mouseleave)="hidePrevious = true"
-          (mouseover)="hidePrevious = false"
-          [hidden]="hidePrevious"
-          *ngIf="currentPage !== 0"
-          class="carousel-button"
-          id="carousel__previous-page">
-    <i [hidden]="hidePrevious" class="pi pi-angle-left"></i>
+          [style.opacity]="hidePrevious ? '0' : '1'"
+          *ngIf="currentPage !== 0">
   </button>
-  <ng-container *ngIf="!loading">
-    <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
-                                                     currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
-      <plate (onNew)="onNewPlate($event)"
-             (onItemEvent)="handleItemEvent($event)"
-             (viewModeChange)="onPlateViewModeChange($event, plate)"
-             [config]="plate"
-             [plateList]="getEnabledPlateList(plate)"
-             [queue]="plateQueueManagerService.getQueue(plate.id!)"
-             [showItemDelays]="showItemDelays">
-      </plate>
+
+  <!-- Plates Carousel -->
+  <div class="plates-carousel">
+    <div class="carousel-loading" *ngIf="loading">
+      <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+      <p>Caricamento piastre...</p>
+    </div>
+    
+    <ng-container *ngIf="!loading">
+      <ng-container *ngFor="let plate of plateList.slice(currentPage * DISPLAY_CHUNK,
+                                                       currentPage * DISPLAY_CHUNK + DISPLAY_CHUNK)">
+        <plate (onNew)="onNewPlate($event)"
+               (onItemEvent)="handleItemEvent($event)"
+               (viewModeChange)="onPlateViewModeChange($event, plate)"
+               [config]="plate"
+               [plateList]="getEnabledPlateList(plate)"
+               [queue]="plateQueueManagerService.getQueue(plate.id!)"
+               [showItemDelays]="showItemDelays">
+        </plate>
+      </ng-container>
     </ng-container>
-  </ng-container>
-  <button (click)="onNextPage()"
+  </div>
+
+  <!-- Next Button -->
+  <button pButton
+          pRipple
+          class="carousel-nav-button carousel-nav-next"
+          icon="pi pi-chevron-right"
+          (click)="onNextPage()"
+          (mouseenter)="hideNext = false"
           (mouseleave)="hideNext = true"
-          (mouseover)="hideNext = false"
-          [hidden]="hideNext"
-          *ngIf="(currentPage + 1) !== totalPages"
-          class="carousel-button"
-          id="carousel__next-page">
-    <i [hidden]="hideNext" class="pi pi-angle-right"></i>
+          [style.opacity]="hideNext ? '0' : '1'"
+          *ngIf="(currentPage + 1) !== totalPages">
   </button>
 </div>
-<div *ngIf="totalPages > 0" id="paginator">
-  <span *ngFor="let p of pages" [ngClass]="p == currentPage ? 'active' : ''" class="circle"></span>
+
+<!-- Modern Pagination Dots -->
+<div class="carousel-pagination" *ngIf="totalPages > 1">
+  <button *ngFor="let p of pages" 
+          class="pagination-dot" 
+          [class.active]="p == currentPage"
+          (click)="currentPage = p">
+  </button>
 </div>
 
 <ng-template #overlay>

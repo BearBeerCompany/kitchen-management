@@ -47,7 +47,13 @@
       <h3>{{i18n.PLATE.EMPTY}}</h3>
       <i class="pi pi-inbox" id="empty"></i>
     </span>
-    <div *ngIf="!(queue?.isEmpty$ | async)" class="item-list_container" [ngClass]="{'rows': viewMode === 'rows', 'columns': viewMode === 'columns'}">
+    <div *ngIf="!(queue?.isEmpty$ | async)" 
+         class="item-list_container" 
+         [ngClass]="{
+           'rows': viewMode === 'rows', 
+           'columns': viewMode === 'columns',
+           'expanded-view': readonly
+         }">
       <ng-container *ngFor="let item of progressItems">
         <item (onCancelEvent)="handleItemEvent($event)"
               (onDoneEvent)="handleItemEvent($event)"

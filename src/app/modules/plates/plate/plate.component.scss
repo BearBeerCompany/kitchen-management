@@ -1,14 +1,23 @@
-@import "~primeng/resources/themes/lara-light-indigo/theme.css";
 @import '../../../sass/theme';
 @import '../../../sass/mixins';
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 section {
   height: 100%;
-
-  margin: 10px;
+  display: flex;
+  flex-direction: column;
   position: relative;
-
   user-select: none;
+  background: var(--theme-card-bg);
+  border: 3px solid var(--theme-card-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  // Rimossi effetti hover per display a soffitto
 
   // Stile generale per tutti i p-tag nella section
   ::ng-deep p-tag {
@@ -53,60 +62,52 @@ section {
   }
 
   header {
-    position: fixed;
-    top: 0;
-    z-index: 10;
-    
-    // Base styling from mixin
+    position: relative;
     width: 100%;
-    height: 10%;
-    border-radius: 16px 16px 0 0;
-    opacity: 0.9;
-    
-    // Grid layout: singola riga
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    grid-template-rows: 1fr;
-    gap: 0;
-    align-items: flex-start;
-    padding: 0.75rem 1rem;
+    min-height: 70px;
+    flex-shrink: 0;
+    border-radius: 14px 14px 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-sm $spacing-md;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
     .header-content {
-      grid-column: 1 / 2;
-      grid-row: 1 / 2;
       display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding-top: 0.25rem;
+      flex-direction: column;
+      gap: $spacing-xs;
+      flex: 1;
+      min-width: 0;
 
       h3 {
         margin: 0;
         padding: 0;
         text-transform: uppercase;
-        font-size: 1.4rem;
-        font-weight: 700;
+        font-size: 24px;
+        font-weight: 800;
         line-height: 1.1;
-        white-space: nowrap;
+        letter-spacing: 0.5px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
 
       .header-badges {
         display: flex;
-        gap: 0.5rem;
-        align-items: flex-start;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
-        padding-top: 0.1rem;
+        gap: $spacing-xs;
+        align-items: center;
+        flex-wrap: wrap;
 
         ::ng-deep .p-tag {
-          font-size: 0.8rem;
-          font-weight: 600;
-          padding: 0.35rem 0.65rem;
+          font-size: 14px;
+          font-weight: 700;
+          padding: 5px 10px;
           white-space: nowrap;
           cursor: default;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-          border: 1.5px solid rgba(255, 255, 255, 0.6);
-          transition: all 0.15s ease;
-          line-height: 1.1;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.7);
+          line-height: 1.2;
 
           &[data-tooltip] {
             cursor: help;
@@ -148,22 +149,19 @@ section {
     }
 
     .view-mode-button {
-      grid-column: 2 / 3;
-      grid-row: 1 / 2;
-      align-self: flex-start;
-      margin-top: 0.25rem;
       border: none;
       background: rgba(255, 255, 255, 0.25);
       border-radius: 8px;
-      padding: 0.5rem;
+      padding: $spacing-xs;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
 
       &:hover {
         background: rgba(255, 255, 255, 0.4);
@@ -188,21 +186,18 @@ section {
     }
 
     .expand-button {
-      grid-column: 3 / 4;
-      grid-row: 1 / 2;
       border: none;
       background: rgba(255, 255, 255, 0.25);
-      border-radius: 6px;
-      padding: 0.4rem;
+      border-radius: 8px;
+      padding: $spacing-xs;
       cursor: pointer;
       transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
-      align-self: flex-start;
-      margin-top: 0.25rem;
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
 
       &:hover {
         background: rgba(255, 255, 255, 0.4);
@@ -256,8 +251,9 @@ section {
     width: 2rem !important;
 
     position: absolute;
-    left: -10px;
-    bottom: -10px;
+    left: 10px;
+    bottom: 10px;
+    z-index: 10;
 
     &:hover {
       cursor: pointer;
@@ -266,8 +262,9 @@ section {
 
   .items-queue-badge {
     position: absolute;
-    right: -10px;
-    bottom: -10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 10;
 
     &:hover {
       cursor: pointer;
@@ -290,68 +287,115 @@ section {
 }
 
 .off {
-  @include black-glass;
+  opacity: 0.6;
+  filter: grayscale(80%);
 
   header {
-    opacity: 0.5;
+    background: $gray-600 !important;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    transform: none;
   }
 }
 
 .on {
-  @include grey-glass;
-
-  header {
-    height: 20%;
-  }
+  // No background override, uses section background
 
   #empty-container {
-
-    height: 100%;
-
-    @include center-flex;
+    flex: 1;
+    display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-4xl;
+    gap: $spacing-xl;
 
     h3 {
       text-transform: uppercase;
-      word-spacing: 10px;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-semibold;
+      color: var(--theme-text-secondary);
+      letter-spacing: 2px;
+      margin: 0;
     }
 
     i#empty {
-      font-size: 100px;
+      font-size: 120px;
+      color: var(--theme-border);
+      opacity: 0.5;
     }
   }
 }
 
 .item-list_container {
-  height: 90%;
+  flex: 1;
   width: 100%;
-
-  position: fixed;
-  bottom: 0;
-  top: auto;
-  z-index: 50;
+  padding: $spacing-md $spacing-sm $spacing-lg $spacing-sm;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   item {
-    flex: 1 0 calc(1% * var(--items-chunk));
-    margin: 10px;
+    display: block;
   }
 
   &.rows {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
+    gap: $spacing-sm;
+    
     item {
-      max-height: 15%;   
+      flex: 0 0 auto;
     }
   }
+  
   &.columns {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: $spacing-sm;
+    
+    item {
+      height: auto;
+    }
   }
 
-  overflow-y: auto;
-  overflow-x: hidden;  
+  // Vista espansa (monitor sospeso)
+  &.expanded-view {
+    padding: $spacing-sm $spacing-md;
+    flex: 1;
+    overflow-y: auto;
+
+    &.rows {
+      gap: $spacing-xs;
+    }
+
+    &.columns {
+      gap: $spacing-xs;
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 170px;
+      align-content: start;
+    }
+  }
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--theme-border);
+    border-radius: $radius-full;
+    
+    &:hover {
+      background: $primary-300;
+    }
+  }
 }
 
 .skeleton {
