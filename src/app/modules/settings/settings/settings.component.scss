@@ -5,7 +5,7 @@
   padding: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
-  background: #f8f9fa;
+  background: var(--theme-background);
   min-height: 100vh;
 }
 
@@ -16,7 +16,7 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding: 1.25rem 1.5rem;
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
@@ -55,16 +55,16 @@
 
 // Settings Card
 .settings-card {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   margin-bottom: 1.5rem;
   overflow: hidden;
 
   .card-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: var(--theme-surface);
     padding: 1.25rem 1.5rem;
-    border-bottom: 2px solid #e5e7eb;
+    border-bottom: 2px solid var(--theme-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -112,8 +112,8 @@
       display: flex;
       gap: 1rem;
       padding: 1rem 1.25rem;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
+      background: var(--theme-surface);
+      border: 1px solid var(--theme-border);
       border-radius: 8px;
       margin-bottom: 1.5rem;
 
@@ -145,13 +145,13 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.25rem;
-      background: #f8f9fa;
+      background: var(--theme-surface);
       border-radius: 10px;
       margin-bottom: 1rem;
       transition: all 0.2s ease;
 
       &:hover {
-        background: #f3f4f6;
+        background: var(--theme-surface-hover, var(--theme-surface));
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       }
 
@@ -209,7 +209,7 @@
         display: flex;
         gap: 1rem;
         padding: 1.25rem;
-        background: #f8f9fa;
+        background: var(--theme-surface);
         border-radius: 10px;
         border-left: 4px solid;
 
@@ -428,7 +428,7 @@
           display: flex;
           justify-content: center;
           padding: 1rem;
-          background: #f8f9fa;
+          background: var(--theme-surface);
           border-radius: 8px;
         }
       }
@@ -437,8 +437,8 @@
 
   .p-dialog-footer {
     padding: 1rem 1.5rem;
-    background: #f8f9fa;
-    border-top: 1px solid #e5e7eb;
+    background: var(--theme-surface);
+    border-top: 1px solid var(--theme-border);
 
     .dialog-actions {
       display: flex;
