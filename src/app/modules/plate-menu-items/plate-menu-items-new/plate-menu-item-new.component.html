@@ -1,61 +1,65 @@
 <p-toast></p-toast>
 <h3>Creazione Nuovo Ordine</h3>
-<div class="flex flex-row justify-content-between column-gap-3">
-    <div class="flex-column menu-item-choice">
-      <form [formGroup]="form!" class="ml-2 mr-2">
-      <div class="flex flex-row mt-4">
-        <div class="field col-4 ml-3">
-          <label for="orderNumber">Numero Ordine</label>
-          <p-inputNumber [max]="1000"
-                         [min]="0"
-                         [showButtons]="true"
-                         [inputStyle]="{'width': '100px'}"
-                         formControlName="orderNumber"
-                         id="orderNumber"
-                         class="ml-4"
-          ></p-inputNumber>
-        </div>
-        <div class="field col-4 ml-3">
-          <label for="tableNumber">Numero Tavolo</label>
-          <input pInputText type="text" id="tableNumber" formControlName="tableNumber" placeholder="Numero Tavolo" class="ml-4" />
-        </div>
-        <div class="field col-4 ml-3">
-          <label for="clientName">Nome Cliente</label>
-          <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Nome Cliente" class="ml-4" />
-        </div>
-      </div>
 
-      <p-tabView *ngIf="categories.length">
-        <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
-          <div class="grid">
-            <ng-container *ngFor="let item of category.menuItems">
-              <p-card [header]="item.name!"
-                      [ngClass]="{'menu-item-selection': item.selected}"
-                      (click)="selectMenuItem($event, item)"
-                      class="menu-item-card col-4"
-                      pDraggable="ddOrders"
-                      (onDragStart)="dragStart(item)"
-                      (onDragEnd)="dragEnd()"
-              >
-                <p>{{item.description}}</p>
-              </p-card>
-            </ng-container>
-          </div>
-        </p-tabPanel>
-      </p-tabView>
-      </form>
+<!-- Form header -->
+<div class="order-header-form">
+  <form [formGroup]="form!">
+    <div class="form-fields">
+      <div class="field">
+        <label for="orderNumber">Numero Ordine</label>
+        <p-inputNumber 
+          [max]="1000"
+          [min]="0"
+          [showButtons]="true"
+          formControlName="orderNumber"
+          id="orderNumber"
+        ></p-inputNumber>
+      </div>
+      <div class="field">
+        <label for="tableNumber">Numero Tavolo</label>
+        <input pInputText type="text" id="tableNumber" formControlName="tableNumber" placeholder="Tavolo" />
+      </div>
+      <div class="field">
+        <label for="clientName">Nome Cliente</label>
+        <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Cliente" />
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="content-layout">
+  <!-- Menu items selection -->
+  <div class="menu-selection-panel">
+    <form [formGroup]="form!">
+
+    <p-tabView *ngIf="categories.length">
+      <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
+        <div class="menu-items-grid">
+          <ng-container *ngFor="let item of category.menuItems">
+            <div class="menu-item-card"
+                 [class.selected]="item.selected"
+                 (click)="selectMenuItem($event, item)"
+                 pDraggable="ddOrders"
+                 (onDragStart)="dragStart(item)"
+                 (onDragEnd)="dragEnd()">
+              <div class="menu-item-header">{{item.name}}</div>
+              <div class="menu-item-description">{{item.description}}</div>
+            </div>
+          </ng-container>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+    </form>
   </div>
 
-  <!-- summary -->
-  <div class="flex-column" pDroppable="ddOrders" (onDrop)="drop()">
-    <p-toolbar styleClass="p-mb-4">
-      <ng-template pTemplate="left">
-        <button pButton pRipple label="Salva" icon="pi pi-plus" class="p-mr-2 mr-2" (click)="savePkmis()" [disabled]="form?.invalid"></button>
-        <button pButton pRipple label="Cancella" icon="pi pi-trash" class="p-button-danger mr-2" (click)="deleteSelectedProducts()"
-                [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
-        <p-splitButton label="Seleziona Piastra" icon="pi pi-plus" [model]="platesAction" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></p-splitButton>
-      </ng-template>
-    </p-toolbar>
+  <!-- Order summary table -->
+  <div class="order-summary-panel" pDroppable="ddOrders" (onDrop)="drop()">
+    <div class="table-toolbar">
+      <button pButton pRipple label="Salva" icon="pi pi-plus" class="p-button-success" (click)="savePkmis()" [disabled]="form?.invalid"></button>
+      <button pButton pRipple label="Cancella" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()"
+              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
+      <p-splitButton label="Seleziona Piastra" icon="pi pi-plus" [model]="platesAction" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></p-splitButton>
+    </div>
 
     <p-table #dt
              [value]="plateMenuItems" 
@@ -97,9 +101,9 @@
       </ng-template>
 
       <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
-        <tr [pEditableRow]="plateMenuItem" [pSelectableRow]="plateMenuItem" [pSelectableRowIndex]="ri" class="p-selectable-row">
-          <td>
-            <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
+        <tr [pEditableRow]="plateMenuItem">
+          <td (click)="$event.stopPropagation()">
+            <p-tableCheckbox [value]="plateMenuItem" [index]="ri"></p-tableCheckbox>
           </td>
           <td>
             <span class="image-text">{{plateMenuItem.menuItem.name}}</span>

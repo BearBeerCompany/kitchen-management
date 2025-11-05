@@ -65,6 +65,9 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Carica e incrementa il numero d'ordine da localStorage
+    this._loadAndIncrementOrderNumber();
+    
     this._categoriesSub = this._categoryService.getAll().subscribe(categoriesData => {
       this._menuItemsSub = this._menuItemsService.getAll().subscribe(data => {
         this.menuItems = data;
@@ -131,6 +134,8 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
 
     this._pkmiCreateAllSub = this._plateMenuItemsService.createAll(newPkmis).subscribe({
       next: data => {
+        // Salva il numero d'ordine corrente in localStorage per il prossimo ordine
+        this._saveOrderNumber(formValue.orderNumber);
         this._router.navigate(['/plate-menu-items']);
       },
       error: (errorResponse: HttpErrorResponse) => {
@@ -143,6 +148,24 @@ export class PlateMenuItemNewComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  private _loadAndIncrementOrderNumber(): void {
+    const STORAGE_KEY = 'last_order_number';
+    const savedOrderNumber = localStorage.getItem(STORAGE_KEY);
+    
+    let nextOrderNumber = 1;
+    if (savedOrderNumber) {
+      const lastNumber = parseInt(savedOrderNumber, 10);
+      nextOrderNumber = isNaN(lastNumber) ? 1 : lastNumber + 1;
+    }
+    
+    this.form?.get('orderNumber')?.setValue(nextOrderNumber);
+  }
+
+  private _saveOrderNumber(orderNumber: number): void {
+    const STORAGE_KEY = 'last_order_number';
+    localStorage.setItem(STORAGE_KEY, orderNumber.toString());
   }
 
   deleteSelectedProducts() {

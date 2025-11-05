@@ -2,26 +2,142 @@
 
 h3 {
   @include title-center;
-
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
-.menu-item-choice {
-  width: 55%;
-}
+// Order header form
+.order-header-form {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
-.menu-item-card {
-  ::ng-deep .p-card {
-    :hover {
-      cursor: pointer;
+  .form-fields {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+
+    .field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      label {
+        font-weight: 600;
+        font-size: 14px;
+        color: #495057;
+      }
+
+      input, ::ng-deep .p-inputnumber {
+        width: 100%;
+      }
     }
   }
 }
 
-.menu-item-selection {
-  ::ng-deep .p-card {
-    background-color: blue;
+// Main content layout
+.content-layout {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 20px;
+  height: calc(100vh - 280px);
+}
+
+// Menu selection panel
+.menu-selection-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  ::ng-deep .p-tabview {
+    .p-tabview-nav {
+      background: transparent;
+      border-bottom: 2px solid #dee2e6;
+      
+      li {
+        .p-tabview-nav-link {
+          padding: 0.75rem 1rem;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .p-tabview-panels {
+      padding: 15px 0;
+    }
+  }
+}
+
+.menu-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.menu-item-card {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+
+  &:hover {
+    border-color: #6366f1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.2);
+  }
+
+  &.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
     color: white;
+
+    .menu-item-description {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .menu-item-header {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .menu-item-description {
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.4;
+  }
+}
+
+// Order summary panel
+.order-summary-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+
+  .table-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+
+    button {
+      white-space: nowrap;
+    }
   }
 }
 
@@ -41,30 +157,53 @@ h3 {
   border: 2px solid;
 }
 
-.p-datatable-orders {
-  .p-datatable-header {
-    padding: 1rem;
-    text-align: left;
-    font-size: 1.5rem;
-  }
+::ng-deep .p-datatable-orders {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
-  .p-paginator {
-    padding: 1rem;
+  .p-datatable-wrapper {
+    flex: 1;
+    overflow: auto;
   }
 
   .p-datatable-thead > tr > th {
     text-align: left;
+    background: #f8f9fa;
+    font-weight: 600;
+    padding: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
 
-  .p-datatable-tbody > tr > td {
-    cursor: auto;
+  .p-datatable-tbody > tr {
+    &:hover {
+      background: #f8f9fa;
+    }
+
+    > td {
+      padding: 12px;
+      vertical-align: middle;
+
+      &:first-child {
+        width: 50px;
+        text-align: center;
+      }
+    }
   }
 
   .p-dropdown-label:not(.p-placeholder) {
     text-transform: uppercase;
   }
 
-  .p-datatable-orders .p-datatable-tbody > tr > td .p-column-title {
-    display: none;
+  // Fix checkbox clickability
+  .p-checkbox {
+    pointer-events: all;
+    cursor: pointer;
+  }
+
+  .p-checkbox-box {
+    cursor: pointer;
   }
 }
