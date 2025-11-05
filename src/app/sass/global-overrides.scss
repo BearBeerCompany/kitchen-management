@@ -1,0 +1,425 @@
+// Global PrimeNG Component Overrides
+// Apply modern styling to all PrimeNG components across the app
+
+@import 'theme';
+@import 'mixins';
+
+// Modern Dialog Styling
+::ng-deep {
+  // Apply to all dialogs with class .modern-dialog
+  .modern-dialog {
+    @include modern-dialog;
+
+    .p-dialog {
+      border-radius: $dialog-border-radius;
+      box-shadow: $dialog-shadow;
+      overflow: hidden;
+    }
+  }
+
+  // Apply to all tables with class .modern-table
+  .modern-table {
+    @include modern-table;
+  }
+
+  // Global dialog header improvements
+  .p-dialog {
+    .p-dialog-header {
+      background: $dialog-header-bg;
+      color: white;
+      padding: $spacing-xl;
+      border-bottom: none;
+
+      .p-dialog-title {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+        width: 2rem;
+        height: 2rem;
+        transition: $transition-base;
+
+        &:enabled:hover {
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: $spacing-xl;
+      background: $dialog-content-bg;
+    }
+
+    .p-dialog-footer {
+      padding: $spacing-lg $spacing-xl;
+      background: $dialog-footer-bg;
+      border-top: 1px solid $border;
+
+      button {
+        margin: 0 $spacing-sm;
+      }
+    }
+  }
+
+  // Global table improvements
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: $table-header-bg;
+      color: white;
+      font-weight: $font-weight-semibold;
+      padding: $spacing-md $spacing-lg;
+      border: none;
+      font-size: $font-size-sm;
+
+      .p-sortable-column-icon {
+        color: white;
+      }
+
+      .p-column-title {
+        font-weight: $font-weight-semibold;
+      }
+    }
+
+    .p-datatable-tbody > tr {
+      transition: $transition-fast;
+
+      &:hover {
+        background: $table-row-hover-bg;
+      }
+
+      &.p-highlight {
+        background: $table-row-selected-bg;
+        color: $text-primary;
+      }
+
+      > td {
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $table-border-color;
+        font-size: $font-size-sm;
+        vertical-align: middle;
+      }
+    }
+
+    &.p-datatable-hoverable-rows {
+      .p-datatable-tbody > tr:not(.p-highlight):hover {
+        background: $table-row-hover-bg;
+        cursor: pointer;
+      }
+    }
+  }
+
+  // Modern Button Styling
+  .p-button {
+    padding: $button-padding-y $button-padding-x;
+    border-radius: $button-border-radius;
+    font-weight: $button-font-weight;
+    transition: $transition-base;
+    border: none;
+
+    &:not(.p-button-text):not(.p-button-outlined) {
+      &.p-button-success {
+        @include modern-button-success;
+      }
+
+      &.p-button-danger {
+        @include modern-button-danger;
+      }
+
+      &:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info) {
+        @include modern-button-primary;
+      }
+    }
+
+    &.p-button-outlined {
+      background: transparent;
+      transition: $transition-base;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.1);
+      }
+    }
+
+    &.p-button-sm {
+      padding: 0.5rem 1rem;
+      font-size: $font-size-sm;
+    }
+
+    &.p-button-lg {
+      padding: 1rem 2rem;
+      font-size: $font-size-lg;
+    }
+  }
+
+  // Modern Input Styling
+  .p-inputtext {
+    padding: $input-padding-y $input-padding-x;
+    border: 1px solid $input-border-color;
+    border-radius: $input-border-radius;
+    font-size: $font-size-base;
+    transition: $transition-base;
+
+    &:enabled:focus {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-shadow;
+      outline: none;
+    }
+  }
+
+  .p-inputnumber-input {
+    padding: $input-padding-y $input-padding-x;
+    border-radius: $input-border-radius;
+  }
+
+  // Modern Dropdown Styling
+  .p-dropdown {
+    border: 1px solid $input-border-color;
+    border-radius: $input-border-radius;
+    transition: $transition-base;
+
+    &:not(.p-disabled):hover {
+      border-color: $input-focus-border-color;
+    }
+
+    &:not(.p-disabled).p-focus {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-shadow;
+    }
+
+    .p-dropdown-label {
+      padding: $input-padding-y $input-padding-x;
+    }
+  }
+
+  // Modern Calendar Styling
+  .p-calendar {
+    .p-inputtext {
+      padding: $input-padding-y $input-padding-x;
+      border-radius: $input-border-radius;
+    }
+  }
+
+  // Modern Card Styling
+  .p-card {
+    @include modern-card;
+
+    .p-card-header {
+      @include card-header;
+    }
+
+    .p-card-body {
+      @include card-body;
+    }
+  }
+
+  // Modern Tag/Badge Styling
+  .p-tag {
+    padding: $badge-padding-y $badge-padding-x;
+    border-radius: $badge-border-radius;
+    font-size: $badge-font-size;
+    font-weight: $badge-font-weight;
+
+    &.p-tag-success {
+      background: $success-500;
+      color: white;
+    }
+
+    &.p-tag-warning {
+      background: $warning-500;
+      color: white;
+    }
+
+    &.p-tag-danger {
+      background: $danger-500;
+      color: white;
+    }
+
+    &.p-tag-info {
+      background: $primary-500;
+      color: white;
+    }
+  }
+
+  // Modern TabView Styling
+  .p-tabview {
+    .p-tabview-nav {
+      background: transparent;
+      border-bottom: 2px solid $border;
+
+      li {
+        .p-tabview-nav-link {
+          padding: $spacing-md $spacing-lg;
+          font-weight: $font-weight-semibold;
+          border: none;
+          color: $text-secondary;
+          transition: $transition-base;
+
+          &:hover {
+            background: $gray-100;
+            color: $text-primary;
+          }
+        }
+
+        &.p-highlight {
+          .p-tabview-nav-link {
+            color: $primary-500;
+            border-bottom: 2px solid $primary-500;
+            background: transparent;
+          }
+        }
+      }
+    }
+
+    .p-tabview-panels {
+      background: transparent;
+    }
+  }
+
+  // Modern Toast Styling
+  .p-toast {
+    .p-toast-message {
+      border-radius: $radius-lg;
+      box-shadow: $shadow-lg;
+      margin: $spacing-md 0;
+
+      &.p-toast-message-success {
+        background: $success-50;
+        border: 1px solid $success-200;
+        color: $success-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $success-600;
+        }
+      }
+
+      &.p-toast-message-error {
+        background: $danger-50;
+        border: 1px solid $danger-200;
+        color: $danger-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $danger-600;
+        }
+      }
+
+      &.p-toast-message-warn {
+        background: $warning-50;
+        border: 1px solid $warning-200;
+        color: $warning-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $warning-600;
+        }
+      }
+
+      &.p-toast-message-info {
+        background: $primary-50;
+        border: 1px solid $primary-200;
+        color: $primary-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $primary-600;
+        }
+      }
+    }
+  }
+
+  // Modern Confirm Dialog
+  .p-confirm-dialog {
+    @include modern-dialog;
+  }
+
+  // Loading Spinner
+  .p-progress-spinner {
+    .p-progress-spinner-circle {
+      stroke: $primary-500;
+    }
+  }
+
+  // Checkbox & Radio
+  .p-checkbox,
+  .p-radiobutton {
+    .p-checkbox-box,
+    .p-radiobutton-box {
+      border: 2px solid $input-border-color;
+      transition: $transition-base;
+
+      &:not(.p-disabled):hover {
+        border-color: $primary-500;
+      }
+
+      &.p-highlight {
+        border-color: $primary-500;
+        background: $primary-500;
+      }
+    }
+  }
+
+  // Input Switch
+  .p-inputswitch {
+    &.p-inputswitch-checked {
+      .p-inputswitch-slider {
+        background: $primary-500;
+      }
+    }
+
+    .p-inputswitch-slider {
+      transition: $transition-base;
+    }
+  }
+}
+
+// Animation Keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Utility Classes
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
