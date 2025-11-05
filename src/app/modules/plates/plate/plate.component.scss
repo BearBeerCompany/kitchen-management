@@ -1,5 +1,6 @@
 @import "~primeng/resources/themes/lara-light-indigo/theme.css";
-@import 'mixins';
+@import '../../../sass/theme';
+@import '../../../sass/mixins';
 
 section {
   height: 100%;

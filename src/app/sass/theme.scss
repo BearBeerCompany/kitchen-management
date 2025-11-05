@@ -198,3 +198,69 @@ $badge-padding-x: 0.75rem;
 $badge-border-radius: $radius-md;
 $badge-font-size: $font-size-sm;
 $badge-font-weight: $font-weight-semibold;
+
+// ============================================
+// CSS Custom Properties for Theme Switching
+// ============================================
+
+:root {
+  // Light Theme (Default)
+  --theme-background: #{$gray-50};
+  --theme-surface: #ffffff;
+  --theme-surface-elevated: #ffffff;
+  --theme-text-primary: #{$gray-900};
+  --theme-text-secondary: #{$gray-600};
+  --theme-text-disabled: #{$gray-400};
+  --theme-border: #{$gray-200};
+  --theme-divider: #{$gray-200};
+  --theme-hover: #{$gray-100};
+  --theme-shadow: rgba(0, 0, 0, 0.1);
+  --theme-shadow-lg: rgba(0, 0, 0, 0.15);
+  
+  // Navbar
+  --theme-navbar-bg: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+  --theme-navbar-border: #{$gray-200};
+  --theme-navbar-shadow: rgba(0, 0, 0, 0.05);
+  
+  // Card
+  --theme-card-bg: #ffffff;
+  --theme-card-border: #{$gray-200};
+  --theme-card-shadow: #{$shadow-md};
+  
+  // Table
+  --theme-table-bg: #ffffff;
+  --theme-table-row-hover: #{$gray-50};
+  --theme-table-row-selected: #{$primary-50};
+  --theme-table-border: #{$gray-200};
+}
+
+body.dark-theme {
+  // Dark Theme
+  --theme-background: #0f172a;
+  --theme-surface: #1e293b;
+  --theme-surface-elevated: #334155;
+  --theme-text-primary: #f1f5f9;
+  --theme-text-secondary: #cbd5e1;
+  --theme-text-disabled: #64748b;
+  --theme-border: #334155;
+  --theme-divider: #334155;
+  --theme-hover: #334155;
+  --theme-shadow: rgba(0, 0, 0, 0.3);
+  --theme-shadow-lg: rgba(0, 0, 0, 0.5);
+  
+  // Navbar
+  --theme-navbar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  --theme-navbar-border: #334155;
+  --theme-navbar-shadow: rgba(0, 0, 0, 0.3);
+  
+  // Card
+  --theme-card-bg: #1e293b;
+  --theme-card-border: #334155;
+  --theme-card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  
+  // Table
+  --theme-table-bg: #1e293b;
+  --theme-table-row-hover: #334155;
+  --theme-table-row-selected: rgba(59, 130, 246, 0.15);
+  --theme-table-border: #334155;
+}

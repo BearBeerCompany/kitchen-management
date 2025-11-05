@@ -8,6 +8,7 @@ import {ConfirmationService, MessageService} from "primeng/api";
 import { GsgIntegrationService } from '../../shared/service/gsg-integration.service';
 import { GsgIntegrationResult } from '../../shared/interface/gsg-integration.interface';
 import { DelayThresholdsService, DelayThresholds } from '../../../services/delay-thresholds.service';
+import { ThemeService } from '../../../services/theme.service';
 
 @Component({
   selector: 'settings',
@@ -26,6 +27,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public showNotify: boolean = false;
   public showItemDelays: boolean = false;
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
+  public isDarkTheme: boolean = false;
 
   private subs: Subscription = new Subscription();
 
@@ -34,7 +36,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
               private _messageService: MessageService,
               private _gsgIntegrationService: GsgIntegrationService,
               private _confirmationService: ConfirmationService,
-              private _delayThresholdsService: DelayThresholdsService) {
+              private _delayThresholdsService: DelayThresholdsService,
+              private _themeService: ThemeService) {
     this.i18n = i18nService.instance;
   }
 
@@ -42,6 +45,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this._platesService.getAll().subscribe(plates => this.plates = plates);
     this._loadSettingsFromLocalStorage();
     this.delayThresholds = this._delayThresholdsService.getThresholds();
+    this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
 
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
@@ -181,6 +185,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (savedShowItemDelays !== null) {
       this.showItemDelays = savedShowItemDelays === 'true';
     }
+  }
+
+  public onThemeChange(): void {
+    const newTheme = this.isDarkTheme ? 'dark' : 'light';
+    this._themeService.setTheme(newTheme);
+    this._messageService.add({
+      severity: 'success',
+      summary: 'Tema cambiato',
+      detail: `Tema ${this.isDarkTheme ? 'scuro' : 'chiaro'} attivato`,
+      life: 2000
+    });
   }
 
   public onShowNotifyChange(): void {

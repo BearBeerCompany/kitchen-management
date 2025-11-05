@@ -55,6 +55,16 @@
       <div class="setting-row">
         <div class="setting-info">
           <div class="setting-label">
+            <i class="pi" [ngClass]="isDarkTheme ? 'pi-moon' : 'pi-sun'"></i>
+            <label for="darkMode">Tema Scuro</label>
+          </div>
+          <small>Attiva la modalità scura per ridurre l'affaticamento visivo</small>
+        </div>
+        <p-inputSwitch inputId="darkMode" [(ngModel)]="isDarkTheme" (onChange)="onThemeChange()"></p-inputSwitch>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
             <i class="pi pi-bell"></i>
             <label for="showNotify">Notifiche Audio</label>
           </div>

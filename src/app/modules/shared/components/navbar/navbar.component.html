@@ -1,30 +1,62 @@
-<footer>
-  <navbar-button (onClick)="onNavClick(routing.MenuItem)"
-                 [active]="selectedRoute === routing.MenuItem"
-                 [title]="i18n.ITEM.TITLE"
-                 icon="pi-book">
-  </navbar-button>
-  <navbar-button (onClick)="onNavClick(routing.Plates)"
-                 [active]="selectedRoute === routing.Plates"
-                 [badgeCounter]="plateQueueManagerService.notify | async"
-                 [badged]="plateQueueManagerService.haveNotify"
-                 [title]="i18n.PLATE.TITLE"
-                 icon="pi-inbox">
-  </navbar-button>
-  <navbar-button (onClick)="onNavClick(routing.PlateMenuItems)"
-                 [active]="selectedRoute === routing.PlateMenuItems"
-                 [title]="i18n.ORDERS.TITLE"
-                 icon="pi-shopping-cart">
-  </navbar-button>
-  <navbar-button (onClick)="onNavClick(routing.PlatesSummary)"
-                 [active]="selectedRoute === routing.PlatesSummary"
-                 [title]="'Riepilogo'"
-                 icon="pi-chart-bar">
-  </navbar-button>
-  <navbar-button (onClick)="onNavClick(routing.Settings)"
-                 [active]="selectedRoute === routing.Settings"
-                 [title]="i18n.SETTINGS.TITLE"
-                 icon="pi-cog">
-  </navbar-button>
-</footer>
+<nav class="modern-navbar">
+  <div class="navbar-container">
+    <!-- Logo/Brand -->
+    <div class="navbar-brand">
+      <i class="pi pi-server brand-icon"></i>
+      <span class="brand-text">Kitchen Manager</span>
+    </div>
+
+    <!-- Navigation Items -->
+    <div class="navbar-items">
+      <button class="nav-item" 
+              [class.active]="selectedRoute === routing.MenuItem"
+              (click)="onNavClick(routing.MenuItem)"
+              [pTooltip]="i18n.ITEM.TITLE"
+              tooltipPosition="top">
+        <i class="pi pi-book nav-icon"></i>
+        <span class="nav-label">{{ i18n.ITEM.TITLE }}</span>
+      </button>
+
+      <button class="nav-item" 
+              [class.active]="selectedRoute === routing.Plates"
+              (click)="onNavClick(routing.Plates)"
+              [pTooltip]="i18n.PLATE.TITLE"
+              tooltipPosition="top">
+        <div class="nav-icon-wrapper">
+          <i class="pi pi-inbox nav-icon"></i>
+          <span *ngIf="plateQueueManagerService.haveNotify" 
+                class="nav-badge">{{ (plateQueueManagerService.notify | async) || 0 }}</span>
+        </div>
+        <span class="nav-label">{{ i18n.PLATE.TITLE }}</span>
+      </button>
+
+      <button class="nav-item" 
+              [class.active]="selectedRoute === routing.PlateMenuItems"
+              (click)="onNavClick(routing.PlateMenuItems)"
+              [pTooltip]="i18n.ORDERS.TITLE"
+              tooltipPosition="top">
+        <i class="pi pi-shopping-cart nav-icon"></i>
+        <span class="nav-label">{{ i18n.ORDERS.TITLE }}</span>
+      </button>
+
+      <button class="nav-item" 
+              [class.active]="selectedRoute === routing.PlatesSummary"
+              (click)="onNavClick(routing.PlatesSummary)"
+              pTooltip="Riepilogo"
+              tooltipPosition="top">
+        <i class="pi pi-chart-bar nav-icon"></i>
+        <span class="nav-label">Riepilogo</span>
+      </button>
+
+      <button class="nav-item" 
+              [class.active]="selectedRoute === routing.Settings"
+              (click)="onNavClick(routing.Settings)"
+              [pTooltip]="i18n.SETTINGS.TITLE"
+              tooltipPosition="top">
+        <i class="pi pi-cog nav-icon"></i>
+        <span class="nav-label">{{ i18n.SETTINGS.TITLE }}</span>
+      </button>
+    </div>
+  </div>
+</nav>
 

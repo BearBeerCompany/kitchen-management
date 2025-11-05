@@ -4,6 +4,13 @@
 @import 'theme';
 @import 'mixins';
 
+// Theme-aware global styles
+body {
+  background: var(--theme-background);
+  color: var(--theme-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
 // Modern Dialog Styling
 ::ng-deep {
   // Apply to all dialogs with class .modern-dialog
