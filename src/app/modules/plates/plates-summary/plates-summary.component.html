@@ -344,37 +344,97 @@
     </div>
 
     <!-- Statistiche Ordini per Periodo -->
-    <div class="stats-section">
-      <h3>Statistiche Ordini</h3>
-      <div class="stats_container">
-        <div class="stats_numbers_container">
-          <span>Seleziona una data per vedere le statistiche degli ordini</span>
-          <div class="stats-range-date_row">
-            <div class="field col-12 md:col-4">
-              <label for="dateFrom">Data Inizio</label>
-              <p-calendar id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-            </div>
-            <div class="field col-12 md:col-4">
-              <label for="dateTo">Data Fine</label>
-              <p-calendar id="dateTo" [(ngModel)]="dateTo" [minDate]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-            </div>
-            <p-button icon="pi pi-search" [loading]="statsLoading" (onClick)="searchByDate()"></p-button>
-          </div>
-          <span id="stats-title" *ngIf="selectedStats">
-            Statistiche: {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}}
-            {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
-            ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) : ''}}
-          </span>
-          <span id="stats-total-count" *ngIf="selectedStats || showEmpty">
-            totale ordini
-            <p class="counter" *ngIf="selectedStats && !showEmpty">{{selectedStats?.count}}</p>
-            <p class="empty" *ngIf="showEmpty">Nessun ordine trovato</p>
-          </span>
+    <div class="orders-stats-section">
+      <div class="section-header">
+        <div class="header-title">
+          <i class="pi pi-calendar"></i>
+          <h3>Statistiche Ordini per Periodo</h3>
         </div>
-        <div class="pie_container" *ngIf="statsData && !showEmpty">
-          <p-chart type="doughnut"
-                   [data]="statsData">
-          </p-chart>
+      </div>
+
+      <!-- Date Filter Card -->
+      <div class="date-filter-card">
+        <div class="filter-header">
+          <i class="pi pi-filter"></i>
+          <span>Seleziona un periodo per analizzare gli ordini</span>
+        </div>
+        
+        <div class="date-inputs-row">
+          <div class="date-field">
+            <label for="dateFrom">
+              <i class="pi pi-calendar-plus"></i>
+              Data Inizio
+            </label>
+            <p-calendar id="dateFrom" 
+                       [(ngModel)]="dateFrom" 
+                       dateFormat="dd/mm/yy"
+                       [showIcon]="true"
+                       [style]="{'width': '100%'}"
+                       placeholder="Seleziona data inizio">
+            </p-calendar>
+          </div>
+
+          <div class="date-field">
+            <label for="dateTo">
+              <i class="pi pi-calendar-minus"></i>
+              Data Fine
+            </label>
+            <p-calendar id="dateTo" 
+                       [(ngModel)]="dateTo" 
+                       [minDate]="dateFrom" 
+                       dateFormat="dd/mm/yy"
+                       [showIcon]="true"
+                       [style]="{'width': '100%'}"
+                       placeholder="Seleziona data fine">
+            </p-calendar>
+          </div>
+
+          <div class="search-button-container">
+            <button pButton pRipple 
+                    icon="pi pi-search" 
+                    label="Cerca"
+                    class="p-button-lg p-button-primary"
+                    [loading]="statsLoading" 
+                    (click)="searchByDate()">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="stats-results" *ngIf="selectedStats || showEmpty">
+        <div class="results-header">
+          <div class="period-info">
+            <i class="pi pi-calendar-times"></i>
+            <div class="period-text">
+              <span class="label">Periodo Analizzato</span>
+              <span class="dates" *ngIf="selectedStats">
+                {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}} {{dateFrom.getFullYear()}}
+                {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
+                ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) + ' ' + dateTo.getFullYear() : ''}}
+              </span>
+            </div>
+          </div>
+
+          <div class="total-orders-badge">
+            <div class="badge-content" *ngIf="selectedStats && !showEmpty">
+              <span class="count">{{selectedStats?.count}}</span>
+              <span class="label">Ordini Totali</span>
+            </div>
+            <div class="badge-content empty" *ngIf="showEmpty">
+              <i class="pi pi-info-circle"></i>
+              <span class="label">Nessun ordine trovato</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-content-grid" *ngIf="statsData && !showEmpty">
+          <div class="chart-container">
+            <div class="chart-card">
+              <h4>Distribuzione Stati Ordini</h4>
+              <p-chart type="doughnut" [data]="statsData"></p-chart>
+            </div>
+          </div>
         </div>
       </div>
     </div>
