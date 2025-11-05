@@ -1,123 +1,165 @@
 @import 'mixins';
 
-.info-container {
-  @include info-plate;
+.plate-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 
-  position: relative;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #3b82f6;
+  }
 
-  width: 100%;
-  height: 100%;
+  &.disabled {
+    opacity: 0.7;
 
-  border-radius: 16px;
-
-  .switch-button {
-
-    width: 10%;
-    border-radius: 16px 0 0 16px;
-
-    i {
-      font-size: 3rem;
+    .plate-header {
+      opacity: 0.8;
     }
 
-    &:hover {
-      cursor: pointer;
+    .plate-icon {
+      opacity: 0.6;
     }
   }
 
-  .off {
-    background-color: #1e2021;
-    color: white;
-
-    &:hover {
-      background-color: #f1e205;
-      color: black;
-    }
-  }
-
-  .on {
-    background-color: #f1e205;
-    color: black;
-
-    &:hover {
-      background-color: #1e2021;
-      color: white;
-    }
-  }
-
-  .details {
-    height: 100%;
-    margin-left: 10%;
-
+  .plate-header {
+    padding: 1.25rem;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #e5e7eb;
 
-    padding: 10px;
-    border-radius: 0 16px 16px 0;
+    .plate-icon {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
 
-    h3 {
-      text-transform: uppercase;
+      i {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
     }
 
-    @media only screen and (max-height: 700px) {
-      h3 {
+    .plate-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      h4 {
         margin: 0;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .plate-number {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6b7280;
+        font-family: 'Courier New', monospace;
+      }
+    }
+
+    .plate-status {
+      flex-shrink: 0;
+
+      ::ng-deep .p-tag {
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
       }
     }
   }
 
-  .details.off {
-    background-color: #1e2021;
-    color: white;
-  }
+  .plate-actions {
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    background: #f8f9fa;
 
-  button {
-    border: none;
-    box-sizing: border-box;
+    button {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
 
-    height: 100%;
-    width: 20%;
+      ::ng-deep {
+        .p-button-label {
+          font-weight: 600;
+        }
 
-    position: absolute;
-    top: 0;
+        .p-button-icon {
+          font-size: 0.9rem;
+        }
+      }
 
-    transition: all 0.3s;
-
-    i {
-      font-size: 2rem;
+      &:hover {
+        transform: translateY(-1px);
+      }
     }
   }
+}
 
-  .edit-button {
-    background-color: var(--gray-400);
-    border-radius: 0;
+// Responsive
+@media (max-width: 768px) {
+  .plate-card {
+    .plate-actions {
+      flex-direction: column;
 
-    right: 20%;
-
-    &:hover {
-      width: 40%;
-      right: 0;
-
-      cursor: pointer;
-
-      background-color: var(--gray-600);
-      color: white;
-      border-radius: 0 16px 16px 0;
+      button {
+        width: 100%;
+      }
     }
   }
+}
 
-  .delete-button {
-    background-color: var(--red-400);
-    border-radius: 0 16px 16px 0;
+@media (max-width: 480px) {
+  .plate-card {
+    .plate-header {
+      padding: 1rem;
 
-    right: 0;
+      .plate-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+      }
 
-    &:hover {
-      width: 40%;
+      .plate-info {
+        h4 {
+          font-size: 1rem;
+        }
+      }
+    }
 
-      cursor: pointer;
+    .plate-actions {
+      padding: 0.75rem;
 
-      background-color: var(--red-600);
-      color: white;
+      button {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+
+        ::ng-deep .p-button-label {
+          display: none;
+        }
+
+        ::ng-deep .p-button-icon {
+          margin: 0;
+        }
+      }
     }
   }
 }

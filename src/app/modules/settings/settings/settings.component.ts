@@ -19,6 +19,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public readonly i18n: any;
 
   public display: boolean = false;
+  public isEditMode: boolean = false;
   public selectedPlate?: Plate;
   public plates: Plate[] = [];
   public form?: FormGroup | undefined;
@@ -77,16 +78,44 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
-    this._platesService.update({
-      ...this.form?.value,
-      enabled: true,
-      slot: [0, this.form?.get("number")?.value],
-      id: this.selectedPlate?.id
-    }).subscribe(
-      _ => this._platesService.getAll().subscribe(plates => {
-        this.plates = plates;
-        this.display = false;
-      }));
+    if (this.isEditMode) {
+      // Update existing plate
+      this._platesService.update({
+        ...this.form?.value,
+        enabled: true,
+        slot: [0, this.form?.get("number")?.value],
+        id: this.selectedPlate?.id
+      }).subscribe(
+        _ => {
+          this._messageService.add({
+            severity: 'success',
+            summary: 'Piastra Modificata',
+            detail: `La piastra "${this.form?.value.name}" è stata modificata con successo`
+          });
+          this._platesService.getAll().subscribe(plates => {
+            this.plates = plates;
+            this.display = false;
+          });
+        });
+    } else {
+      // Create new plate
+      this._platesService.create({
+        ...this.form?.value,
+        enabled: false,
+        slot: [0, this.form?.get("number")?.value]
+      }).subscribe(
+        _ => {
+          this._messageService.add({
+            severity: 'success',
+            summary: 'Piastra Creata',
+            detail: `La piastra "${this.form?.value.name}" è stata creata con successo`
+          });
+          this._platesService.getAll().subscribe(plates => {
+            this.plates = plates;
+            this.display = false;
+          });
+        });
+    }
   }
 
   public discardForm(): void {
@@ -94,7 +123,19 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.display = false;
   }
 
-  public showDialog(id: string) {
+  public showCreateDialog(): void {
+    this.isEditMode = false;
+    this.selectedPlate = undefined;
+    this.form = new FormGroup({
+      name: new FormControl("", Validators.required),
+      color: new FormControl("#3b82f6", Validators.required),
+      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
+    });
+    this.display = true;
+  }
+
+  public showEditDialog(id: string) {
+    this.isEditMode = true;
     this._platesService.getById(id).subscribe(
       (plate: Plate) => {
         this.selectedPlate = plate;

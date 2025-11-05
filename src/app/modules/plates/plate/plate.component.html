@@ -14,9 +14,11 @@
         <div class="header-badges">
           <p-tag *ngIf="maxDelayMinutes > 0"
                  [severity]="delaySeverity"
-                 [value]="'⏱ ' + getDelayLabel()"
                  [pTooltip]="getDelayTooltip()"
-                 tooltipPosition="bottom"></p-tag>
+                 tooltipPosition="bottom">
+            <i class="pi pi-clock delay-icon"></i>
+            <span>{{ getDelayLabel() }}</span>
+          </p-tag>
           <p-tag [severity]="config._severity!"
                  [value]="config._status!"
                  [style.display]="'none'"></p-tag>
