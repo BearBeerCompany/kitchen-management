@@ -41,7 +41,40 @@ h3 {
   .p-datatable-orders {
     // Limita la larghezza massima della tabella per schermi grandi
     max-width: 100%;
-    overflow-x: auto;
+    
+    // IMPORTANTE: quando c'è una riga in editing, rimuovi tutti gli overflow
+    &:has(.p-row-editing) {
+      overflow: visible !important;
+      
+      .p-datatable-wrapper {
+        overflow: visible !important;
+      }
+      
+      .p-datatable-table {
+        overflow: visible !important;
+      }
+
+      .p-datatable-tbody {
+        overflow: visible !important;
+      }
+      
+      tbody {
+        overflow: visible !important;
+      }
+      
+      table {
+        overflow: visible !important;
+      }
+    }
+    
+    // Quando NON c'è editing, mantieni overflow normale
+    &:not(:has(.p-row-editing)) {
+      overflow-x: auto;
+      
+      .p-datatable-wrapper {
+        overflow-x: auto;
+      }
+    }
 
     .p-datatable-header {
       padding: 1rem;
@@ -65,8 +98,26 @@ h3 {
       cursor: auto;
       vertical-align: middle;
       max-width: 200px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      
+      // Rimuovi overflow solo per le righe in editing
+      &:not(.p-cell-editing) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    
+    // Le celle in editing non devono avere overflow o limiti di altezza
+    .p-datatable-tbody > tr.p-row-editing {
+      overflow: visible !important;
+      max-height: none !important;
+      height: auto !important;
+      
+      > td {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+        position: relative;
+      }
     }
 
     .p-dropdown-label:not(.p-placeholder) {
@@ -100,6 +151,42 @@ h3 {
       .p-dropdown-label,
       .p-treeselect-label {
         padding: 0.4rem;
+      }
+    }
+    
+    // TreeSelect specifico - assicura che il container non limiti il panel
+    .p-treeselect {
+      position: relative;
+      
+      .p-treeselect-panel {
+        min-width: 100%;
+      }
+    }
+
+    // Fix per evitare che i dropdown vengano tagliati durante l'editing
+    .p-datatable-tbody > tr.p-row-editing {
+      position: relative;
+      z-index: 100;
+      
+      > td {
+        overflow: visible !important;
+        position: static !important; // Cambiato da relative a static
+        
+        // Assicura che i contenuti delle celle possano espandersi
+        > * {
+          overflow: visible !important;
+        }
+      }
+      
+      // Celle con editor attivo
+      .p-cell-editing {
+        overflow: visible !important;
+        
+        .p-dropdown,
+        .p-treeselect {
+          position: static !important; // Permette al panel di espandersi liberamente
+          overflow: visible !important;
+        }
       }
     }
 

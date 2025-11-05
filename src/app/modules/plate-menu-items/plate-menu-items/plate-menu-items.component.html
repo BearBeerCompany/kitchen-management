@@ -127,21 +127,7 @@
         <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
       </td>
       <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <p-treeSelect [(ngModel)]="plateMenuItem.menuItem"
-                          [options]="menuItemOptions"
-                          [metaKeySelection]="false"
-                          placeholder="Select Menu Item"
-                          [filter]="true"
-                          [filterInputAutoFocus]="true"
-                          scrollHeight="300px"
-            ></p-treeSelect>
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem?.menuItem?.data?.name}}
-          </ng-template>
-        </p-cellEditor>
+        <span class="image-text">{{plateMenuItem?.menuItem?.data?.name}}</span>
       </td>
       <td>
         <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem?.menuItem)}">
@@ -185,7 +171,12 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="statuses" [(ngModel)]="plateMenuItem.status" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="statuses" 
+                        [(ngModel)]="plateMenuItem.status" 
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
             <span [style]="{'color': getStatusLabelColor(plateMenuItem?.status)}">
@@ -198,7 +189,12 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="platesOptions" [(ngModel)]="plateMenuItem.plate" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="platesOptions" 
+                        [(ngModel)]="plateMenuItem.plate" 
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
             <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem?.plate)}">{{plateMenuItem?.plate}}</span>
@@ -208,7 +204,12 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="takeAwayOptions" [(ngModel)]="plateMenuItem.takeAway" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="takeAwayOptions" 
+                        [(ngModel)]="plateMenuItem.takeAway" 
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
             <span>{{plateMenuItem?.takeAway ? 'SI' : ''}}</span>
