@@ -16,6 +16,8 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { CalendarModule } from 'primeng/calendar';
+import { ChartModule } from 'primeng/chart';
 
 const routes: Routes = [
   {
@@ -51,7 +53,9 @@ const routes: Routes = [
     TableModule,
     TagModule,
     ButtonModule,
-    TooltipModule
+    TooltipModule,
+    CalendarModule,
+    ChartModule
   ],
   providers: [MessageService]
 })

@@ -92,7 +92,23 @@
 
     <!-- Tabella Dettagli Piastre -->
     <div class="plates-table-container">
-      <h3>Dettaglio Piastre</h3>
+      <div class="table-header-with-legend">
+        <h3>Dettaglio Piastre</h3>
+        <div class="legend-inline">
+          <div class="legend-item">
+            <p-tag severity="success" [value]="'< ' + warningThreshold + ' min'"></p-tag>
+            <span>Ottimo</span>
+          </div>
+          <div class="legend-item">
+            <p-tag severity="warning" [value]="warningThreshold + '-' + dangerThreshold + ' min'"></p-tag>
+            <span>Attenzione</span>
+          </div>
+          <div class="legend-item">
+            <p-tag severity="danger" [value]="'> ' + dangerThreshold + ' min'"></p-tag>
+            <span>Critico</span>
+          </div>
+        </div>
+      </div>
       
       <p-table [value]="platesStats" 
                styleClass="p-datatable-sm p-datatable-striped"
@@ -180,21 +196,38 @@
       </p-table>
     </div>
 
-    <!-- Legenda -->
-    <div class="legend-container">
-      <h4>Legenda Ritardi</h4>
-      <div class="legend-items">
-        <div class="legend-item">
-          <p-tag severity="success" [value]="'< ' + warningThreshold + ' min'"></p-tag>
-          <span>Ottimo</span>
+    <!-- Statistiche Ordini per Periodo -->
+    <div class="stats-section">
+      <h3>Statistiche Ordini</h3>
+      <div class="stats_container">
+        <div class="stats_numbers_container">
+          <span>Seleziona una data per vedere le statistiche degli ordini</span>
+          <div class="stats-range-date_row">
+            <div class="field col-12 md:col-4">
+              <label for="dateFrom">Data Inizio</label>
+              <p-calendar id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
+            </div>
+            <div class="field col-12 md:col-4">
+              <label for="dateTo">Data Fine</label>
+              <p-calendar id="dateTo" [(ngModel)]="dateTo" [minDate]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
+            </div>
+            <p-button icon="pi pi-search" [loading]="statsLoading" (onClick)="searchByDate()"></p-button>
+          </div>
+          <span id="stats-title" *ngIf="selectedStats">
+            Statistiche: {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}}
+            {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
+            ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) : ''}}
+          </span>
+          <span id="stats-total-count" *ngIf="selectedStats || showEmpty">
+            totale ordini
+            <p class="counter" *ngIf="selectedStats && !showEmpty">{{selectedStats?.count}}</p>
+            <p class="empty" *ngIf="showEmpty">Nessun ordine trovato</p>
+          </span>
         </div>
-        <div class="legend-item">
-          <p-tag severity="warning" [value]="warningThreshold + '-' + dangerThreshold + ' min'"></p-tag>
-          <span>Attenzione</span>
-        </div>
-        <div class="legend-item">
-          <p-tag severity="danger" [value]="'> ' + dangerThreshold + ' min'"></p-tag>
-          <span>Critico</span>
+        <div class="pie_container" *ngIf="statsData && !showEmpty">
+          <p-chart type="doughnut"
+                   [data]="statsData">
+          </p-chart>
         </div>
       </div>
     </div>

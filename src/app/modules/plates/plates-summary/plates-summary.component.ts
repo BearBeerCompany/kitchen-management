@@ -6,6 +6,9 @@ import {PlateMenuItem, Status} from '../../plate-menu-items/plate-menu-item';
 import {Subscription} from 'rxjs';
 import {I18nService} from '../../../services/i18n.service';
 import {DelayThresholdsService} from '../../../services/delay-thresholds.service';
+import {StatsService} from '../../shared/service/stats.service';
+import {Stats, StatsChart} from '../../shared/interface/stats.interface';
+import {MessageService} from 'primeng/api';
 
 interface PlateStats {
   plate: Plate;
@@ -47,6 +50,14 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     criticalOrders: 0
   };
 
+  // Statistiche ordini per periodo
+  public selectedStats?: Stats;
+  public statsData: StatsChart | undefined;
+  public dateFrom: Date = new Date();
+  public dateTo: Date = new Date();
+  public statsLoading: boolean = false;
+  public showEmpty: boolean = false;
+
   // Soglie dinamiche per la leggenda
   public get warningThreshold(): number {
     return this._delayThresholdsService.getThresholds().warning;
@@ -63,7 +74,9 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _plateService: PlateService,
     private _plateQueueManager: PlateQueueManagerService,
     private _i18nService: I18nService,
-    private _delayThresholdsService: DelayThresholdsService
+    private _delayThresholdsService: DelayThresholdsService,
+    private _statsService: StatsService,
+    private _messageService: MessageService
   ) {
     this.i18n = _i18nService.instance;
   }
@@ -86,6 +99,15 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
         this.loadData();
       }
     });
+    
+    // Carica le statistiche di oggi all'avvio
+    this._subscriptions.add(
+      this._statsService.getTodayStats().subscribe((stats: Stats[]) => {
+        if (stats.length > 0) {
+          this._loadDiagramData(stats);
+        }
+      })
+    );
     
     // Aggiorna ogni 30 secondi
     this._updateInterval = setInterval(() => {
@@ -244,5 +266,70 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadData();
+  }
+
+  searchByDate(): void {
+    this.statsLoading = true;
+    // Reset stato precedente
+    this.showEmpty = false;
+    this.selectedStats = undefined;
+    this.statsData = undefined;
+    
+    this._subscriptions.add(
+      this._statsService.getStats(StatsService.getDateFormatted(this.dateFrom),
+      StatsService.getDateFormatted(this.dateTo))
+      .subscribe({
+        next: (stats: Stats[]) => {
+          if (stats.length > 0) {
+            this._loadDiagramData(stats);
+          } else {
+            this.showEmpty = true;
+          }
+          this.statsLoading = false;
+        }, error: () => {
+          this._messageService.add({
+            severity: 'error',
+            summary: 'Caricamento Statistiche',
+            detail: `Errore durante il caricamento delle statistiche per i giorni selezionati`
+          });
+          this.showEmpty = true;
+          this.statsLoading = false;
+        }
+      })
+    );
+  }
+
+  private _loadDiagramData(stats: Stats[]) {
+    this.showEmpty = false;
+    this.selectedStats = stats[0];
+
+    if (this.selectedStats && stats.length > 1) {
+      stats.slice(1).forEach((stats: Stats) => {
+        this.selectedStats!.count! += stats.count;
+        this.selectedStats!.statusCount[Status.Todo] += stats.statusCount[Status.Todo];
+        this.selectedStats!.statusCount[Status.Progress] += stats.statusCount[Status.Progress];
+        this.selectedStats!.statusCount[Status.Done] += stats.statusCount[Status.Done];
+        this.selectedStats!.statusCount[Status.Cancelled] += stats.statusCount[Status.Cancelled];
+      });
+    }
+    this.statsData = {
+      labels: ['Attesa', 'In Corso', 'Completati', 'Cancellati'],
+      datasets: [
+        {
+          data: [
+            this.selectedStats.statusCount[Status.Todo],
+            this.selectedStats.statusCount[Status.Progress],
+            this.selectedStats.statusCount[Status.Done],
+            this.selectedStats.statusCount[Status.Cancelled]
+          ],
+          backgroundColor: [
+            "#0d91e8",
+            "#f6dd38",
+            "#5ff104",
+            "#f31919",
+          ]
+        }
+      ]
+    };
   }
 }
