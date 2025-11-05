@@ -1,158 +1,305 @@
 <p-toast></p-toast>
-<h3>Creazione Nuovo Ordine</h3>
 
-<!-- Form header -->
-<div class="order-header-form">
-  <form [formGroup]="form!">
-    <div class="form-fields">
-      <div class="field">
-        <label for="orderNumber">Numero Ordine</label>
-        <p-inputNumber 
-          [max]="1000"
-          [min]="0"
-          [showButtons]="true"
-          formControlName="orderNumber"
-          id="orderNumber"
-        ></p-inputNumber>
-      </div>
-      <div class="field">
-        <label for="tableNumber">Numero Tavolo</label>
-        <input pInputText type="text" id="tableNumber" formControlName="tableNumber" placeholder="Tavolo" />
-      </div>
-      <div class="field">
-        <label for="clientName">Nome Cliente</label>
-        <input pInputText type="text" id="clientName" formControlName="clientName" placeholder="Cliente" />
+<div class="order-creation-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <i class="pi pi-plus-circle"></i>
+      <div>
+        <h2>Creazione Nuovo Ordine</h2>
+        <p class="header-subtitle">Compila i dati dell'ordine e seleziona i prodotti dal menù</p>
       </div>
     </div>
-  </form>
-</div>
-
-<div class="content-layout">
-  <!-- Menu items selection -->
-  <div class="menu-selection-panel">
-    <form [formGroup]="form!">
-
-    <p-tabView *ngIf="categories.length">
-      <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
-        <div class="menu-items-grid">
-          <ng-container *ngFor="let item of category.menuItems">
-            <div class="menu-item-card"
-                 [class.selected]="item.selected"
-                 (click)="selectMenuItem($event, item)"
-                 pDraggable="ddOrders"
-                 (onDragStart)="dragStart(item)"
-                 (onDragEnd)="dragEnd()">
-              <div class="menu-item-header">{{item.name}}</div>
-              <div class="menu-item-description">{{item.description}}</div>
-            </div>
-          </ng-container>
-        </div>
-      </p-tabPanel>
-    </p-tabView>
-    </form>
   </div>
 
-  <!-- Order summary table -->
-  <div class="order-summary-panel" pDroppable="ddOrders" (onDrop)="drop()">
-    <div class="table-toolbar">
-      <button pButton pRipple label="Salva" icon="pi pi-plus" class="p-button-success" (click)="savePkmis()" [disabled]="form?.invalid"></button>
-      <button pButton pRipple label="Cancella" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedProducts()"
-              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
-      <p-splitButton label="Seleziona Piastra" icon="pi pi-plus" [model]="platesAction" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></p-splitButton>
+  <!-- Order Info Card -->
+  <div class="order-info-card">
+    <div class="card-header">
+      <i class="pi pi-file-edit"></i>
+      <h3>Informazioni Ordine</h3>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="form!">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="orderNumber">
+              <i class="pi pi-hashtag"></i>
+              Numero Ordine
+            </label>
+            <p-inputNumber 
+              [max]="1000"
+              [min]="0"
+              [showButtons]="true"
+              formControlName="orderNumber"
+              id="orderNumber"
+              placeholder="0"
+            ></p-inputNumber>
+            <small class="field-hint">Numero identificativo dell'ordine</small>
+          </div>
+          
+          <div class="form-field">
+            <label for="tableNumber">
+              <i class="pi pi-table"></i>
+              Numero Tavolo
+            </label>
+            <input pInputText 
+              type="text" 
+              id="tableNumber" 
+              formControlName="tableNumber" 
+              placeholder="Es: 12" />
+            <small class="field-hint">Tavolo di destinazione</small>
+          </div>
+          
+          <div class="form-field">
+            <label for="clientName">
+              <i class="pi pi-user"></i>
+              Nome Cliente
+            </label>
+            <input pInputText 
+              type="text" 
+              id="clientName" 
+              formControlName="clientName" 
+              placeholder="Es: Mario Rossi" />
+            <small class="field-hint">Nome del cliente (opzionale)</small>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="content-layout">
+    <!-- Menu items selection -->
+    <div class="menu-selection-card">
+      <div class="card-header">
+        <div class="header-content">
+          <i class="pi pi-list"></i>
+          <h3>Seleziona Prodotti</h3>
+        </div>
+        <span class="items-count" *ngIf="plateMenuItems.length">
+          {{plateMenuItems.length}} {{plateMenuItems.length === 1 ? 'prodotto' : 'prodotti'}}
+        </span>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form!">
+          <p-tabView *ngIf="categories.length" styleClass="menu-tabs">
+            <p-tabPanel [header]="category.name" *ngFor="let category of categories; let i = index" [selected]="i == 0">
+              <div class="menu-items-grid">
+                <ng-container *ngFor="let item of category.menuItems">
+                  <div class="menu-item-card"
+                       [class.selected]="item.selected"
+                       (click)="selectMenuItem($event, item)"
+                       pDraggable="ddOrders"
+                       (onDragStart)="dragStart(item)"
+                       (onDragEnd)="dragEnd()">
+                    <div class="card-icon">
+                      <i class="pi pi-shopping-cart"></i>
+                    </div>
+                    <div class="card-content">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-description">{{item.description}}</div>
+                    </div>
+                    <div class="card-checkmark" *ngIf="item.selected">
+                      <i class="pi pi-check"></i>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </p-tabPanel>
+          </p-tabView>
+        </form>
+      </div>
     </div>
 
-    <p-table #dt
+    <!-- Order summary table -->
+    <div class="order-summary-card" pDroppable="ddOrders" (onDrop)="drop()">
+      <div class="card-header">
+        <div class="header-content">
+          <i class="pi pi-shopping-bag"></i>
+          <h3>Riepilogo Ordine</h3>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="table-toolbar">
+          <div class="toolbar-left">
+            <button pButton pRipple 
+              label="Salva Ordine" 
+              icon="pi pi-check" 
+              class="p-button-success" 
+              (click)="savePkmis()" 
+              [disabled]="form?.invalid || !plateMenuItems.length">
+            </button>
+          </div>
+          <div class="toolbar-right">
+            <button pButton pRipple 
+              label="Cancella Selezionati" 
+              icon="pi pi-trash" 
+              class="p-button-danger p-button-outlined" 
+              (click)="deleteSelectedProducts()"
+              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length">
+            </button>
+            <p-splitButton 
+              label="Assegna Piastra" 
+              icon="pi pi-inbox" 
+              [model]="platesAction" 
+              styleClass="p-button-info"
+              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length">
+            </p-splitButton>
+          </div>
+        </div>
+
+        <p-table #dt
              [value]="plateMenuItems" 
              selectionMode="multiple"
              [(selection)]="selectedPlateMenuItems" 
              dataKey="id" 
-             styleClass="p-datatable-orders"
+             styleClass="p-datatable-modern"
              [rowHover]="true"
              [filterDelay]="0"
              editMode="row"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th style="width: 3rem">
-            <p-tableHeaderCheckbox [disabled]="!plateMenuItems.length"></p-tableHeaderCheckbox>
-          </th>
-          <th>
-            <div class="p-d-flex p-jc-between p-ai-center">
-              Prodotto
-            </div>
-          </th>
-          <th>
-            <div class="p-d-flex p-jc-between p-ai-center">
-              Categoria
-            </div>
-          </th>
-          <th>
-            <div class="p-d-flex p-jc-between p-ai-center">
-              Piastra
-            </div>
-          </th>
-          <th>
-            <div class="p-d-flex p-jc-between p-ai-center">
-              Note
-            </div>
-          </th>
-          <th style="width:8rem"></th>
-        </tr>
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox [disabled]="!plateMenuItems.length"></p-tableHeaderCheckbox>
+              </th>
+              <th>
+                <div class="header-content">
+                  <i class="pi pi-shopping-cart"></i>
+                  <span>Prodotto</span>
+                </div>
+              </th>
+              <th>
+                <div class="header-content">
+                  <i class="pi pi-tag"></i>
+                  <span>Categoria</span>
+                </div>
+              </th>
+              <th>
+                <div class="header-content">
+                  <i class="pi pi-inbox"></i>
+                  <span>Piastra</span>
+                </div>
+              </th>
+              <th>
+                <div class="header-content">
+                  <i class="pi pi-comment"></i>
+                  <span>Note</span>
+                </div>
+              </th>
+              <th style="width:8rem">
+                <div class="header-content">
+                  <i class="pi pi-cog"></i>
+                  <span>Azioni</span>
+                </div>
+              </th>
+            </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
-        <tr [pEditableRow]="plateMenuItem">
-          <td (click)="$event.stopPropagation()">
-            <p-tableCheckbox [value]="plateMenuItem" [index]="ri"></p-tableCheckbox>
-          </td>
-          <td>
-            <span class="image-text">{{plateMenuItem.menuItem.name}}</span>
-          </td>
-          <td>
-            <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem.menuItem.category)}">
-              {{plateMenuItem.menuItem.category.name}}
-            </span>
-          </td>
-          <td pEditableColumn>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <p-dropdown [options]="platesOptions" [(ngModel)]="plateMenuItem.plate" [style]="{'width':'100%'}"></p-dropdown>
-              </ng-template>
-              <ng-template pTemplate="output">
-                <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem.plate)}">{{plateMenuItem.plate}}</span>
-              </ng-template>
-            </p-cellEditor>
-          </td>
-          <td pEditableColumn>
-            <p-cellEditor>
-              <ng-template pTemplate="input">
-                <input pInputText type="text" [(ngModel)]="plateMenuItem.notes">
-              </ng-template>
-              <ng-template pTemplate="output">
-                {{plateMenuItem.notes}}
-              </ng-template>
-            </p-cellEditor>
-          </td>
-          <td style="text-align:center">
-            <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                    (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
-            ></button>
-            <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                    (click)="onRowEditSave(plateMenuItem)" class="p-button-rounded p-button-text p-button-success p-mr-2"
-            ></button>
-            <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
-                    (click)="onRowEditCancel(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-danger"
-            ></button>
-          </td>
-        </tr>
-      </ng-template>
+          <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="plateMenuItem">
+              <td (click)="$event.stopPropagation()">
+                <p-tableCheckbox [value]="plateMenuItem" [index]="ri"></p-tableCheckbox>
+              </td>
+              <td>
+                <div class="product-cell">
+                  <i class="pi pi-circle-fill product-indicator"></i>
+                  <span class="product-name">{{plateMenuItem.menuItem.name}}</span>
+                </div>
+              </td>
+              <td>
+                <span class="category-badge" [style]="{'border-left-color': getCategoryColor(plateMenuItem.menuItem.category)}">
+                  {{plateMenuItem.menuItem.category.name}}
+                </span>
+              </td>
+              <td pEditableColumn>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <p-dropdown 
+                      [options]="platesOptions" 
+                      [(ngModel)]="plateMenuItem.plate" 
+                      optionLabel="label"
+                      optionValue="value"
+                      [style]="{'width':'100%'}"
+                      placeholder="Seleziona piastra">
+                    </p-dropdown>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    <span class="plate-badge" 
+                          *ngIf="plateMenuItem.plate"
+                          [style]="{'background-color': getPlateColor(plateMenuItem.plate)}">
+                      <i class="pi pi-inbox"></i>
+                      {{plateMenuItem.plate}}
+                    </span>
+                    <span class="no-plate" *ngIf="!plateMenuItem.plate">
+                      <i class="pi pi-minus-circle"></i>
+                      Non assegnata
+                    </span>
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td pEditableColumn>
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                    <input pInputText 
+                      type="text" 
+                      [(ngModel)]="plateMenuItem.notes"
+                      placeholder="Aggiungi note">
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    <span class="notes-text" *ngIf="plateMenuItem.notes">
+                      <i class="pi pi-comment"></i>
+                      {{plateMenuItem.notes}}
+                    </span>
+                    <span class="no-notes" *ngIf="!plateMenuItem.notes">-</span>
+                  </ng-template>
+                </p-cellEditor>
+              </td>
+              <td class="actions-cell">
+                <button *ngIf="!editing" pButton pRipple 
+                  type="button" 
+                  pInitEditableRow 
+                  icon="pi pi-pencil"
+                  (click)="onRowEditInit(plateMenuItem)" 
+                  class="p-button-rounded p-button-text p-button-info"
+                  pTooltip="Modifica"
+                  tooltipPosition="top">
+                </button>
+                <button *ngIf="editing" pButton pRipple 
+                  type="button" 
+                  pSaveEditableRow 
+                  icon="pi pi-check"
+                  (click)="onRowEditSave(plateMenuItem)" 
+                  class="p-button-rounded p-button-text p-button-success"
+                  pTooltip="Salva"
+                  tooltipPosition="top">
+                </button>
+                <button *ngIf="editing" pButton pRipple 
+                  type="button" 
+                  pCancelEditableRow 
+                  icon="pi pi-times"
+                  (click)="onRowEditCancel(plateMenuItem, ri)" 
+                  class="p-button-rounded p-button-text p-button-danger"
+                  pTooltip="Annulla"
+                  tooltipPosition="top">
+                </button>
+              </td>
+            </tr>
+          </ng-template>
 
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">Nessun prodotto aggiunto.</td>
-        </tr>
-      </ng-template>
-    </p-table>
-
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="empty-message">
+                <div class="empty-state">
+                  <i class="pi pi-shopping-cart"></i>
+                  <h4>Nessun prodotto selezionato</h4>
+                  <p>Seleziona i prodotti dal menù per aggiungerli all'ordine</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
   </div>
 </div>
