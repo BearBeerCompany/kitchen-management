@@ -207,6 +207,133 @@
   }
 }
 
+// Analisi Ordini Avanzate
+.advanced-analysis-section {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 3px solid #2196f3;
+}
+
+.kpi-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  flex: 1;
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  border-left: 4px solid #4caf50;
+
+  &.warning {
+    border-left-color: #f44336;
+
+    .kpi-icon {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #f44336;
+    }
+
+    .kpi-value {
+      color: #f44336;
+    }
+  }
+
+  &.success {
+    border-left-color: #4caf50;
+
+    .kpi-icon {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #4caf50;
+    }
+
+    .kpi-value {
+      color: #4caf50;
+    }
+  }
+
+  .kpi-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .kpi-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 0.5rem 0;
+      color: #6c757d;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-details {
+      margin: 0;
+      color: #999;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.analysis-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 1.5rem;
+
+  .chart-card.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .analysis-charts-grid {
+    grid-template-columns: 1fr;
+
+    .chart-card.full-width {
+      grid-column: 1;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .kpi-cards {
+    flex-direction: column;
+  }
+
+  .kpi-card {
+    .kpi-icon {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+
+    .kpi-content {
+      .kpi-value {
+        font-size: 2rem;
+      }
+    }
+  }
+}
+
 // Grafici analisi piastre
 .charts-container {
   display: grid;

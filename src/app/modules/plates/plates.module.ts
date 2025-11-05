@@ -18,6 +18,7 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
+import { PlateMenuItemsService } from '../shared/service/plate-menu-items.service';
 
 const routes: Routes = [
   {
@@ -57,7 +58,7 @@ const routes: Routes = [
     CalendarModule,
     ChartModule
   ],
-  providers: [MessageService]
+  providers: [MessageService, PlateMenuItemsService]
 })
 export class PlatesModule {
 }
