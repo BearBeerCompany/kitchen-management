@@ -1,17 +1,194 @@
 @import 'mixins';
 
-h3 {
-  @include title-center;
-
-  margin-bottom: 10px;
-  font-size: 1.5rem;
+// Modern Orders Management Styles
+.orders-management-container {
+  padding: 1rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  background: #f8f9fa;
+  min-height: 100vh;
 }
 
-// Contenitore per gestire l'overflow
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  gap: 1.5rem;
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    > i {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border-radius: 10px;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .header-subtitle {
+      margin: 0.2rem 0 0 0;
+      font-size: 0.85rem;
+      color: #6b7280;
+    }
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0 1rem;
+    border-left: 2px solid #e5e7eb;
+    border-right: 2px solid #e5e7eb;
+
+    .stat-mini {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      > i {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        color: #3b82f6;
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+
+      .stat-mini-content {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+
+        .value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #2c3e50;
+        }
+
+        .label {
+          font-size: 0.7rem;
+          color: #6b7280;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    .notify-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f3f4f6;
+      border-radius: 8px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4b5563;
+        cursor: help;
+
+        i {
+          color: #3b82f6;
+        }
+      }
+    }
+  }
+}
+
+// Stats grid removed - now inline in header
+
+.orders-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  .toolbar-left,
+  .toolbar-right {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-center {
+    flex: 1;
+    min-width: 250px;
+    max-width: 500px;
+
+    .search-input {
+      width: 100%;
+
+      input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.9rem;
+
+        &:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+
+      i {
+        left: 0.875rem;
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+// Table container
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+
+  &.edit-mode {
+    overflow: visible;
+  }
+}// Contenitore per gestire l'overflow
 :host {
   display: block;
   width: 100%;
-  padding: 0 1rem;
   box-sizing: border-box;
 }
 
@@ -605,5 +782,313 @@ h3 {
       opacity: 0.6;
       cursor: not-allowed;
     }
+  }
+
+  // Modern Table Styles
+  .p-datatable-orders-modern {
+    .p-datatable-thead > tr > th {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.65rem 0.75rem;
+      border: none;
+      font-size: 0.85rem;
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+
+        i {
+          font-size: 0.8rem;
+          opacity: 0.9;
+        }
+      }
+
+      .p-sortable-column-icon {
+        color: white;
+      }
+    }
+
+    .p-datatable-tbody > tr {
+      &:hover {
+        background: #f8f9fa;
+      }
+
+      &.p-highlight {
+        background: #eff6ff;
+      }
+
+      > td {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+        vertical-align: middle;
+
+        // Previeni overflow in edit mode
+        input,
+        .p-dropdown,
+        textarea {
+          font-size: 0.875rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+          padding: 0.4rem 0.5rem;
+          width: 100%;
+        }
+
+        // Action buttons inline
+        &.actions-cell {
+          white-space: nowrap;
+          
+          button {
+            display: inline-flex !important;
+            margin: 0 0.15rem !important;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+
+    // Fix overflow in edit mode
+    .p-datatable-wrapper {
+      overflow-x: auto;
+    }
+
+    &:has(.p-row-editing) {
+      .p-datatable-wrapper {
+        overflow-x: visible;
+      }
+
+      tr.p-row-editing > td {
+        overflow: visible;
+        
+        .p-dropdown {
+          min-width: 150px;
+        }
+      }
+    }
+
+    .empty-message {
+      padding: 0 !important;
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+
+        i {
+          font-size: 4rem;
+          color: #d1d5db;
+          margin-bottom: 1rem;
+        }
+
+        h4 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.25rem;
+          color: #4b5563;
+        }
+
+        p {
+          margin: 0;
+          color: #9ca3af;
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  // Batch Edit Dialog Styles
+  .batch-edit-dialog {
+    .p-dialog-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+
+      .dialog-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+
+        i {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          font-size: 1.25rem;
+        }
+
+        .dialog-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          display: block;
+        }
+
+        .dialog-subtitle {
+          font-size: 0.85rem;
+          opacity: 0.9;
+          display: block;
+          margin-top: 0.25rem;
+        }
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+    }
+
+    .batch-edit-info-card {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+
+      .info-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #3b82f6;
+        color: white;
+        border-radius: 8px;
+        flex-shrink: 0;
+        font-size: 1.1rem;
+      }
+
+      .info-content {
+        h4 {
+          margin: 0 0 0.25rem 0;
+          font-size: 0.95rem;
+          color: #1e3a8a;
+          font-weight: 600;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.85rem;
+          color: #1e40af;
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .batch-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: #4b5563;
+          font-size: 0.9rem;
+
+          i {
+            color: #3b82f6;
+            font-size: 0.9rem;
+          }
+        }
+
+        .p-dropdown,
+        .p-inputtextarea {
+          width: 100%;
+        }
+
+        .field-hint {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          color: #f59e0b;
+
+          i {
+            font-size: 0.8rem;
+          }
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0;
+        }
+
+        .plate-item {
+          padding: 0.5rem;
+          border-radius: 4px;
+          color: white;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .p-dialog-footer {
+      padding: 1rem 1.5rem;
+      border-top: 2px solid #f3f4f6;
+
+      .dialog-footer-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .orders-management-container {
+    padding: 1rem;
+  }
+
+  .orders-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    .toolbar-left,
+    .toolbar-right,
+    .toolbar-center {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .quick-stats-grid {
+    grid-template-columns: 1fr;
   }
 }
