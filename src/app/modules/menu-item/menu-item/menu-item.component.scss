@@ -246,32 +246,6 @@ form {
 }
 
 ::ng-deep {
-  .p-dialog {
-    .p-dialog-header {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color: white;
-      border-radius: 12px 12px 0 0;
-      padding: 1.5rem;
-
-      .p-dialog-title {
-        font-weight: 600;
-        font-size: 1.25rem;
-      }
-
-      .p-dialog-header-icon {
-        color: white;
-
-        &:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      }
-    }
-
-    .p-dialog-content {
-      padding: 1.5rem;
-    }
-  }
-
   // Modern Color Picker
   .modern-color-picker {
     display: flex;

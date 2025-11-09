@@ -11,13 +11,12 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-// Modern Dialog Styling
-::ng-deep {
-  // Global Dialog Styles - Applied to ALL dialogs
-  .p-dialog {
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
+// Modern Dialog Styling - Global styles (no ::ng-deep needed in global files)
+// Global Dialog Styles - Applied to ALL dialogs
+.p-dialog {
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
     max-height: 90vh;
     
     // Default responsive width
@@ -42,8 +41,8 @@ body {
     }
 
     .p-dialog-header {
-      background: linear-gradient(135deg, $primary-600 0%, $primary-700 100%);
-      color: white;
+      background: linear-gradient(135deg, $primary-600 0%, $primary-700 100%) !important;
+      color: white !important;
       padding: 1.5rem 2rem;
       border-bottom: none;
 
@@ -111,8 +110,110 @@ body {
       gap: 0.75rem;
       justify-content: flex-end;
 
-      button {
+      .p-button {
         min-width: 100px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: none !important;
+        
+        // Primary/Success button (Save, Confirm, etc)
+        &.p-button-success {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+          
+          &:disabled {
+            background: #d1d5db !important;
+            box-shadow: none !important;
+            opacity: 0.6;
+          }
+        }
+        
+        // Danger button (Delete, Remove, etc)
+        &.p-button-danger {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+        
+        // Default primary button
+        &:not(.p-button-text):not(.p-button-outlined):not(.p-button-success):not(.p-button-danger) {
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+        
+        // Text button (Cancel, Close, etc)
+        &.p-button-text {
+          background: transparent !important;
+          color: var(--theme-text-secondary) !important;
+          box-shadow: none !important;
+          
+          &:hover:not(:disabled) {
+            background: var(--theme-border) !important;
+            color: var(--theme-text-primary) !important;
+          }
+          
+          &.p-button-secondary {
+            color: #6b7280 !important;
+            
+            &:hover:not(:disabled) {
+              background: rgba(107, 114, 128, 0.1) !important;
+              color: #4b5563 !important;
+            }
+          }
+        }
+        
+        // Outlined button
+        &.p-button-outlined {
+          background: transparent !important;
+          border: 2px solid var(--theme-border) !important;
+          color: var(--theme-text-primary) !important;
+          box-shadow: none !important;
+          
+          &:hover:not(:disabled) {
+            background: rgba(59, 130, 246, 0.05) !important;
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+          }
+        }
+        
+        // Icon styling
+        .p-button-icon {
+          font-size: 1rem;
+        }
       }
     }
   }
@@ -498,7 +599,6 @@ body {
       transition: $transition-base;
     }
   }
-}
 
 // Animation Keyframes
 @keyframes fadeIn {
