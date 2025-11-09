@@ -91,6 +91,9 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     // Load settings from localStorage
     this._loadSettingsFromLocalStorage();
     
+    // Load initial data
+    this._loadPlateMenuItems(false, null);
+    
     this._categoriesSub = this._categoryService.getAll().subscribe(data => {
       this.categories = data;
 

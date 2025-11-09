@@ -787,8 +787,8 @@
   // Modern Table Styles
   .p-datatable-orders-modern {
     .p-datatable-thead > tr > th {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-      color: white;
+      // background: Ora usa lo stile globale da global-overrides.scss
+      // color: Ora usa lo stile globale
       font-weight: 600;
       padding: 0.65rem 0.75rem;
       border: none;

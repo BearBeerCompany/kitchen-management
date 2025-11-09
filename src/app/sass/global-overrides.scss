@@ -294,14 +294,26 @@ body {
   .p-datatable {
     .p-datatable-thead > tr > th {
       background: $table-header-bg;
-      color: white;
+      color: #f8fafc; // Slate-50 - testo chiaro ma non bianco puro
       font-weight: $font-weight-semibold;
       padding: $spacing-md $spacing-lg;
       border: none;
+      border-bottom: 2px solid rgba(148, 163, 184, 0.3); // Subtle separator
       font-size: $font-size-sm;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+      
+      // Subtle top border for depth
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
       .p-sortable-column-icon {
-        color: white;
+        color: rgba(248, 250, 252, 0.7);
+        transition: color 0.2s ease;
+      }
+      
+      &:hover .p-sortable-column-icon {
+        color: #f8fafc;
       }
 
       .p-column-title {
