@@ -281,16 +281,69 @@
       border-top: 1px solid #e5e7eb;
     }
 
-    // Plates Grid
-    .plates-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.25rem;
-
-      plate-info {
-        height: auto;
-        display: block;
+    // Plates Table
+    ::ng-deep .p-datatable {
+      .p-datatable-thead > tr > th {
+        background: var(--theme-surface);
+        color: var(--theme-text-primary);
+        font-weight: 600;
+        padding: 1rem;
+        border-bottom: 2px solid var(--theme-border);
       }
+
+      .p-datatable-tbody > tr {
+        background: var(--theme-card-bg);
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: var(--theme-surface);
+        }
+
+        > td {
+          padding: 1rem;
+          border-bottom: 1px solid var(--theme-border);
+        }
+      }
+    }
+
+    .plate-color-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .plate-number-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--theme-surface);
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--theme-text-primary);
+    }
+
+    .availability-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .availability-text {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--theme-text-primary);
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .text-center {
+      text-align: center;
     }
 
     // Empty State
