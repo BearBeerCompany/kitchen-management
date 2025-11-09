@@ -137,17 +137,34 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           });
         }
 
+        // Se c'è una riga in editing, non ricaricare i dati per evitare perdita di modifiche
+        const isEditingRow = this._editablePkmiMap.size > 0;
+
         this.loading = true;
         switch (notification.type) {
           case PKMINotificationType.PKMI_ADD:
+            // Aggiungi singolo item in background senza ricaricare
+            if (notification.plateKitchenMenuItem) {
+              this._addItem(notification.plateKitchenMenuItem);
+            }
+            break;
           case PKMINotificationType.PKMI_ADD_ALL:
-            this._loadPlateMenuItems(false, null);
+            // Per add multipli, ricarica solo se non stiamo editando
+            if (!isEditingRow) {
+              this._loadPlateMenuItems(this.toggleCompleted, null);
+            }
             break;
           case PKMINotificationType.PKMI_UPDATE:
-            this._updateItem(notification.plateKitchenMenuItem);
+            // Gli update singoli possono essere applicati anche durante l'editing (se non è la riga editata)
+            if (!isEditingRow || (notification.plateKitchenMenuItem.id && !this._editablePkmiMap.has(notification.plateKitchenMenuItem.id))) {
+              this._updateItem(notification.plateKitchenMenuItem);
+            }
             break;
           case PKMINotificationType.PKMI_UPDATE_ALL:
-            this._updateItems(notification.ids);
+            // Gli update multipli vengono ignorati durante l'editing
+            if (!isEditingRow) {
+              this._updateItems(notification.ids);
+            }
             break;
         }
         this.loading = false;
@@ -370,6 +387,29 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       plateMenuItems.forEach(item => {
         this._updateItem(item);
       });
+    });
+  }
+
+  private _addItem(plateMenuItem: PlateMenuItem) {
+    // Verifica se l'item appartiene alla vista corrente (in corso o completati)
+    const isCompleted = plateMenuItem.status === Status.Done || plateMenuItem.status === Status.Cancelled;
+    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : !isCompleted;
+    
+    if (shouldShowInCurrentView) {
+      // Aggiungi solo se non esiste già
+      const existingIndex = this.plateMenuItems.findIndex(item => item.id === plateMenuItem.id);
+      if (existingIndex === -1) {
+        // Aggiungi all'inizio dell'array (ordini più recenti in alto)
+        this.plateMenuItems.unshift(plateMenuItem);
+        this.pkmiRows.unshift(this._getPkmiRow(plateMenuItem));
+        this.totalRecords++;
+      }
+    }
+  }
+
+  private _addItems(plateMenuItems: PlateMenuItem[]) {
+    plateMenuItems.forEach(item => {
+      this._addItem(item);
     });
   }
 
