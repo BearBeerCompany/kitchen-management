@@ -261,6 +261,16 @@
 
   .plates-carousel {
     flex-direction: column;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    height: calc(100vh - 200px) !important;
+    
+    plate {
+      flex: none;
+      height: auto;
+      min-height: 400px;
+    }
   }
 }
 
