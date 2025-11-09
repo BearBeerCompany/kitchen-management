@@ -517,6 +517,8 @@ body {
 
   // Modern Toast Styling
   .p-toast {
+    z-index: 9999 !important; // Assicura che siano sempre visibili sopra tutto
+    
     .p-toast-message {
       border-radius: $radius-lg;
       box-shadow: $shadow-lg;

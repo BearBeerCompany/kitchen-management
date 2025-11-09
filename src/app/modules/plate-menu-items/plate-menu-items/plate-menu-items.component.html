@@ -210,7 +210,13 @@
     </ng-template>
 
   <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
-    <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
+    <tr [pEditableRow]="plateMenuItem" 
+        class="p-selectable-row"
+        (dblclick)="!editing && onRowDblClick(plateMenuItem, ri)"
+        [style.cursor]="!editing ? 'pointer' : 'default'"
+        pTooltip="Doppio click per modificare"
+        [tooltipDisabled]="editing"
+        tooltipPosition="left">
       <td>
         <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
       </td>
@@ -294,13 +300,15 @@
           <ng-template pTemplate="input">
             <p-dropdown [options]="takeAwayOptions" 
                         [(ngModel)]="plateMenuItem.takeAway" 
+                        optionLabel="label"
+                        optionValue="value"
                         [style]="{'width':'100%'}"
                         appendTo="body"
                         [panelStyle]="{'max-height': '250px'}"
                         scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span>{{plateMenuItem?.takeAway ? 'SI' : ''}}</span>
+            <span>{{plateMenuItem?.takeAway ? 'SI' : 'NO'}}</span>
           </ng-template>
         </p-cellEditor>
       </td>

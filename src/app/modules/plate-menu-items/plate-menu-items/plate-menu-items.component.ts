@@ -223,6 +223,14 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this._editablePkmiMap.set(pkmi.id, {...pkmi});
   }
 
+  onRowDblClick(pkmi: any, rowIndex: number) {
+    // Inizia l'editing della riga al doppio click
+    if (this.table) {
+      this.table.initRowEdit(pkmi);
+      this.onRowEditInit(pkmi);
+    }
+  }
+
   onRowEditSave(pkmiRow: any, index: number) {
     let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow.id);
 
