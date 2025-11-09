@@ -13,6 +13,166 @@ body {
 
 // Modern Dialog Styling
 ::ng-deep {
+  // Global Dialog Styles - Applied to ALL dialogs
+  .p-dialog {
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-height: 90vh;
+    
+    // Default responsive width
+    width: 90vw !important;
+    max-width: 600px !important;
+    
+    // Size modifiers
+    &.dialog-sm {
+      max-width: 400px !important;
+    }
+    
+    &.dialog-md {
+      max-width: 600px !important;
+    }
+    
+    &.dialog-lg {
+      max-width: 800px !important;
+    }
+    
+    &.dialog-xl {
+      max-width: 1000px !important;
+    }
+
+    .p-dialog-header {
+      background: linear-gradient(135deg, $primary-600 0%, $primary-700 100%);
+      color: white;
+      padding: 1.5rem 2rem;
+      border-bottom: none;
+
+      .p-dialog-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        i {
+          font-size: 1.5rem;
+        }
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+        width: 2.5rem;
+        height: 2.5rem;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        &:active {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 2rem;
+      background: var(--theme-card-bg);
+      color: var(--theme-text-primary);
+      max-height: calc(90vh - 180px);
+      overflow-y: auto;
+      
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: var(--theme-surface);
+        border-radius: 4px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: var(--theme-border);
+        border-radius: 4px;
+        
+        &:hover {
+          background: $primary-500;
+        }
+      }
+    }
+
+    .p-dialog-footer {
+      padding: 1.25rem 2rem;
+      background: var(--theme-surface);
+      border-top: 1px solid var(--theme-border);
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+
+      button {
+        min-width: 100px;
+      }
+    }
+  }
+
+  // Form fields styling inside dialogs
+  .p-dialog {
+    .form-field {
+      margin-bottom: 1.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: var(--theme-text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: $primary-500;
+          font-size: 1rem;
+        }
+
+        &.section-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--theme-text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.75rem;
+        }
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="email"],
+      textarea,
+      .p-inputtext,
+      .p-inputnumber {
+        width: 100%;
+      }
+
+      small {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.85rem;
+        color: var(--theme-text-secondary);
+
+        &.p-error {
+          color: $danger-500;
+        }
+      }
+    }
+  }
+
   // Apply to all dialogs with class .modern-dialog
   .modern-dialog {
     @include modern-dialog;
@@ -27,52 +187,6 @@ body {
   // Apply to all tables with class .modern-table
   .modern-table {
     @include modern-table;
-  }
-
-  // Global dialog header improvements
-  .p-dialog {
-    .p-dialog-header {
-      background: $dialog-header-bg;
-      color: white;
-      padding: $spacing-xl;
-      border-bottom: none;
-
-      .p-dialog-title {
-        font-size: $font-size-xl;
-        font-weight: $font-weight-semibold;
-      }
-
-      .p-dialog-header-icon {
-        color: white;
-        width: 2rem;
-        height: 2rem;
-        transition: $transition-base;
-
-        &:enabled:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: white;
-        }
-
-        &:focus {
-          box-shadow: none;
-        }
-      }
-    }
-
-    .p-dialog-content {
-      padding: $spacing-xl;
-      background: $dialog-content-bg;
-    }
-
-    .p-dialog-footer {
-      padding: $spacing-lg $spacing-xl;
-      background: $dialog-footer-bg;
-      border-top: 1px solid $border;
-
-      button {
-        margin: 0 $spacing-sm;
-      }
-    }
   }
 
   // Global table improvements

@@ -89,7 +89,7 @@
   <div class="settings-card">
     <div class="card-header">
       <div class="header-content">
-        <i class="pi pi-stopwatch"></i>
+        <i class="pi pi-clock"></i>
         <div>
           <h3>Soglie Ritardi</h3>
           <p>Configura i limiti temporali per gli avvisi di ritardo</p>
@@ -255,18 +255,11 @@
   [(visible)]="display"
   [draggable]="false"
   [modal]="true"
-  [style]="{width: '600px'}"
-  styleClass="plate-edit-dialog">
+  styleClass="dialog-lg">
   
   <ng-template pTemplate="header">
-    <div class="dialog-header-content">
-      <i [class]="isEditMode ? 'pi pi-pencil' : 'pi pi-plus'"></i>
-      <div>
-        <h3>{{isEditMode ? 'Modifica Piastra' : 'Crea Nuova Piastra'}}</h3>
-        <p *ngIf="isEditMode">{{selectedPlate?.name}}</p>
-        <p *ngIf="!isEditMode">Configura una nuova piastra di cottura</p>
-      </div>
-    </div>
+    <i [class]="isEditMode ? 'pi pi-pencil' : 'pi pi-plus'"></i>
+    {{isEditMode ? 'Modifica Piastra' : 'Crea Nuova Piastra'}}
   </ng-template>
   
   <form (ngSubmit)="onSubmit()" [formGroup]="form!">
@@ -290,11 +283,34 @@
         <i class="pi pi-palette"></i>
         {{i18n.PLATE.FORM.COLOR}}
       </label>
-      <div class="color-picker-wrapper">
-        <p-colorPicker 
-          [inline]="true"
-          formControlName="color">
-        </p-colorPicker>
+      <div class="modern-color-picker">
+        <div class="color-preview" [style.background-color]="form?.get('color')?.value">
+          <span class="preview-text">Anteprima Colore</span>
+        </div>
+        <div class="color-palette">
+          <div class="palette-section">
+            <label class="section-label">Seleziona Colore</label>
+            <div class="color-grid">
+              <button type="button" 
+                      class="color-option"
+                      [class.selected]="form?.get('color')?.value === color"
+                      *ngFor="let color of primaryColors"
+                      [style.background-color]="color"
+                      (click)="form?.get('color')?.setValue(color)"
+                      [pTooltip]="color"
+                      tooltipPosition="top">
+                <i class="pi pi-check" *ngIf="form?.get('color')?.value === color"></i>
+              </button>
+            </div>
+          </div>
+          <div class="custom-color-section">
+            <label class="section-label">Colore Personalizzato</label>
+            <input type="color" 
+                   class="custom-color-input"
+                   [value]="form?.get('color')?.value"
+                   (input)="form?.get('color')?.setValue($any($event.target).value)">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -318,27 +334,26 @@
   </form>
   
   <ng-template pTemplate="footer">
-    <div class="dialog-actions">
-      <button pButton pRipple
-        (click)="discardForm()"
-        [label]="i18n.COMMON.UNDO"
-        icon="pi pi-times"
-        class="p-button-secondary p-button-outlined"
-        type="button">
-      </button>
-      <button pButton pRipple
-        [disabled]="!form?.valid"
-        [label]="i18n.COMMON.SAVE"
-        icon="pi pi-check"
-        class="p-button-success"
-        type="submit"
-        (click)="onSubmit()">
-      </button>
-    </div>
+    <button pButton pRipple
+      [label]="i18n.COMMON.UNDO"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="display = false">
+    </button>
+    <button pButton pRipple
+      [disabled]="!form?.valid"
+      [label]="i18n.COMMON.SAVE"
+      icon="pi pi-check"
+      class="p-button-success"
+      type="submit"
+      (click)="onSubmit()">
+    </button>
   </ng-template>
 </p-dialog>
-<p-confirmDialog header="Conferma"
-                 icon="pi pi-exclamation-triangle"
-                 acceptLabel="Si"
-                 rejectLabel="No">
+
+<p-confirmDialog 
+  header="Conferma"
+  icon="pi pi-exclamation-triangle"
+  acceptLabel="Si"
+  rejectLabel="No">
 </p-confirmDialog>

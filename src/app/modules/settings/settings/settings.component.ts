@@ -29,6 +29,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
   public isDarkTheme: boolean = false;
 
+  // Color Picker Palette
+  public primaryColors: string[] = [
+    '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', 
+    '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
+    '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef'
+  ];
+
   private subs: Subscription = new Subscription();
 
   constructor(public i18nService: I18nService,

@@ -76,67 +76,138 @@
     <p>Scegli una categoria dalla barra superiore per visualizzare e gestire i prodotti</p>
   </div>
 </div>
-<p-dialog header="Creazione Categoria"
-          [style]="{height: '80vh'}"
-          [(visible)]="categoryDisplay"
-          [draggable]="false">
+<p-dialog 
+  [(visible)]="categoryDisplay"
+  [draggable]="false"
+  styleClass="dialog-lg">
+  <ng-template pTemplate="header">
+    <i class="pi pi-tag"></i>
+    {{isEdit ? 'Modifica Categoria' : 'Creazione Categoria'}}
+  </ng-template>
+  
   <form (ngSubmit)="onCategorySubmit()" [formGroup]="categoryForm!">
-    <label>Nome</label>
-    <input formControlName="name"
-           pInputText
-           type="text">
-    <label>Descrizione</label>
-    <input formControlName="description"
-           pInputText
-           type="text">
-    <label>Colore</label>
-    <p-colorPicker [inline]="true" formControlName="color"></p-colorPicker>
-    <label>Identificativo esterno</label>
-    <input formControlName="externalId"
-           pInputText
-           type="number">
-    <div class="confirm-form">
-      <button (click)="discardCategoryForm()"
-              [label]="i18n.COMMON.UNDO"
-              class="p-button-secondary" pButton pRipple
-              type="button"></button>
-      <button [disabled]="categoryForm?.valid ? !categoryForm?.valid : true"
-              [label]="i18n.COMMON.SAVE"
-              class="p-button-success" pButton pRipple
-              type="submit"></button>
+    <div class="form-field">
+      <label>Nome</label>
+      <input formControlName="name"
+             pInputText
+             type="text">
+    </div>
+    
+    <div class="form-field">
+      <label>Descrizione</label>
+      <input formControlName="description"
+             pInputText
+             type="text">
+    </div>
+    
+    <div class="form-field">
+      <label>Colore</label>
+      <div class="modern-color-picker">
+        <div class="color-preview" [style.background-color]="categoryForm?.get('color')?.value">
+          <span class="preview-text">Anteprima Colore</span>
+        </div>
+        <div class="color-palette">
+          <div class="palette-section">
+            <label class="section-label">Seleziona Colore</label>
+            <div class="color-grid">
+              <button type="button" 
+                      class="color-option"
+                      [class.selected]="categoryForm?.get('color')?.value === color"
+                      *ngFor="let color of colorPalette"
+                      [style.background-color]="color"
+                      (click)="categoryForm?.get('color')?.setValue(color)"
+                      [pTooltip]="color"
+                      tooltipPosition="top">
+                <i class="pi pi-check" *ngIf="categoryForm?.get('color')?.value === color"></i>
+              </button>
+            </div>
+          </div>
+          <div class="custom-color-section">
+            <label class="section-label">Colore Personalizzato</label>
+            <input type="color" 
+                   class="custom-color-input"
+                   [value]="categoryForm?.get('color')?.value"
+                   (input)="categoryForm?.get('color')?.setValue($any($event.target).value)">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-field">
+      <label>Identificativo esterno</label>
+      <input formControlName="externalId"
+             pInputText
+             type="number">
     </div>
   </form>
+  
+  <ng-template pTemplate="footer">
+    <button [label]="i18n.COMMON.UNDO"
+            class="p-button-text p-button-secondary" 
+            pButton pRipple
+            (click)="discardCategoryForm()"
+            type="button"></button>
+    <button [disabled]="categoryForm?.valid ? !categoryForm?.valid : true"
+            [label]="i18n.COMMON.SAVE"
+            class="p-button-success" pButton pRipple
+            (click)="onCategorySubmit()"
+            type="button"></button>
+  </ng-template>
 </p-dialog>
-<p-dialog header="Aggiungi Prodotto"
-          [style]="{height: '50vh'}"
-          [(visible)]="menuItemDisplay"
-          [draggable]="false">
+
+<p-dialog 
+  [(visible)]="menuItemDisplay"
+  [draggable]="false"
+  styleClass="dialog-md">
+  <ng-template pTemplate="header">
+    <i class="pi pi-shopping-bag"></i>
+    {{isEdit ? 'Modifica Prodotto' : 'Aggiungi Prodotto'}}
+  </ng-template>
+  
   <form (ngSubmit)="onMenuItemSubmit()" [formGroup]="menuItemForm!">
-    <label>Nome</label>
-    <input formControlName="name"
-           pInputText
-           type="text">
-    <label>Descrizione</label>
-    <input formControlName="description"
-           pInputText
-           type="text">
-    <p class="form-category_title">Categoria: <span>{{selectedCategory?.name}}</span></p>
-    <label>Identificativo esterno</label>
-    <input formControlName="externalId"
-           pInputText
-           type="number">
-    <div class="confirm-form">
-      <button (click)="discardMenuItemForm()"
-              [label]="i18n.COMMON.UNDO"
-              class="p-button-secondary" pButton pRipple
-              type="button"></button>
-      <button [disabled]="menuItemForm?.valid ? !menuItemForm?.valid : true"
-              [label]="i18n.COMMON.SAVE"
-              class="p-button-success" pButton pRipple
-              type="submit"></button>
+    <div class="form-field">
+      <label>Nome</label>
+      <input formControlName="name"
+             pInputText
+             type="text">
+    </div>
+    
+    <div class="form-field">
+      <label>Descrizione</label>
+      <input formControlName="description"
+             pInputText
+             type="text">
+    </div>
+    
+    <div class="form-field">
+      <label class="section-label">
+        <i class="pi pi-tag"></i>
+        Categoria
+      </label>
+      <p style="margin: 0; font-weight: 600; color: var(--theme-text-primary);">{{selectedCategory?.name}}</p>
+    </div>
+    
+    <div class="form-field">
+      <label>Identificativo esterno</label>
+      <input formControlName="externalId"
+             pInputText
+             type="number">
     </div>
   </form>
+  
+  <ng-template pTemplate="footer">
+    <button (click)="discardMenuItemForm()"
+            [label]="i18n.COMMON.UNDO"
+            class="p-button-text p-button-secondary" pButton pRipple
+            type="button"></button>
+    <button (click)="onMenuItemSubmit()"
+            [disabled]="menuItemForm?.valid ? !menuItemForm?.valid : true"
+            [label]="i18n.COMMON.SAVE"
+            class="p-button-success" pButton pRipple
+            type="button"></button>
+  </ng-template>
 </p-dialog>
+
 <p-confirmDialog header="Conferma eliminazione"
                  icon="pi pi-exclamation-triangle"
                  acceptLabel="Si"
