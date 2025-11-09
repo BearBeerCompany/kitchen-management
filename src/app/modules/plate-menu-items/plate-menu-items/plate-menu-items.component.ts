@@ -363,22 +363,40 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     const updItemId = plateMenuItem.id;
     const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === updItemId);
     const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
+    
+    // Verifica se l'item aggiornato appartiene alla vista corrente
+    const isCompleted = plateMenuItem.status === Status.Done || plateMenuItem.status === Status.Cancelled;
+    const isInProgress = plateMenuItem.status === Status.Todo || plateMenuItem.status === Status.Progress;
+    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : isInProgress;
+    
     if (pkmiRowIndex > -1) {
-      this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
-      const updatedItem = {
-        ...this.pkmiRows[pkmiRowIndex],
-        ...this._getPkmiRow(plateMenuItem)
-      };
-      // update fields to refresh row
-      this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
-      this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
-      this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
-      this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
-      this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
-      this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
-      this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
-      this.pkmiRows[pkmiRowIndex].orderNotes = updatedItem.orderNotes;
-      this.pkmiRows[pkmiRowIndex].takeAway = updatedItem.takeAway;
+      // Item esiste già nella lista
+      if (shouldShowInCurrentView) {
+        // Aggiorna l'item
+        this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
+        const updatedItem = {
+          ...this.pkmiRows[pkmiRowIndex],
+          ...this._getPkmiRow(plateMenuItem)
+        };
+        // update fields to refresh row
+        this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
+        this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
+        this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
+        this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
+        this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
+        this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
+        this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
+        this.pkmiRows[pkmiRowIndex].orderNotes = updatedItem.orderNotes;
+        this.pkmiRows[pkmiRowIndex].takeAway = updatedItem.takeAway;
+      } else {
+        // Item non appartiene più alla vista corrente, rimuovilo
+        this.plateMenuItems.splice(pkmiIndex, 1);
+        this.pkmiRows.splice(pkmiRowIndex, 1);
+        this.totalRecords--;
+      }
+    } else if (shouldShowInCurrentView) {
+      // Item non esiste ma dovrebbe essere mostrato, aggiungilo
+      this._addItem(plateMenuItem);
     }
   }
 
@@ -393,7 +411,8 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   private _addItem(plateMenuItem: PlateMenuItem) {
     // Verifica se l'item appartiene alla vista corrente (in corso o completati)
     const isCompleted = plateMenuItem.status === Status.Done || plateMenuItem.status === Status.Cancelled;
-    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : !isCompleted;
+    const isInProgress = plateMenuItem.status === Status.Todo || plateMenuItem.status === Status.Progress;
+    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : isInProgress;
     
     if (shouldShowInCurrentView) {
       // Aggiungi solo se non esiste già

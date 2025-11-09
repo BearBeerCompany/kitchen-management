@@ -646,6 +646,199 @@ body {
   }
 }
 
+// Responsive Table Styles
+@media (max-width: 1200px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.7rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.4rem 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.3px;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.4rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    // Riduci dimensioni icone e badge
+    .pi {
+      font-size: 0.9rem;
+    }
+
+    .p-tag {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .p-button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .p-datatable {
+    font-size: 0.75rem;
+
+    .p-datatable-wrapper {
+      overflow-x: auto;
+    }
+
+    // Forza layout compatto per le righe
+    .p-datatable-tbody > tr {
+      display: table-row !important;
+      height: auto !important;
+      
+      > td {
+        display: table-cell !important;
+        padding: 0.4rem 0.3rem !important;
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+      }
+    }
+
+    .p-datatable-thead > tr > th {
+      padding: 0.4rem 0.3rem !important;
+      font-size: 0.6rem !important;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    // Riduci dimensioni elementi interni
+    .pi {
+      font-size: 0.85rem !important;
+    }
+
+    .p-tag {
+      font-size: 0.65rem !important;
+      padding: 0.2rem 0.35rem !important;
+      line-height: 1.2;
+    }
+
+    .p-button {
+      padding: 0.35rem 0.5rem !important;
+      font-size: 0.7rem !important;
+      min-width: auto !important;
+      
+      .p-button-icon {
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+      }
+      
+      .p-button-label {
+        padding: 0 0.25rem;
+      }
+    }
+
+    // Dropdown e input più compatti
+    .p-dropdown {
+      font-size: 0.7rem !important;
+      
+      .p-dropdown-label {
+        padding: 0.3rem 0.4rem !important;
+      }
+    }
+
+    .p-inputtext,
+    .p-inputnumber input {
+      padding: 0.3rem 0.4rem !important;
+      font-size: 0.7rem !important;
+      line-height: 1.3 !important;
+    }
+
+    // Checkbox più piccoli
+    .p-checkbox {
+      width: 1rem !important;
+      height: 1rem !important;
+      
+      .p-checkbox-box {
+        width: 1rem !important;
+        height: 1rem !important;
+      }
+    }
+
+    // Badge categoria più compatti
+    .category-badge {
+      font-size: 0.65rem !important;
+      padding: 0.2rem 0.4rem !important;
+    }
+
+    // Progress bar più sottili
+    .p-progressbar {
+      height: 0.5rem !important;
+    }
+  }
+
+  // Riduci padding container su mobile
+  .orders-management-container,
+  .settings-container {
+    padding: 0.5rem !important;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem !important;
+  }
+
+  .orders-toolbar,
+  .toolbar-section {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem !important;
+
+    .toolbar-left,
+    .toolbar-center,
+    .toolbar-right {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  // Card tabelle più compatte
+  .table-container {
+    border-radius: 8px;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.25rem 0.3rem;
+      font-size: 0.55rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.25rem 0.3rem;
+      font-size: 0.65rem;
+    }
+
+    // Mostra solo le prime 4 colonne su schermi molto piccoli
+    .p-datatable-thead > tr > th:nth-child(n+5),
+    .p-datatable-tbody > tr > td:nth-child(n+5) {
+      display: none;
+    }
+  }
+}
+
 // Utility Classes
 .fade-in {
   animation: fadeIn 0.3s ease;
