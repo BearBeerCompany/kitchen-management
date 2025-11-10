@@ -8,39 +8,59 @@
     </button>
   </section>
   <section *ngSwitchCase="plateMode.On" class="on">
-    <header [style.backgroundColor]="config.color!">
-      <h3>{{config.name}}</h3>
-      <div class="view-mode-button-container" [ngClass]="{'expanded': showExpand}" *ngIf="!showExpand">
-        <button pTooltip="Righe" class="view-mode-button" (click)="onViewMode('rows')">
-          <i class="pi pi-list"></i>
-        </button>
-        <button pTooltip="Colonne" class="view-mode-button" (click)="onViewMode('columns')">
-          <i class="pi pi-pause"></i>
-        </button>
+    <header [style.backgroundColor]="config.color!" [class.expanded]="!showExpand">
+      <div class="header-content">
+        <h3>{{config.name}}</h3>
+        <div class="header-badges">
+          <p-tag *ngIf="maxDelayMinutes > 0"
+                 [severity]="delaySeverity"
+                 [pTooltip]="getDelayTooltip()"
+                 tooltipPosition="bottom">
+            <i class="pi pi-clock delay-icon"></i>
+            <span>{{ getDelayLabel() }}</span>
+          </p-tag>
+          <p-tag [severity]="config._severity!"
+                 [value]="config._status!"
+                 [style.display]="'none'"></p-tag>
+        </div>
       </div>
+      
+      <button *ngIf="!showExpand"
+              [pTooltip]="viewMode === 'rows' ? 'Vista Colonne' : 'Vista Righe'" 
+              tooltipPosition="bottom"
+              class="view-mode-button" 
+              [class.active]="viewMode === 'columns'"
+              (click)="onViewMode()">
+        <i [class]="viewMode === 'rows' ? 'pi pi-pause' : 'pi pi-list'"></i>
+      </button>
+      
       <button (click)="expandTab()"
-        *ngIf="showExpand"
-        [pTooltip]="'Espandi ' + config.name"
-        [showDelay]="500"
-        tooltipPosition="bottom"
-        class="expand-button">
+              *ngIf="showExpand"
+              [pTooltip]="'Espandi ' + config.name"
+              [showDelay]="500"
+              tooltipPosition="bottom"
+              class="expand-button">
         <i class="pi pi-external-link"></i>
       </button>
-      <p-tag [severity]="config._severity!"
-             [value]="config._status!"
-             styleClass="mr-2"></p-tag>
     </header>
     <span *ngIf="config._severity !== 'danger' && progressItems.length == 0" id="empty-container">
       <h3>{{i18n.PLATE.EMPTY}}</h3>
       <i class="pi pi-inbox" id="empty"></i>
     </span>
-    <div *ngIf="!(queue?.isEmpty$ | async)" class="item-list_container" [ngClass]="{'rows': viewMode === 'rows', 'columns': viewMode === 'columns'}">
+    <div *ngIf="!(queue?.isEmpty$ | async)" 
+         class="item-list_container" 
+         [ngClass]="{
+           'rows': viewMode === 'rows', 
+           'columns': viewMode === 'columns',
+           'expanded-view': readonly
+         }">
       <ng-container *ngFor="let item of progressItems">
         <item (onCancelEvent)="handleItemEvent($event)"
               (onDoneEvent)="handleItemEvent($event)"
               [config]="item"
               [plateList]="plateList"
               [readonly]="readonly"
+              [showDelay]="!showExpand || showItemDelays"
         ></item>
       </ng-container>
     </div>

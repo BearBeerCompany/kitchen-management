@@ -1,88 +1,359 @@
 <p-toast></p-toast>
-<h3>{{i18n.SETTINGS.TITLE}}</h3>
-<main>
-  <div style="display: flex; justify-content: flex-start;">
-    <button pButton pRipple label="Inizializzazione GSG"
-      icon="pi pi-plus"
-      class="p-button-info"
-      (click)="onGSGInit()">
-    </button>
-  </div>
-  <h3>Statistiche</h3>
-  <div class="stats_container">
-    <div class="stats_numbers_container">
-      <span>Selezionata una data per vedere le statistiche degli ordini</span>
-      <div class="stats-range-date_row">
-        <div class="field col-12 md:col-4">
-          <label for="dateFrom">Data Inizio</label>
-          <p-calendar id="dateFrom" [(ngModel)]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-        </div>
-        <div class="field col-12 md:col-4">
-          <label for="dateTo">Data Fine</label>
-          <p-calendar id="dateTo" [(ngModel)]="dateTo" [minDate]="dateFrom" dateFormat="dd/mm/yy"></p-calendar>
-        </div>
-        <p-button icon="pi pi-search" [loading]="loading" (onClick)="searchByDate()"></p-button>
+
+<div class="settings-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <i class="pi pi-cog"></i>
+      <div>
+        <h2>{{i18n.SETTINGS.TITLE}}</h2>
+        <p class="header-subtitle">Configura le impostazioni dell'applicazione</p>
       </div>
-      <span id="stats-title">
-        Statistiche: {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}}
-        {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
-        ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) : ''}}
-      </span>
-      <span id="stats-total-count">
-      totale ordini
-      <p class="counter" *ngIf="!showEmpty">{{selectedStats?.count}}</p>
-      <p class="empty" *ngIf="showEmpty">Nessun ordine trovato</p>
-    </span>
-    </div>
-    <div class="pie_container" *ngIf="!showEmpty">
-      <p-chart type="doughnut"
-               [data]="data">
-      </p-chart>
     </div>
   </div>
-  <h3>Modifica Piastre</h3>
-  <section id="plate-settings__container">
-    <ng-container *ngFor="let plate of plates">
-      <plate-info [config]="plate"
-                  (delete)="onDelete($event)"
-                  (edit)="showDialog($event)"
-                  (switch)="onSwitchPlate($event)"
-      ></plate-info>
-    </ng-container>
-  </section>
-</main>
-<p-dialog header="Modifica Piastra"
-          [style]="{height: '80vh'}"
-          [(visible)]="display"
-          [draggable]="false">
+
+  <!-- GSG Integration Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-database"></i>
+        <div>
+          <h3>Inizializzazione GSG</h3>
+          <p>Importa categorie e voci di menù dal sistema GSG</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="gsg-info-alert">
+        <i class="pi pi-info-circle"></i>
+        <div>
+          <strong>Attenzione:</strong>
+          <p>L'inizializzazione sovrascriverà tutti i dati esistenti di ordini, categorie e voci di menù.</p>
+        </div>
+      </div>
+      <button pButton pRipple 
+        label="Inizializza da GSG"
+        icon="pi pi-download"
+        class="p-button-info"
+        (click)="onGSGInit()">
+      </button>
+    </div>
+  </div>
+
+  <!-- Display Settings Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-eye"></i>
+        <div>
+          <h3>Impostazioni Visualizzazione</h3>
+          <p>Gestisci le preferenze di visualizzazione dell'interfaccia</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
+            <i class="pi" [ngClass]="isDarkTheme ? 'pi-moon' : 'pi-sun'"></i>
+            <label for="darkMode">Tema Scuro</label>
+          </div>
+          <small>Attiva la modalità scura per ridurre l'affaticamento visivo</small>
+        </div>
+        <p-inputSwitch inputId="darkMode" [(ngModel)]="isDarkTheme" (onChange)="onThemeChange()"></p-inputSwitch>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
+            <i class="pi pi-bell"></i>
+            <label for="showNotify">Notifiche</label>
+          </div>
+          <small>Attiva le notifiche per i nuovi ordini in arrivo</small>
+        </div>
+        <p-inputSwitch inputId="showNotify" [(ngModel)]="showNotify" (onChange)="onShowNotifyChange()"></p-inputSwitch>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
+            <i class="pi pi-clock"></i>
+            <label for="showItemDelays">Mostra Ritardi Singoli</label>
+          </div>
+          <small>Visualizza i badge di ritardo sugli elementi nella dashboard delle piastre</small>
+        </div>
+        <p-inputSwitch inputId="showItemDelays" [(ngModel)]="showItemDelays" (onChange)="onShowItemDelaysChange()"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delay Thresholds Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-clock"></i>
+        <div>
+          <h3>Soglie Ritardi</h3>
+          <p>Configura i limiti temporali per gli avvisi di ritardo</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="threshold-grid">
+        <div class="threshold-item warning">
+          <div class="threshold-icon">
+            <i class="pi pi-exclamation-triangle"></i>
+          </div>
+          <div class="threshold-content">
+            <label for="warningThreshold">Soglia Avviso (Giallo)</label>
+            <small>Tempo in minuti prima che un ordine diventi giallo</small>
+            <p-inputNumber 
+              inputId="warningThreshold"
+              [(ngModel)]="delayThresholds.warning"
+              [min]="1"
+              [max]="60"
+              [showButtons]="true"
+              suffix=" min"
+              (onBlur)="onDelayThresholdChange()">
+            </p-inputNumber>
+          </div>
+        </div>
+        
+        <div class="threshold-item danger">
+          <div class="threshold-icon">
+            <i class="pi pi-exclamation-circle"></i>
+          </div>
+          <div class="threshold-content">
+            <label for="dangerThreshold">Soglia Pericolo (Rosso)</label>
+            <small>Tempo in minuti prima che un ordine diventi rosso</small>
+            <p-inputNumber 
+              inputId="dangerThreshold"
+              [(ngModel)]="delayThresholds.danger"
+              [min]="2"
+              [max]="120"
+              [showButtons]="true"
+              suffix=" min"
+              (onBlur)="onDelayThresholdChange()">
+            </p-inputNumber>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <button pButton 
+          label="Ripristina Predefiniti" 
+          icon="pi pi-refresh"
+          class="p-button-secondary"
+          (click)="resetDelayThresholds()">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plates Management Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-inbox"></i>
+        <div>
+          <h3>Gestione Piastre</h3>
+          <p>Configura e gestisci le piastre di cottura</p>
+        </div>
+      </div>
+      <button pButton pRipple
+        label="Nuova Piastra"
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="showCreateDialog()">
+      </button>
+    </div>
+    <div class="card-body">
+      <p-table [value]="plates" 
+               styleClass="p-datatable-sm"
+               *ngIf="plates.length > 0">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 60px">Colore</th>
+            <th>Nome</th>
+            <th style="width: 100px">Numero</th>
+            <th style="width: 150px">Disponibilità</th>
+            <th style="width: 120px">Stato</th>
+            <th style="width: 200px">Azioni</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-plate>
+          <tr>
+            <td>
+              <div class="plate-color-indicator" [style.background-color]="plate.color"></div>
+            </td>
+            <td>
+              <strong>{{ plate.name }}</strong>
+            </td>
+            <td class="text-center">
+              <span class="plate-number-badge">#{{ plate.slot[1] }}</span>
+            </td>
+            <td>
+              <div class="availability-cell">
+                <span class="availability-text">{{ plate.slot[0] }}/{{ plate.slot[1] }}</span>
+                <p-progressBar 
+                  [value]="(plate.slot[0] / plate.slot[1]) * 100" 
+                  [showValue]="false"
+                  [style]="{ height: '6px' }">
+                </p-progressBar>
+              </div>
+            </td>
+            <td>
+              <p-tag [severity]="plate.enabled ? plate._severity : 'secondary'"
+                     [value]="!plate.enabled ? 'SPENTO' : plate._status">
+              </p-tag>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button pButton pRipple
+                        type="button"
+                        [icon]="plate.enabled ? 'pi pi-power-off' : 'pi pi-check'"
+                        [class]="plate.enabled ? 'p-button-warning p-button-sm p-button-text' : 'p-button-success p-button-sm p-button-text'"
+                        [pTooltip]="plate.enabled ? 'Spegni' : 'Accendi'"
+                        tooltipPosition="top"
+                        (click)="onSwitchPlate({ id: plate.id, enable: !plate.enabled })">
+                </button>
+                <button pButton pRipple
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-info p-button-sm p-button-text"
+                        pTooltip="Modifica"
+                        tooltipPosition="top"
+                        (click)="showEditDialog(plate.id)">
+                </button>
+                <button pButton pRipple
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-danger p-button-sm p-button-text"
+                        pTooltip="Elimina"
+                        tooltipPosition="top"
+                        (click)="onDelete(plate.id)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      
+      <div class="empty-state" *ngIf="plates.length === 0">
+        <i class="pi pi-inbox"></i>
+        <h4>Nessuna Piastra Configurata</h4>
+        <p>Crea la tua prima piastra per iniziare a gestire gli ordini</p>
+        <button pButton pRipple
+          label="Crea Prima Piastra"
+          icon="pi pi-plus"
+          class="p-button-success"
+          (click)="showCreateDialog()">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<p-dialog 
+  [(visible)]="display"
+  [draggable]="false"
+  [modal]="true"
+  styleClass="dialog-lg">
+  
+  <ng-template pTemplate="header">
+    <i [class]="isEditMode ? 'pi pi-pencil' : 'pi pi-plus'"></i>
+    {{isEditMode ? 'Modifica Piastra' : 'Crea Nuova Piastra'}}
+  </ng-template>
+  
   <form (ngSubmit)="onSubmit()" [formGroup]="form!">
-    <h3>{{i18n.PLATE.FORM.TITLE}}</h3>
-    <label>{{i18n.PLATE.FORM.NAME}}</label>
-    <input formControlName="name"
-           pInputText
-           type="text">
-    <label>{{i18n.PLATE.FORM.COLOR}}</label>
-    <p-colorPicker [inline]="true"
-                   formControlName="color"></p-colorPicker>
-    <label>{{i18n.PLATE.FORM.NUMBER}}</label>
-    <p-inputNumber [max]="200"
-                   [min]="0"
-                   [showButtons]="true"
-                   formControlName="number"></p-inputNumber>
-    <div id="confirmForm">
-      <button (click)="discardForm()"
-              [label]="i18n.COMMON.UNDO"
-              class="p-button-secondary" pButton pRipple
-              type="button"></button>
-      <button [disabled]="form?.valid ? !form?.valid : true"
-              [label]="i18n.COMMON.SAVE"
-              class="p-button-success" pButton pRipple
-              type="submit"></button>
+    <div class="form-field">
+      <label for="plateName">
+        <i class="pi pi-tag"></i>
+        {{i18n.PLATE.FORM.NAME}}
+      </label>
+      <input id="plateName"
+             formControlName="name"
+             pInputText
+             type="text"
+             placeholder="Nome della piastra">
+      <small *ngIf="form?.get('name')?.invalid && form?.get('name')?.touched" class="p-error">
+        Il nome è obbligatorio
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label>
+        <i class="pi pi-palette"></i>
+        {{i18n.PLATE.FORM.COLOR}}
+      </label>
+      <div class="modern-color-picker">
+        <div class="color-preview" [style.background-color]="form?.get('color')?.value">
+          <span class="preview-text">Anteprima Colore</span>
+        </div>
+        <div class="color-palette">
+          <div class="palette-section">
+            <label class="section-label">Seleziona Colore</label>
+            <div class="color-grid">
+              <button type="button" 
+                      class="color-option"
+                      [class.selected]="form?.get('color')?.value === color"
+                      *ngFor="let color of primaryColors"
+                      [style.background-color]="color"
+                      (click)="form?.get('color')?.setValue(color)"
+                      [pTooltip]="color"
+                      tooltipPosition="top">
+                <i class="pi pi-check" *ngIf="form?.get('color')?.value === color"></i>
+              </button>
+            </div>
+          </div>
+          <div class="custom-color-section">
+            <label class="section-label">Colore Personalizzato</label>
+            <input type="color" 
+                   class="custom-color-input"
+                   [value]="form?.get('color')?.value"
+                   (input)="form?.get('color')?.setValue($any($event.target).value)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="plateNumber">
+        <i class="pi pi-hashtag"></i>
+        {{i18n.PLATE.FORM.NUMBER}}
+      </label>
+      <p-inputNumber 
+        id="plateNumber"
+        [max]="200"
+        [min]="0"
+        [showButtons]="true"
+        formControlName="number"
+        placeholder="Numero della piastra">
+      </p-inputNumber>
+      <small class="field-hint">
+        Numero identificativo della piastra (0-200)
+      </small>
     </div>
   </form>
+  
+  <ng-template pTemplate="footer">
+    <button pButton pRipple
+      [label]="i18n.COMMON.UNDO"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="display = false">
+    </button>
+    <button pButton pRipple
+      [disabled]="!form?.valid"
+      [label]="i18n.COMMON.SAVE"
+      icon="pi pi-check"
+      class="p-button-success"
+      type="submit"
+      (click)="onSubmit()">
+    </button>
+  </ng-template>
 </p-dialog>
-<p-confirmDialog header="Conferma"
-                 icon="pi pi-exclamation-triangle"
-                 acceptLabel="Si"
-                 rejectLabel="No">
+
+<p-confirmDialog 
+  header="Conferma"
+  icon="pi pi-exclamation-triangle"
+  acceptLabel="Si"
+  rejectLabel="No">
 </p-confirmDialog>

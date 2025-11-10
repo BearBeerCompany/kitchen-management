@@ -1,0 +1,442 @@
+<div class="summary-container">
+  <div class="summary-header">
+    <h2>
+      <i class="pi pi-chart-bar"></i>
+      Riepilogo Piastre e Tempi
+    </h2>
+    <div class="header-actions">
+      <button pButton pRipple 
+              icon="pi pi-refresh" 
+              label="Aggiorna" 
+              class="p-button-sm p-button-outlined"
+              (click)="refreshData()"
+              [loading]="loading">
+      </button>
+      <button pButton pRipple 
+              icon="pi pi-times" 
+              label="Chiudi" 
+              class="p-button-sm p-button-text"
+              routerLink="/plates">
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+    <p>Caricamento dati...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Statistiche Globali -->
+    <div class="global-stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon success">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.totalProgress}}</h3>
+          <p>Ordini in Corso</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon info">
+          <i class="pi pi-clock"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.totalTodo}}</h3>
+          <p>Ordini in Coda</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon warning">
+          <i class="pi pi-fire"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.activePlates}}/{{globalStats.totalPlates}}</h3>
+          <p>Piastre Attive</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" [ngClass]="getDelaySeverity(globalStats.maxDelayAllPlates)">
+          <i class="pi pi-exclamation-triangle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{formatTime(globalStats.maxDelayAllPlates)}}</h3>
+          <p>Ritardo Massimo</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" [ngClass]="getDelaySeverity(globalStats.avgDelayAllPlates)">
+          <i class="pi pi-chart-line"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{formatTime(globalStats.avgDelayAllPlates)}}</h3>
+          <p>Ritardo Medio</p>
+        </div>
+      </div>
+
+      <div class="stat-card" *ngIf="globalStats.criticalOrders > 0">
+        <div class="stat-icon danger">
+          <i class="pi pi-times-circle"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{globalStats.criticalOrders}}</h3>
+          <p>Ordini Critici (>20min)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabella Dettagli Piastre -->
+    <div class="plates-table-container">
+      <div class="table-header-with-legend">
+        <h3>Dettaglio Piastre</h3>
+        <div class="legend-inline">
+          <div class="legend-item">
+            <p-tag severity="success" [value]="'< ' + warningThreshold + ' min'"></p-tag>
+            <span>Ottimo</span>
+          </div>
+          <div class="legend-item">
+            <p-tag severity="warning" [value]="warningThreshold + '-' + dangerThreshold + ' min'"></p-tag>
+            <span>Attenzione</span>
+          </div>
+          <div class="legend-item">
+            <p-tag severity="danger" [value]="'> ' + dangerThreshold + ' min'"></p-tag>
+            <span>Critico</span>
+          </div>
+        </div>
+      </div>
+      
+      <p-table [value]="platesStats" 
+               styleClass="modern-table p-datatable-sm p-datatable-striped"
+               [paginator]="true"
+               [rows]="10"
+               [showCurrentPageReport]="true"
+               currentPageReportTemplate="{totalRecords} piastre totali">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Piastra</th>
+            <th>In Corso</th>
+            <th>In Coda</th>
+            <th>Ritardo Max</th>
+            <th>Ritardo Medio</th>
+            <th>Ordine Più Vecchio</th>
+            <th>Stato</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-stat>
+          <tr>
+            <td>
+              <div class="plate-name" [style.border-left-color]="stat.plate.color">
+                <strong>{{stat.plate.name}}</strong>
+              </div>
+            </td>
+            <td>
+              <p-badge [value]="stat.progressCount + ''" 
+                       [severity]="stat.progressCount > 0 ? 'info' : 'secondary'">
+              </p-badge>
+            </td>
+            <td>
+              <p-badge [value]="stat.todoCount + ''" 
+                       [severity]="stat.todoCount > 0 ? 'warning' : 'secondary'">
+              </p-badge>
+            </td>
+            <td>
+              <p-tag *ngIf="stat.maxDelayMinutes > 0"
+                     [value]="formatTime(stat.maxDelayMinutes)"
+                     [severity]="getDelaySeverity(stat.maxDelayMinutes)">
+              </p-tag>
+              <span *ngIf="stat.maxDelayMinutes === 0" class="no-delay">-</span>
+            </td>
+            <td>
+              <span *ngIf="stat.avgDelayMinutes > 0">{{formatTime(stat.avgDelayMinutes)}}</span>
+              <span *ngIf="stat.avgDelayMinutes === 0" class="no-delay">-</span>
+            </td>
+            <td>
+              <span class="time-badge">{{formatDateTime(stat.oldestOrderTime)}}</span>
+            </td>
+            <td>
+              <i *ngIf="stat.maxDelayMinutes === 0" 
+                 class="pi pi-check-circle" 
+                 style="color: var(--green-500); font-size: 1.2rem"
+                 pTooltip="Nessun ritardo">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes > 0 && stat.maxDelayMinutes < 10" 
+                 class="pi pi-thumbs-up" 
+                 style="color: var(--green-500); font-size: 1.2rem"
+                 pTooltip="Tempi buoni">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes >= 10 && stat.maxDelayMinutes < 20" 
+                 class="pi pi-exclamation-triangle" 
+                 style="color: var(--orange-500); font-size: 1.2rem"
+                 pTooltip="Attenzione ai tempi">
+              </i>
+              <i *ngIf="stat.maxDelayMinutes >= 20" 
+                 class="pi pi-times-circle" 
+                 style="color: var(--red-500); font-size: 1.2rem"
+                 pTooltip="Ritardo critico!">
+              </i>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="empty-message">
+              <i class="pi pi-inbox"></i>
+              <p>Nessuna piastra attiva al momento</p>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Grafici Analisi Piastre -->
+    <div class="charts-container" *ngIf="!loading">
+      <div class="chart-card" *ngIf="plateWorkloadChartData">
+        <div class="chart-header">
+          <h3>
+            <i class="pi pi-chart-bar"></i>
+            Carico di Lavoro per Piastra
+          </h3>
+          <p>Distribuzione degli ordini in corso e in coda per ogni piastra</p>
+        </div>
+        <div class="chart-content">
+          <p-chart type="bar" 
+                   [data]="plateWorkloadChartData" 
+                   [options]="chartOptions"
+                   height="300px">
+          </p-chart>
+        </div>
+      </div>
+
+      <div class="chart-card" *ngIf="plateDelayChartData">
+        <div class="chart-header">
+          <h3>
+            <i class="pi pi-clock"></i>
+            Ritardi Medi per Piastra
+          </h3>
+          <p>Tempo medio di ritardo per piastra (solo piastre con ordini attivi)</p>
+        </div>
+        <div class="chart-content">
+          <p-chart type="bar" 
+                   [data]="plateDelayChartData" 
+                   [options]="chartOptions"
+                   height="300px">
+          </p-chart>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analisi Ordini Avanzate -->
+    <div class="advanced-analysis-section" *ngIf="!analysisLoading">
+      
+      <!-- KPI Tasso di Cancellazione -->
+      <div class="kpi-cards">
+        <div class="kpi-card" [ngClass]="cancellationRate > 10 ? 'warning' : 'success'">
+          <div class="kpi-icon">
+            <i class="pi pi-times-circle"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>Tasso di Cancellazione</h4>
+            <div class="kpi-value">{{cancellationRate}}%</div>
+            <p class="kpi-details">
+              {{completedOrdersCount}} completati • {{cancelledOrdersCount}} cancellati
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grafici Analisi -->
+      <div class="analysis-charts-grid">
+        
+        <!-- Grafico 1: Top Prodotti -->
+        <div class="chart-card full-width" *ngIf="topProductsChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-star"></i>
+              Top 10 Prodotti Più Ordinati
+            </h3>
+            <p>I prodotti più richiesti nel periodo selezionato</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="bar" 
+                     [data]="topProductsChartData" 
+                     [options]="chartOptions"
+                     height="350px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 2: Andamento Orario -->
+        <div class="chart-card" *ngIf="hourlyOrdersChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-calendar"></i>
+              Andamento Ordini per Ora
+            </h3>
+            <p>Distribuzione degli ordini durante il giorno</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="line" 
+                     [data]="hourlyOrdersChartData" 
+                     [options]="chartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 3: Performance Temporale -->
+        <div class="chart-card" *ngIf="hourlyPerformanceChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-bolt"></i>
+              Performance Temporale
+            </h3>
+            <p>Tempo medio di completamento ordini per fascia oraria</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="bar" 
+                     [data]="hourlyPerformanceChartData" 
+                     [options]="chartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 4: Distribuzione Categorie -->
+        <div class="chart-card" *ngIf="categoryDistributionChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-tags"></i>
+              Distribuzione per Categoria
+            </h3>
+            <p>Ripartizione ordini per categoria di prodotto</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="categoryDistributionChartData" 
+                     [options]="chartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Loading analisi -->
+    <div *ngIf="analysisLoading" class="loading-container">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <p>Caricamento analisi avanzate...</p>
+    </div>
+
+    <!-- Nessun dato disponibile -->
+    <div *ngIf="!analysisLoading && !topProductsChartData && !hourlyOrdersChartData && !categoryDistributionChartData" 
+         class="loading-container">
+      <i class="pi pi-info-circle" style="font-size: 2rem; color: #2196f3"></i>
+      <p>Nessun ordine trovato per il periodo selezionato</p>
+    </div>
+
+    <!-- Statistiche Ordini per Periodo -->
+    <div class="orders-stats-section">
+      <div class="section-header">
+        <div class="header-title">
+          <i class="pi pi-calendar"></i>
+          <h3>Statistiche Ordini per Periodo</h3>
+        </div>
+      </div>
+
+      <!-- Date Filter Card -->
+      <div class="date-filter-card">
+        <div class="filter-header">
+          <i class="pi pi-filter"></i>
+          <span>Seleziona un periodo per analizzare gli ordini</span>
+        </div>
+        
+        <div class="date-inputs-row">
+          <div class="date-field">
+            <label for="dateFrom">
+              <i class="pi pi-calendar-plus"></i>
+              Data Inizio
+            </label>
+            <p-calendar id="dateFrom" 
+                       [(ngModel)]="dateFrom" 
+                       dateFormat="dd/mm/yy"
+                       [showIcon]="true"
+                       [style]="{'width': '100%'}"
+                       placeholder="Seleziona data inizio">
+            </p-calendar>
+          </div>
+
+          <div class="date-field">
+            <label for="dateTo">
+              <i class="pi pi-calendar-minus"></i>
+              Data Fine
+            </label>
+            <p-calendar id="dateTo" 
+                       [(ngModel)]="dateTo" 
+                       [minDate]="dateFrom" 
+                       dateFormat="dd/mm/yy"
+                       [showIcon]="true"
+                       [style]="{'width': '100%'}"
+                       placeholder="Seleziona data fine">
+            </p-calendar>
+          </div>
+
+          <div class="search-button-container">
+            <button pButton pRipple 
+                    icon="pi pi-search" 
+                    label="Cerca"
+                    class="p-button-lg p-button-primary"
+                    [loading]="statsLoading" 
+                    (click)="searchByDate()">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="stats-results" *ngIf="selectedStats || showEmpty">
+        <div class="results-header">
+          <div class="period-info">
+            <i class="pi pi-calendar-times"></i>
+            <div class="period-text">
+              <span class="label">Periodo Analizzato</span>
+              <span class="dates" *ngIf="selectedStats">
+                {{dateFrom.getDate()}} {{dateFrom.toLocaleString('default', {month: 'long'})}} {{dateFrom.getFullYear()}}
+                {{dateTo.getDate() != dateFrom.getDate() || dateTo.getMonth() != dateFrom.getMonth() || dateTo.getFullYear() != dateFrom.getFullYear()
+                ? ' - ' + dateTo.getDate() + ' ' + dateTo.toLocaleString('default', {month: 'long'}) + ' ' + dateTo.getFullYear() : ''}}
+              </span>
+            </div>
+          </div>
+
+          <div class="total-orders-badge">
+            <div class="badge-content" *ngIf="selectedStats && !showEmpty">
+              <span class="count">{{selectedStats?.count}}</span>
+              <span class="label">Ordini Totali</span>
+            </div>
+            <div class="badge-content empty" *ngIf="showEmpty">
+              <i class="pi pi-info-circle"></i>
+              <span class="label">Nessun ordine trovato</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stats-content-grid" *ngIf="statsData && !showEmpty">
+          <div class="chart-container">
+            <div class="chart-card">
+              <h4>Distribuzione Stati Ordini</h4>
+              <p-chart type="doughnut" [data]="statsData"></p-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

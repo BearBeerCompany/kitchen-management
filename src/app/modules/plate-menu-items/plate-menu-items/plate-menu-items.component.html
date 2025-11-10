@@ -1,152 +1,227 @@
 <p-toast></p-toast>
-<h3>
-  <span>Gestione Ordini</span>
-  <div class="show-notify-container">
-    <label for="showNotify">Notifiche</label>
-    <p-inputSwitch inputId="showNotify" [(ngModel)]="showNotify"></p-inputSwitch>
-  </div>
-</h3>
-<p-table #dt
-         [value]="pkmiRows"
-         [(selection)]="selectedPlateMenuItems"
-         dataKey="id"
-         styleClass="p-datatable-orders"
-         [rowHover]="true"
-         [rows]="10"
-         [showCurrentPageReport]="true"
-         [rowsPerPageOptions]="[10,25,50]"
-         [loading]="loading"
-         [lazy]="true"
-         [totalRecords]="totalRecords"
-         [paginator]="true"
-         (onLazyLoad)="loadItems($event)"
-         currentPageReportTemplate="{last} di {totalRecords} trovati"
-         [filterDelay]="0"
-         [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName','tableNumber']"
-         editMode="row"
-         sortField="createdDate"
-         [sortOrder]="-1"
->
-  <ng-template pTemplate="caption">
-    <div class="table-header">
-      {{toggleCompleted ? 'Ordini Completati - Chiusi' : 'Ordini Da Completare - In Corso'}}
-      <div class="table-header-buttons">
-        <div>
-          <button pButton pRipple [label]="toggleCompleted ? 'In Corso' : 'Completati'" icon="pi pi-eye" class="p-mr-2" (click)="viewCompletedPlateMenuItems()"></button>
-          <button pButton pRipple label="Nuovo" icon="pi pi-plus" class="p-mr-2 ml-2" (click)="addPlateMenuItems()"></button>
-          <button pButton pRipple label="Elimina" icon="pi pi-trash" class="p-button-danger ml-2" (click)="deleteSelectedPkmis()" [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"></button>
+
+<div class="orders-management-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-title">
+      <i class="pi pi-list"></i>
+      <div>
+        <h2>Gestione Ordini</h2>
+        <p class="header-subtitle">{{toggleCompleted ? 'Ordini Completati e Chiusi' : 'Ordini Attivi e In Lavorazione'}}</p>
+      </div>
+    </div>
+
+    <!-- Quick Stats Inline -->
+    <div class="header-stats" *ngIf="!loading && pkmiRows.length > 0">
+      <div class="stat-mini">
+        <i class="pi pi-list"></i>
+        <div class="stat-mini-content">
+          <span class="value">{{totalRecords}}</span>
+          <span class="label">Totali</span>
         </div>
-        <div class="ml-4">
-          <span class="p-input-icon-left">
-              <i class="pi pi-search"></i>
-              <input pInputText type="text" (input)="filterGlobal($event)" placeholder="Ricerca" />
-          </span>
+      </div>
+      
+      <div class="stat-mini">
+        <i class="pi pi-check-square"></i>
+        <div class="stat-mini-content">
+          <span class="value">{{selectedPlateMenuItems?.length || 0}}</span>
+          <span class="label">Selezionati</span>
+        </div>
+      </div>
+
+      <div class="stat-mini">
+        <i class="pi pi-filter"></i>
+        <div class="stat-mini-content">
+          <span class="value">{{pkmiRows.length}}</span>
+          <span class="label">Visibili</span>
         </div>
       </div>
     </div>
-  </ng-template>
 
-  <ng-template pTemplate="header">
-    <tr>
-      <th style="width: 3rem">
-        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Prodotto
-          <p-columnFilter type="text" field="menuItemId" display="menu" [showAddButton]="false"></p-columnFilter>
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Categoria
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Ordine
-          <p-columnFilter type="numeric" field="orderNumber" display="menu" [showAddButton]="false"></p-columnFilter>
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Tavolo
-          <p-columnFilter type="text" field="tableNumber" display="menu" [showAddButton]="false"></p-columnFilter>
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Nome Cliente
-          <p-columnFilter type="text" field="clientName" display="menu" [showAddButton]="false"></p-columnFilter>
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Data
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Stato
-          <!--
-          <p-columnFilter field="status" matchMode="equals" display="menu">
-            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-              <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
-                          placeholder="Any">
-                <ng-template let-option pTemplate="item">
-                  <span class="plate-badge" [style]="{'background-color': option.color}">{{option.label}}</span>
-                </ng-template>
-              </p-dropdown>
-            </ng-template>
-          </p-columnFilter>
-          -->
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Piastra
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Asporto
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Note Ordine
-        </div>
-      </th>
-      <th>
-        <div class="p-d-flex p-jc-between p-ai-center">
-          Note Panino
-        </div>
-      </th>
-      <th style="width: 8rem"></th>
-    </tr>
-  </ng-template>
+    <div class="header-actions">
+      <div class="notify-toggle">
+        <p-inputSwitch [(ngModel)]="showNotify" (onChange)="onShowNotifyChange()"></p-inputSwitch>
+        <label pTooltip="Abilita/Disabilita notifiche in tempo reale" tooltipPosition="bottom">
+          <i class="pi pi-bell"></i>
+          Notifiche
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="orders-toolbar">
+    <div class="toolbar-left">
+      <button pButton pRipple 
+              [label]="toggleCompleted ? 'Mostra In Corso' : 'Mostra Completati'" 
+              [icon]="toggleCompleted ? 'pi pi-replay' : 'pi pi-check-circle'"
+              class="p-button-outlined"
+              (click)="viewCompletedPlateMenuItems()"
+              pTooltip="Passa alla visualizzazione degli ordini completati/in corso"
+              tooltipPosition="bottom">
+      </button>
+      
+      <button pButton pRipple 
+              label="Nuovo Ordine" 
+              icon="pi pi-plus" 
+              class="p-button-success"
+              (click)="addPlateMenuItems()">
+      </button>
+    </div>
+
+    <div class="toolbar-center">
+      <span class="p-input-icon-left search-input">
+        <i class="pi pi-search"></i>
+        <input pInputText 
+               type="text" 
+               (input)="filterGlobal($event)" 
+               placeholder="Cerca per ordine, prodotto, cliente, tavolo..." />
+      </span>
+    </div>
+
+    <div class="toolbar-right">
+      <button pButton pRipple 
+              label="Modifica Batch" 
+              icon="pi pi-pencil" 
+              class="p-button-warning p-button-outlined"
+              (click)="openBatchEditDialog()" 
+              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"
+              pTooltip="Modifica più ordini contemporaneamente"
+              tooltipPosition="bottom">
+      </button>
+      
+      <button pButton pRipple 
+              label="Elimina" 
+              icon="pi pi-trash" 
+              class="p-button-danger p-button-outlined"
+              (click)="deleteSelectedPkmis()" 
+              [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"
+              pTooltip="Elimina gli ordini selezionati"
+              tooltipPosition="bottom">
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <p-table #dt
+             [value]="pkmiRows"
+             [(selection)]="selectedPlateMenuItems"
+             dataKey="id"
+             styleClass="modern-table p-datatable-orders-modern"
+             [rowHover]="true"
+             [rows]="10"
+             [showCurrentPageReport]="true"
+             [rowsPerPageOptions]="[10,25,50]"
+             [loading]="loading"
+             [paginator]="true"
+             currentPageReportTemplate="Mostrando {first} - {last} di {totalRecords} ordini"
+             [filterDelay]="0"
+             [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName','tableNumber']"
+             editMode="row"
+             sortField="createdDate"
+             [sortOrder]="-1"
+    >
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="menuItem.data.name">
+          <div class="header-content">
+            <i class="pi pi-tag"></i>
+            <span>Prodotto</span>
+            <p-sortIcon field="menuItem.data.name"></p-sortIcon>
+          </div>
+        </th>
+        <th>
+          <div class="header-content">
+            <i class="pi pi-bookmark"></i>
+            <span>Categoria</span>
+          </div>
+        </th>
+        <th pSortableColumn="orderNumber" style="width: 8rem">
+          <div class="header-content">
+            <i class="pi pi-hashtag"></i>
+            <span>Ordine</span>
+            <p-sortIcon field="orderNumber"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="tableNumber" style="width: 8rem">
+          <div class="header-content">
+            <i class="pi pi-home"></i>
+            <span>Tavolo</span>
+            <p-sortIcon field="tableNumber"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="clientName" style="width: 12rem">
+          <div class="header-content">
+            <i class="pi pi-user"></i>
+            <span>Cliente</span>
+            <p-sortIcon field="clientName"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="createdDate" style="width: 11rem">
+          <div class="header-content">
+            <i class="pi pi-calendar"></i>
+            <span>Data</span>
+            <p-sortIcon field="createdDate"></p-sortIcon>
+          </div>
+        </th>
+        <th pSortableColumn="status" style="width: 10rem">
+          <div class="header-content">
+            <i class="pi pi-flag"></i>
+            <span>Stato</span>
+            <p-sortIcon field="status"></p-sortIcon>
+          </div>
+        </th>
+        <th style="width: 10rem">
+          <div class="header-content">
+            <i class="pi pi-server"></i>
+            <span>Piastra</span>
+          </div>
+        </th>
+        <th style="width: 7rem">
+          <div class="header-content">
+            <i class="pi pi-shopping-bag"></i>
+            <span>Asporto</span>
+          </div>
+        </th>
+        <th style="width: 12rem">
+          <div class="header-content">
+            <i class="pi pi-comment"></i>
+            <span>Note Ordine</span>
+          </div>
+        </th>
+        <th style="width: 12rem">
+          <div class="header-content">
+            <i class="pi pi-pencil"></i>
+            <span>Note Prodotto</span>
+          </div>
+        </th>
+        <th style="width: 10rem">
+          <div class="header-content">
+            <i class="pi pi-cog"></i>
+            <span>Azioni</span>
+          </div>
+        </th>
+      </tr>
+    </ng-template>
 
   <ng-template pTemplate="body" let-plateMenuItem let-editing="editing" let-ri="rowIndex">
-    <tr [pEditableRow]="plateMenuItem" class="p-selectable-row">
+    <tr [pEditableRow]="plateMenuItem" 
+        class="p-selectable-row"
+        (dblclick)="!editing && onRowDblClick(plateMenuItem, ri)"
+        [style.cursor]="!editing ? 'pointer' : 'default'"
+        pTooltip="Doppio click per modificare"
+        [tooltipDisabled]="editing"
+        tooltipPosition="left">
       <td>
         <p-tableCheckbox [value]="plateMenuItem"></p-tableCheckbox>
       </td>
       <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <p-treeSelect [(ngModel)]="plateMenuItem.menuItem"
-                          [options]="menuItemOptions"
-                          [metaKeySelection]="false"
-                          placeholder="Select Menu Item"
-                          [filter]="true"
-                          [filterInputAutoFocus]="true"
-                          scrollHeight="300px"
-            ></p-treeSelect>
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem?.menuItem?.data?.name}}
-          </ng-template>
-        </p-cellEditor>
+        <span class="image-text">{{plateMenuItem?.menuItem?.data?.name}}</span>
       </td>
       <td>
         <span class="category-badge" [style]="{'border-color': getCategoryColor(plateMenuItem?.menuItem)}">
@@ -190,7 +265,12 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="statuses" [(ngModel)]="plateMenuItem.status" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="statuses" 
+                        [(ngModel)]="plateMenuItem.status" 
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
             <span [style]="{'color': getStatusLabelColor(plateMenuItem?.status)}">
@@ -203,7 +283,12 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="platesOptions" [(ngModel)]="plateMenuItem.plate" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="platesOptions" 
+                        [(ngModel)]="plateMenuItem.plate" 
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
             <span class="plate-badge" [style]="{'background-color': getPlateColor(plateMenuItem?.plate)}">{{plateMenuItem?.plate}}</span>
@@ -213,10 +298,17 @@
       <td>
         <p-cellEditor>
           <ng-template pTemplate="input">
-            <p-dropdown [options]="takeAwayOptions" [(ngModel)]="plateMenuItem.takeAway" [style]="{'width':'100%'}"></p-dropdown>
+            <p-dropdown [options]="takeAwayOptions" 
+                        [(ngModel)]="plateMenuItem.takeAway" 
+                        optionLabel="label"
+                        optionValue="value"
+                        [style]="{'width':'100%'}"
+                        appendTo="body"
+                        [panelStyle]="{'max-height': '250px'}"
+                        scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span>{{plateMenuItem?.takeAway ? 'SI' : ''}}</span>
+            <span>{{plateMenuItem?.takeAway ? 'SI' : 'NO'}}</span>
           </ng-template>
         </p-cellEditor>
       </td>
@@ -240,31 +332,168 @@
           </ng-template>
         </p-cellEditor>
       </td>
-      <td style="text-align:center">
+      <td class="actions-cell" style="text-align:center">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
+                pTooltip="Modifica" tooltipPosition="top"
         ></button>
         <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
-                (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"></button>
+                (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Elimina" tooltipPosition="top"
+        ></button>
         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
                 (click)="onRowEditSave(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-success p-mr-2"
+                pTooltip="Salva modifiche" tooltipPosition="top"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
                 (click)="onRowEditCancel(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-danger"
+                pTooltip="Annulla" tooltipPosition="top"
         ></button>
       </td>
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="emptymessage">
-    <tr>
-      <td colspan="11">Nessun ordine trovato.</td>
-    </tr>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="13" class="empty-message">
+          <div class="empty-state">
+            <i class="pi pi-inbox"></i>
+            <h4>Nessun ordine trovato</h4>
+            <p>{{toggleCompleted ? 'Non ci sono ordini completati nel sistema' : 'Non ci sono ordini attivi al momento'}}</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #noEdit>
+      <td></td>
+    </ng-template>
+  </p-table>
+  </div>
+</div>
+
+<!-- Batch Edit Dialog -->
+<p-dialog [(visible)]="batchEditDialog" 
+          [style]="{width: '550px'}" 
+          header="Modifica Multipla Ordini" 
+          [modal]="true" 
+          styleClass="p-fluid batch-edit-dialog"
+          [closable]="true"
+          [draggable]="false"
+          (onHide)="closeBatchEditDialog()">
+  <ng-template pTemplate="header">
+    <div class="dialog-header-content">
+      <i class="pi pi-pencil"></i>
+      <div>
+        <span class="dialog-title">Modifica Multipla Ordini</span>
+        <span class="dialog-subtitle">Applica modifiche a {{selectedPlateMenuItems.length}} ordini contemporaneamente</span>
+      </div>
+    </div>
   </ng-template>
 
-  <ng-template #noEdit>
-    <td></td>
+  <ng-template pTemplate="content">
+    <div class="batch-edit-info-card">
+      <div class="info-icon">
+        <i class="pi pi-info-circle"></i>
+      </div>
+      <div class="info-content">
+        <h4>Come funziona</h4>
+        <p>Modifica solo i campi che desideri aggiornare. I campi lasciati vuoti manterranno i loro valori originali.</p>
+      </div>
+    </div>
+
+    <div class="batch-edit-form">
+      <div class="form-field">
+        <label for="batchStatus">
+          <i class="pi pi-flag"></i>
+          Stato
+        </label>
+        <p-dropdown id="batchStatus"
+                    [(ngModel)]="batchEditData.status"
+                    [options]="statuses"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Non modificare lo stato"
+                    [showClear]="true">
+          <ng-template let-status pTemplate="item">
+            <div class="dropdown-item" [style]="{'color': status.color}">
+              <i [class]="'pi ' + status.icon"></i>
+              <span>{{status.label}}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <div class="form-field">
+        <label for="batchPlate">
+          <i class="pi pi-server"></i>
+          Piastra
+        </label>
+        <p-dropdown id="batchPlate"
+                    [(ngModel)]="batchEditData.plate"
+                    [options]="platesOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Non modificare la piastra"
+                    [showClear]="true">
+          <ng-template let-plate pTemplate="item">
+            <div class="plate-item" [style]="{'background-color': plate.color}">
+              {{plate.label}}
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <div class="form-field">
+        <label for="batchTakeAway">
+          <i class="pi pi-shopping-bag"></i>
+          Asporto
+        </label>
+        <p-dropdown id="batchTakeAway"
+                    [(ngModel)]="batchEditData.takeAway"
+                    [options]="takeAwayOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Non modificare asporto"
+                    [showClear]="true">
+        </p-dropdown>
+      </div>
+
+      <div class="form-field">
+        <label for="batchOrderNotes">
+          <i class="pi pi-comment"></i>
+          Note Ordine
+        </label>
+        <textarea id="batchOrderNotes"
+                  pInputTextarea
+                  [(ngModel)]="batchEditData.orderNotes"
+                  rows="3"
+                  placeholder="Aggiungi note ordine (sostituirà le note esistenti)">
+        </textarea>
+        <small class="field-hint">
+          <i class="pi pi-exclamation-triangle"></i>
+          Le note verranno sovrascritte per tutti gli ordini selezionati
+        </small>
+      </div>
+    </div>
   </ng-template>
-</p-table>
+
+  <ng-template pTemplate="footer">
+    <div class="dialog-footer-actions">
+      <button pButton pRipple 
+              label="Annulla" 
+              icon="pi pi-times" 
+              class="p-button-text p-button-secondary" 
+              (click)="closeBatchEditDialog()">
+      </button>
+      <button pButton pRipple 
+              label="Applica a {{selectedPlateMenuItems.length}} ordini" 
+              icon="pi pi-check" 
+              class="p-button-success" 
+              (click)="applyBatchEdit()">
+      </button>
+    </div>
+  </ng-template>
+</p-dialog>
 
 <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

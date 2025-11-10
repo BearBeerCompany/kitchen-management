@@ -14,6 +14,12 @@ import {CalendarModule} from 'primeng/calendar';
 import {ConfirmationService, MessageService} from "primeng/api";
 import {ToastModule} from "primeng/toast";
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { ButtonModule } from 'primeng/button';
+import { TableModule } from 'primeng/table';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 
 const routes: Routes = [
   {
@@ -40,7 +46,13 @@ const routes: Routes = [
     CalendarModule,
     FormsModule,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    InputSwitchModule,
+    ButtonModule,
+    TableModule,
+    ProgressBarModule,
+    TagModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService]
 })

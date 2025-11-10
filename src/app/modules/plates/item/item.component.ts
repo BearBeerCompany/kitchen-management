@@ -6,6 +6,8 @@ import {CommonModule} from "@angular/common";
 import {RippleModule} from "primeng/ripple";
 import {ButtonModule} from "primeng/button";
 import {TooltipModule} from "primeng/tooltip";
+import {TagModule} from "primeng/tag";
+import {DelayThresholdsService} from "../../../services/delay-thresholds.service";
 
 @Component({
   selector: 'item',
@@ -17,6 +19,7 @@ export class ItemComponent implements OnInit {
   @Input() public config!: PlateMenuItem;
   @Input() public plateList: Plate[] = [];
   @Input() public readonly: boolean = false;
+  @Input() public showDelay: boolean = true; // default true per vista espansa
 
   @Output() public onDoneEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
   @Output() public onCancelEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -24,8 +27,15 @@ export class ItemComponent implements OnInit {
   public deleteOptions: PrimeMenuItem[] = [];
   public deleteOverlay: boolean = false;
   public showPlateList: boolean = false;
+  
+  // Delay tracking per item
+  public delayMinutes: number = 0;
+  public delaySeverity: 'success' | 'warning' | 'danger' = 'success';
+
+  constructor(private _delayThresholdsService: DelayThresholdsService) {}
 
   public ngOnInit(): void {
+    this.calculateItemDelay();
     this.deleteOptions = [
       {
         icon: 'pi pi-trash',
@@ -102,10 +112,41 @@ export class ItemComponent implements OnInit {
     }
     return result;
   }
+
+  /**
+   * Calcola il ritardo per questo specifico item
+   */
+  private calculateItemDelay(): void {
+    if (!this.config?.createdDate) {
+      this.delayMinutes = 0;
+      this.delaySeverity = 'success';
+      return;
+    }
+
+    const now = new Date().getTime();
+    const createdTime = new Date(this.config.createdDate).getTime();
+    const delayMs = now - createdTime;
+    this.delayMinutes = Math.floor(delayMs / 60000);
+
+    // Determina la severità usando le soglie configurabili
+    this.delaySeverity = this._delayThresholdsService.getSeverity(this.delayMinutes);
+  }
+
+  /**
+   * Formatta i minuti in stringa leggibile
+   */
+  public getDelayLabel(): string {
+    if (this.delayMinutes < 60) {
+      return `${this.delayMinutes}min`;
+    }
+    const hours = Math.floor(this.delayMinutes / 60);
+    const mins = this.delayMinutes % 60;
+    return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+  }
 }
 
 @NgModule({
-  imports: [CommonModule, RippleModule, ButtonModule, TooltipModule],
+  imports: [CommonModule, RippleModule, ButtonModule, TooltipModule, TagModule],
   declarations: [ItemComponent],
   exports: [ItemComponent]
 })

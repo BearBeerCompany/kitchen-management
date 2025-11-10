@@ -15,7 +15,7 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
   template: `
     <p-toast></p-toast>
     <div class="page-container">
-      <plate [config]="config" [queue]="queue" [chunk]="10"></plate>
+      <plate [config]="config" [queue]="queue" [chunk]="10" [showItemDelays]="true"></plate>
     </div>
   `,
   styles: [`
@@ -47,6 +47,31 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
 
           .item_container {
             font-size: 40px;
+            
+            // Badge del delay più grande nella vista espansa
+            .item-delay-badge {
+              .p-tag {
+                font-size: 1.1rem !important;
+                padding: 0.5rem 0.8rem !important;
+              }
+              
+              // Animazione più evidente nella vista espansa
+              .p-tag-warning,
+              .p-tag-danger {
+                animation: pulse-badge-expanded 2s ease-in-out infinite !important;
+              }
+            }
+          }
+          
+          @keyframes pulse-badge-expanded {
+            0%, 100% {
+              transform: scale(1);
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            }
+            50% {
+              transform: scale(1.12);
+              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+            }
           }
         }
       }

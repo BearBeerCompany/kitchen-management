@@ -55,6 +55,15 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     { code: false, label: 'NO', value: false }, 
   ];
 
+  // Batch Edit
+  batchEditDialog: boolean = false;
+  batchEditData: any = {
+    status: null,
+    plate: null,
+    takeAway: null,
+    orderNotes: null
+  };
+
   @ViewChild('dt') table: Table | undefined;
 
   constructor(private _i18nService: I18nService,
@@ -79,6 +88,12 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load settings from localStorage
+    this._loadSettingsFromLocalStorage();
+    
+    // Load initial data
+    this._loadPlateMenuItems(false, null);
+    
     this._categoriesSub = this._categoryService.getAll().subscribe(data => {
       this.categories = data;
 
@@ -122,17 +137,34 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
           });
         }
 
+        // Se c'è una riga in editing, non ricaricare i dati per evitare perdita di modifiche
+        const isEditingRow = this._editablePkmiMap.size > 0;
+
         this.loading = true;
         switch (notification.type) {
           case PKMINotificationType.PKMI_ADD:
+            // Aggiungi singolo item in background senza ricaricare
+            if (notification.plateKitchenMenuItem) {
+              this._addItem(notification.plateKitchenMenuItem);
+            }
+            break;
           case PKMINotificationType.PKMI_ADD_ALL:
-            this._loadPlateMenuItems(false, null);
+            // Per add multipli, ricarica solo se non stiamo editando
+            if (!isEditingRow) {
+              this._loadPlateMenuItems(this.toggleCompleted, null);
+            }
             break;
           case PKMINotificationType.PKMI_UPDATE:
-            this._updateItem(notification.plateKitchenMenuItem);
+            // Gli update singoli possono essere applicati anche durante l'editing (se non è la riga editata)
+            if (!isEditingRow || (notification.plateKitchenMenuItem.id && !this._editablePkmiMap.has(notification.plateKitchenMenuItem.id))) {
+              this._updateItem(notification.plateKitchenMenuItem);
+            }
             break;
           case PKMINotificationType.PKMI_UPDATE_ALL:
-            this._updateItems(notification.ids);
+            // Gli update multipli vengono ignorati durante l'editing
+            if (!isEditingRow) {
+              this._updateItems(notification.ids);
+            }
             break;
         }
         this.loading = false;
@@ -208,6 +240,14 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     this._editablePkmiMap.set(pkmi.id, {...pkmi});
   }
 
+  onRowDblClick(pkmi: any, rowIndex: number) {
+    // Inizia l'editing della riga al doppio click
+    if (this.table) {
+      this.table.initRowEdit(pkmi);
+      this.onRowEditInit(pkmi);
+    }
+  }
+
   onRowEditSave(pkmiRow: any, index: number) {
     let plateMenuItem = this.plateMenuItems.find(item => item.id === pkmiRow.id);
 
@@ -236,22 +276,42 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
         .subscribe({
           error: (errorResponse: HttpErrorResponse) => {
             const plateName: string = this.plates.find(p => p.id === (errorResponse.error as Error).causeId)?.name!;
-            this.pkmiRows[index].plate = this.plateMenuItems.find(p => p.id === this.pkmiRows[index].id)?.plate?.name;
+            // Ripristina il valore originale in caso di errore
+            const originalRow = this._editablePkmiMap.get(pkmiRow.id);
+            if (originalRow) {
+              this.pkmiRows[index] = {...originalRow};
+            }
             this._messageService.add({
               severity: 'error',
-              summary: 'Errore Creazione',
+              summary: 'Errore Modifica',
               detail: `${plateName} è spenta o non disponibile, selezionare un\' altra piastra per l\'ordine`
             });
-          }, next: () => {
+          }, 
+          next: () => {
+            // Aggiorna l'elemento nella lista principale
+            const mainIndex = this.plateMenuItems.findIndex(item => item.id === plateMenuItem!.id);
+            if (mainIndex > -1) {
+              this.plateMenuItems[mainIndex] = plateMenuItem!;
+            }
             this._editablePkmiMap.delete(pkmiRow.id);
+            this._messageService.add({
+              severity: 'success',
+              summary: 'Successo',
+              detail: 'Ordine aggiornato correttamente',
+              life: 2000
+            });
           }
         });
     }
   }
 
   onRowEditCancel(pkmi: any, index: number) {
-    this.pkmiRows = this.pkmiRows.filter(val => pkmi.id !== val.id);
-    this.pkmiRows.splice(index, 0, this._editablePkmiMap.get(pkmi.id));
+    // Ripristina i valori originali dalla mappa senza modificare l'array
+    const originalRow = this._editablePkmiMap.get(pkmi.id);
+    if (originalRow && this.pkmiRows[index]) {
+      // Sostituisci l'oggetto mantenendo la referenza nell'array
+      this.pkmiRows[index] = {...originalRow};
+    }
     this._editablePkmiMap.delete(pkmi.id);
   }
 
@@ -303,22 +363,40 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
     const updItemId = plateMenuItem.id;
     const pkmiIndex = this.plateMenuItems.findIndex(item => item.id === updItemId);
     const pkmiRowIndex = this.pkmiRows.findIndex(item => item.id === updItemId);
+    
+    // Verifica se l'item aggiornato appartiene alla vista corrente
+    const isCompleted = plateMenuItem.status === Status.Done || plateMenuItem.status === Status.Cancelled;
+    const isInProgress = plateMenuItem.status === Status.Todo || plateMenuItem.status === Status.Progress;
+    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : isInProgress;
+    
     if (pkmiRowIndex > -1) {
-      this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
-      const updatedItem = {
-        ...this.pkmiRows[pkmiRowIndex],
-        ...this._getPkmiRow(plateMenuItem)
-      };
-      // update fields to refresh row
-      this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
-      this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
-      this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
-      this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
-      this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
-      this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
-      this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
-      this.pkmiRows[pkmiRowIndex].orderNotes = updatedItem.orderNotes;
-      this.pkmiRows[pkmiRowIndex].takeAway = updatedItem.takeAway;
+      // Item esiste già nella lista
+      if (shouldShowInCurrentView) {
+        // Aggiorna l'item
+        this.plateMenuItems[pkmiIndex] = {...this.plateMenuItems[pkmiIndex], ...plateMenuItem};
+        const updatedItem = {
+          ...this.pkmiRows[pkmiRowIndex],
+          ...this._getPkmiRow(plateMenuItem)
+        };
+        // update fields to refresh row
+        this.pkmiRows[pkmiRowIndex].menuItem = updatedItem.menuItem;
+        this.pkmiRows[pkmiRowIndex].orderNumber = updatedItem.orderNumber;
+        this.pkmiRows[pkmiRowIndex].tableNumber = updatedItem.tableNumber;
+        this.pkmiRows[pkmiRowIndex].clientName = updatedItem.clientName;
+        this.pkmiRows[pkmiRowIndex].status = updatedItem.status;
+        this.pkmiRows[pkmiRowIndex].plate = updatedItem.plate;
+        this.pkmiRows[pkmiRowIndex].notes = updatedItem.notes;
+        this.pkmiRows[pkmiRowIndex].orderNotes = updatedItem.orderNotes;
+        this.pkmiRows[pkmiRowIndex].takeAway = updatedItem.takeAway;
+      } else {
+        // Item non appartiene più alla vista corrente, rimuovilo
+        this.plateMenuItems.splice(pkmiIndex, 1);
+        this.pkmiRows.splice(pkmiRowIndex, 1);
+        this.totalRecords--;
+      }
+    } else if (shouldShowInCurrentView) {
+      // Item non esiste ma dovrebbe essere mostrato, aggiungilo
+      this._addItem(plateMenuItem);
     }
   }
 
@@ -327,6 +405,30 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       plateMenuItems.forEach(item => {
         this._updateItem(item);
       });
+    });
+  }
+
+  private _addItem(plateMenuItem: PlateMenuItem) {
+    // Verifica se l'item appartiene alla vista corrente (in corso o completati)
+    const isCompleted = plateMenuItem.status === Status.Done || plateMenuItem.status === Status.Cancelled;
+    const isInProgress = plateMenuItem.status === Status.Todo || plateMenuItem.status === Status.Progress;
+    const shouldShowInCurrentView = this.toggleCompleted ? isCompleted : isInProgress;
+    
+    if (shouldShowInCurrentView) {
+      // Aggiungi solo se non esiste già
+      const existingIndex = this.plateMenuItems.findIndex(item => item.id === plateMenuItem.id);
+      if (existingIndex === -1) {
+        // Aggiungi all'inizio dell'array (ordini più recenti in alto)
+        this.plateMenuItems.unshift(plateMenuItem);
+        this.pkmiRows.unshift(this._getPkmiRow(plateMenuItem));
+        this.totalRecords++;
+      }
+    }
+  }
+
+  private _addItems(plateMenuItems: PlateMenuItem[]) {
+    plateMenuItems.forEach(item => {
+      this._addItem(item);
     });
   }
 
@@ -357,6 +459,153 @@ export class PlateMenuItemsComponent implements OnInit, OnDestroy {
       notes: plateMenuItem.notes,
       orderNotes: plateMenuItem.orderNotes
     };
+  }
+
+  // Batch Edit Methods
+  openBatchEditDialog() {
+    if (!this.selectedPlateMenuItems || this.selectedPlateMenuItems.length === 0) {
+      this._messageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Seleziona almeno un ordine per la modifica batch',
+        life: 3000
+      });
+      return;
+    }
+
+    // Reset batch edit data
+    this.batchEditData = {
+      status: null,
+      plate: null,
+      takeAway: null,
+      orderNotes: null
+    };
+
+    this.batchEditDialog = true;
+  }
+
+  closeBatchEditDialog() {
+    this.batchEditDialog = false;
+  }
+
+  applyBatchEdit() {
+    if (!this.selectedPlateMenuItems || this.selectedPlateMenuItems.length === 0) {
+      return;
+    }
+
+    // Verifica che almeno un campo sia stato selezionato
+    if (!this.batchEditData.status && !this.batchEditData.plate && this.batchEditData.takeAway === null && !this.batchEditData.orderNotes) {
+      this._messageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Seleziona almeno un campo da modificare',
+        life: 3000
+      });
+      return;
+    }
+
+    this._confirmationService.confirm({
+      message: `Confermi di modificare ${this.selectedPlateMenuItems.length} ordini selezionati?`,
+      header: 'Conferma Modifica Batch',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.loading = true;
+        let updatedCount = 0;
+        let errorCount = 0;
+
+        // Aggiorna ogni elemento selezionato
+        this.selectedPlateMenuItems.forEach((selected, index) => {
+          const plateMenuItem = this.plateMenuItems.find(item => item.id === selected.id);
+          
+          if (plateMenuItem) {
+            // Applica solo i campi selezionati
+            const updatedPlateMenuItem: PlateMenuItem = {
+              ...plateMenuItem,
+              status: this.batchEditData.status || plateMenuItem.status,
+              takeAway: this.batchEditData.takeAway !== null ? this.batchEditData.takeAway : plateMenuItem.takeAway,
+              orderNotes: this.batchEditData.orderNotes || plateMenuItem.orderNotes
+            };
+
+            // Gestione piastra
+            if (this.batchEditData.plate) {
+              const plate = this.plates.find(p => p.name === this.batchEditData.plate);
+              if (plate) {
+                updatedPlateMenuItem.plate = plate;
+              }
+            }
+
+            // Effettua l'update
+            this._plateMenuItemsService.update(updatedPlateMenuItem).subscribe({
+              next: () => {
+                updatedCount++;
+                
+                // Aggiorna la vista
+                const pkmiRowIndex = this.pkmiRows.findIndex(row => row.id === plateMenuItem.id);
+                if (pkmiRowIndex > -1) {
+                  if (this.batchEditData.status) {
+                    this.pkmiRows[pkmiRowIndex].status = this.batchEditData.status;
+                  }
+                  if (this.batchEditData.plate) {
+                    this.pkmiRows[pkmiRowIndex].plate = this.batchEditData.plate;
+                  }
+                  if (this.batchEditData.takeAway !== null) {
+                    this.pkmiRows[pkmiRowIndex].takeAway = this.batchEditData.takeAway;
+                  }
+                  if (this.batchEditData.orderNotes) {
+                    this.pkmiRows[pkmiRowIndex].orderNotes = this.batchEditData.orderNotes;
+                  }
+                }
+
+                // Aggiorna anche l'array principale
+                const mainIndex = this.plateMenuItems.findIndex(item => item.id === plateMenuItem.id);
+                if (mainIndex > -1) {
+                  this.plateMenuItems[mainIndex] = updatedPlateMenuItem;
+                }
+
+                // Se è l'ultimo elemento, mostra il messaggio di successo
+                if (index === this.selectedPlateMenuItems.length - 1) {
+                  this.loading = false;
+                  this._messageService.add({
+                    severity: 'success',
+                    summary: 'Successo',
+                    detail: `${updatedCount} ordini aggiornati correttamente${errorCount > 0 ? `, ${errorCount} errori` : ''}`,
+                    life: 4000
+                  });
+                  this.selectedPlateMenuItems = [];
+                  this.closeBatchEditDialog();
+                }
+              },
+              error: (error: HttpErrorResponse) => {
+                errorCount++;
+                
+                if (index === this.selectedPlateMenuItems.length - 1) {
+                  this.loading = false;
+                  this._messageService.add({
+                    severity: errorCount === this.selectedPlateMenuItems.length ? 'error' : 'warn',
+                    summary: errorCount === this.selectedPlateMenuItems.length ? 'Errore' : 'Parzialmente Completato',
+                    detail: `${updatedCount} ordini aggiornati, ${errorCount} errori`,
+                    life: 4000
+                  });
+                  this.selectedPlateMenuItems = [];
+                  this.closeBatchEditDialog();
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  private _loadSettingsFromLocalStorage(): void {
+    const savedShowNotify = localStorage.getItem('plates_showNotify');
+    if (savedShowNotify !== null) {
+      this.showNotify = savedShowNotify === 'true';
+    }
+  }
+
+  onShowNotifyChange(): void {
+    localStorage.setItem('plates_showNotify', this.showNotify.toString());
   }
 
 }

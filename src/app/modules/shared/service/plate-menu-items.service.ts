@@ -26,7 +26,7 @@ export class PlateMenuItemsService extends RequestService implements CRUDService
     let uri: string = this._getUrl()
       + `?statuses=${completed ? 'DONE,CANCELLED' : 'TODO,PROGRESS'}`
       + `&offset=${event?.first ?? 0}`
-      + `&size=${event?.rows ?? 10}`;
+      + `&size=${event?.rows ?? 1000}`; // Carica tutti gli ordini per paginazione client-side
 
     if (event?.filters?.tableNumber?.[0]?.value != undefined) {
       uri = uri + `&tableNumber=${event.filters.tableNumber[0].value}`

@@ -11,11 +11,23 @@ import {MessageService} from "primeng/api";
 import {ItemsOverlayComponentModule} from "./items-overlay/items-overlay.component";
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
+import { PlatesSummaryComponent } from './plates-summary/plates-summary.component';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
+import { CalendarModule } from 'primeng/calendar';
+import { ChartModule } from 'primeng/chart';
+import { PlateMenuItemsService } from '../shared/service/plate-menu-items.service';
 
 const routes: Routes = [
   {
     path: '',
     component: PlatesComponent
+  },
+  {
+    path: 'summary',
+    component: PlatesSummaryComponent
   },
   {
     path: ':id',
@@ -26,7 +38,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     PlatePageComponent,
-    PlatesComponent
+    PlatesComponent,
+    PlatesSummaryComponent
   ],
   imports: [
     CommonModule,
@@ -37,9 +50,15 @@ const routes: Routes = [
     ItemsOverlayComponentModule,
     ToastModule,
     InputSwitchModule,
-    FormsModule
+    FormsModule,
+    TableModule,
+    TagModule,
+    ButtonModule,
+    TooltipModule,
+    CalendarModule,
+    ChartModule
   ],
-  providers: [MessageService]
+  providers: [MessageService, PlateMenuItemsService]
 })
 export class PlatesModule {
 }
