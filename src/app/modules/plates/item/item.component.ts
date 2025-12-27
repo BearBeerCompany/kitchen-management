@@ -20,6 +20,7 @@ export class ItemComponent implements OnInit {
   @Input() public plateList: Plate[] = [];
   @Input() public readonly: boolean = false;
   @Input() public showDelay: boolean = true; // default true per vista espansa
+  @Input() public currentPlate?: Plate; // Configurazione della piastra corrente
 
   @Output() public onDoneEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
   @Output() public onCancelEvent: EventEmitter<ItemEvent> = new EventEmitter<ItemEvent>(false);
@@ -94,11 +95,38 @@ export class ItemComponent implements OnInit {
     const event: ItemEvent = {
       action: PlateItemStatus.Moved,
       item: this.config,
-      nextId: plate.id
+      nextId: plate.id,
+      plateId: '' // Sarà impostato dal componente parent
     } as ItemEvent;
 
     this.onCancelEvent.emit(event);
     this.toggleOverlay();
+  }
+
+  public onQuickMove(): void {
+    if (!this.currentPlate?.quickMoveEnabled || !this.currentPlate?.quickMoveTargetPlateId) {
+      return;
+    }
+
+    const targetPlate = this.plateList.find(p => p.id === this.currentPlate?.quickMoveTargetPlateId);
+    if (targetPlate) {
+      const event: ItemEvent = {
+        action: PlateItemStatus.Moved,
+        item: this.config,
+        nextId: targetPlate.id,
+        plateId: '' // Sarà impostato dal componente parent
+      } as ItemEvent;
+      
+      this.onCancelEvent.emit(event);
+    }
+  }
+
+  public getTargetPlateName(): string {
+    if (!this.currentPlate?.quickMoveTargetPlateId) {
+      return '';
+    }
+    const targetPlate = this.plateList.find(p => p.id === this.currentPlate?.quickMoveTargetPlateId);
+    return targetPlate?.name || '';
   }
 
   public getNotes(config: PlateMenuItem): string {

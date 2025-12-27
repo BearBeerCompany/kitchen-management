@@ -192,9 +192,9 @@
             </td>
             <td>
               <div class="availability-cell">
-                <span class="availability-text">{{ plate.slot[0] }}/{{ plate.slot[1] }}</span>
+                <span class="availability-text">{{ getPlateSlotDisplay(plate) }}</span>
                 <p-progressBar 
-                  [value]="(plate.slot[0] / plate.slot[1]) * 100" 
+                  [value]="getPlateSlotPercentage(plate)" 
                   [showValue]="false"
                   [style]="{ height: '6px' }">
                 </p-progressBar>
@@ -330,6 +330,42 @@
       <small class="field-hint">
         Numero identificativo della piastra (0-200)
       </small>
+    </div>
+
+    <div class="form-field">
+      <label for="quickMoveEnabled">
+        <i class="pi pi-arrow-right"></i>
+        Spostamento Rapido
+      </label>
+      <div class="quick-move-container">
+        <div class="quick-move-toggle">
+          <p-inputSwitch 
+            id="quickMoveEnabled" 
+            formControlName="quickMoveEnabled">
+          </p-inputSwitch>
+          <span class="toggle-label">Abilita pulsante spostamento rapido</span>
+        </div>
+        <small class="field-hint">
+          Mostra un pulsante nella vista espansa per spostare rapidamente gli item in un'altra piastra
+        </small>
+        
+        <div class="target-plate-select" *ngIf="form?.get('quickMoveEnabled')?.value">
+          <label for="quickMoveTargetPlateId">Piastra di Destinazione</label>
+          <p-dropdown 
+            id="quickMoveTargetPlateId"
+            formControlName="quickMoveTargetPlateId"
+            [options]="getAvailablePlates()"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Seleziona una piastra"
+            [showClear]="false"
+            appendTo="body">
+          </p-dropdown>
+          <small class="field-hint">
+            Scegli la piastra dove verranno spostati gli item con il pulsante rapido
+          </small>
+        </div>
+      </div>
     </div>
   </form>
   

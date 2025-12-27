@@ -36,4 +36,6 @@ export interface Plate {
   viewMode?: 'rows' | 'columns';
   _severity?: string;
   _status?: string;
+  quickMoveEnabled?: boolean;
+  quickMoveTargetPlateId?: string;
 }
