@@ -411,6 +411,69 @@ body {
     border-radius: $input-border-radius;
   }
 
+  // Improved InputNumber with compact buttons - Stacked layout
+  .p-inputnumber.p-inputnumber-buttons-stacked {
+    .p-inputnumber-button-group {
+      width: 2.5rem !important;
+    }
+    
+    .p-inputnumber-button {
+      padding: 0 !important;
+      height: 50% !important;
+      border-radius: 0 !important;
+      
+      &.p-inputnumber-button-up {
+        border-top-right-radius: $input-border-radius !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      }
+      
+      &.p-inputnumber-button-down {
+        border-bottom-right-radius: $input-border-radius !important;
+      }
+      
+      .p-button-icon {
+        font-size: 0.875rem !important;
+      }
+    }
+    
+    .p-inputnumber-input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  // Improved InputNumber with compact buttons - Horizontal layout
+  .p-inputnumber.p-inputnumber-buttons-horizontal {
+    .p-inputnumber-button {
+      width: 2.5rem !important;
+      padding: 0 !important;
+      
+      &.p-inputnumber-button-up {
+        border-top-right-radius: $input-border-radius !important;
+        border-bottom-right-radius: $input-border-radius !important;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+      }
+      
+      &.p-inputnumber-button-down {
+        border-top-left-radius: $input-border-radius !important;
+        border-bottom-left-radius: $input-border-radius !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+      }
+      
+      .p-button-icon {
+        font-size: 0.875rem !important;
+      }
+    }
+    
+    .p-inputnumber-input {
+      border-radius: 0 !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+  }
+
   // Modern Dropdown Styling
   .p-dropdown {
     border: 1px solid $input-border-color;
