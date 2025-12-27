@@ -84,8 +84,21 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     return this._delayThresholdsService.getThresholds().danger;
   }
 
+  // Auto-refresh settings
+  public autoRefreshEnabled: boolean = false;
+  public autoRefreshInterval: number = 30000; // default 30 secondi
+  public refreshIntervalOptions = [
+    { label: '10 secondi', value: 10000 },
+    { label: '30 secondi', value: 30000 },
+    { label: '1 minuto', value: 60000 },
+    { label: '2 minuti', value: 120000 },
+    { label: '5 minuti', value: 300000 }
+  ];
+
   private _updateInterval: any;
+  private _autoRefreshInterval: any;
   private _subscriptions: Subscription = new Subscription();
+  private readonly AUTO_REFRESH_STORAGE_KEY = 'summary_auto_refresh_settings';
 
   constructor(
     private _plateService: PlateService,
@@ -98,6 +111,9 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _themeService: ThemeService
   ) {
     this.i18n = _i18nService.instance;
+    
+    // Load auto-refresh settings from localStorage
+    this._loadAutoRefreshSettings();
     
     // Initialize chart options based on current theme
     this._initChartOptions();
@@ -145,16 +161,14 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     // Carica analisi ordini di oggi
     this.loadOrderAnalysis(new Date(), new Date());
     
-    // Aggiorna ogni 30 secondi
-    this._updateInterval = setInterval(() => {
-      this.loadData();
-    }, 30000);
+    // Avvia auto-refresh se abilitato
+    if (this.autoRefreshEnabled) {
+      this._startAutoRefresh();
+    }
   }
 
   ngOnDestroy(): void {
-    if (this._updateInterval) {
-      clearInterval(this._updateInterval);
-    }
+    this._stopAutoRefresh();
     this._subscriptions.unsubscribe();
   }
 
@@ -368,6 +382,78 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadData();
+  }
+
+  onAutoRefreshChange(): void {
+    this._saveAutoRefreshSettings();
+    
+    if (this.autoRefreshEnabled) {
+      this._startAutoRefresh();
+      this._messageService.add({
+        severity: 'success',
+        summary: 'Auto-refresh Attivato',
+        detail: `Aggiornamento automatico ogni ${this.autoRefreshInterval / 1000} secondi`,
+        life: 3000
+      });
+    } else {
+      this._stopAutoRefresh();
+      this._messageService.add({
+        severity: 'info',
+        summary: 'Auto-refresh Disattivato',
+        detail: 'Aggiornamento automatico disabilitato',
+        life: 3000
+      });
+    }
+  }
+
+  onIntervalChange(): void {
+    this._saveAutoRefreshSettings();
+    
+    if (this.autoRefreshEnabled) {
+      this._stopAutoRefresh();
+      this._startAutoRefresh();
+      this._messageService.add({
+        severity: 'info',
+        summary: 'Intervallo Aggiornato',
+        detail: `Aggiornamento ogni ${this.autoRefreshInterval / 1000} secondi`,
+        life: 3000
+      });
+    }
+  }
+
+  private _startAutoRefresh(): void {
+    this._stopAutoRefresh();
+    this._autoRefreshInterval = setInterval(() => {
+      this.loadData();
+    }, this.autoRefreshInterval);
+  }
+
+  private _stopAutoRefresh(): void {
+    if (this._autoRefreshInterval) {
+      clearInterval(this._autoRefreshInterval);
+      this._autoRefreshInterval = null;
+    }
+  }
+
+  private _loadAutoRefreshSettings(): void {
+    const savedSettings = localStorage.getItem(this.AUTO_REFRESH_STORAGE_KEY);
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        this.autoRefreshEnabled = settings.enabled || false;
+        this.autoRefreshInterval = settings.interval || 30000;
+      } catch (e) {
+        console.error('Error loading auto-refresh settings:', e);
+      }
+    }
+  }
+
+  private _saveAutoRefreshSettings(): void {
+    const settings = {
+      enabled: this.autoRefreshEnabled,
+      interval: this.autoRefreshInterval
+    };
+    localStorage.setItem(this.AUTO_REFRESH_STORAGE_KEY, JSON.stringify(settings));
   }
 
   private generatePlateCharts(): void {

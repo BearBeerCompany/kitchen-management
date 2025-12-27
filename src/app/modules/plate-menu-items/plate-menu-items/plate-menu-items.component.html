@@ -229,34 +229,13 @@
         </span>
       </td>
       <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <input pInputText type="number" [(ngModel)]="plateMenuItem.orderNumber">
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem?.orderNumber}}
-          </ng-template>
-        </p-cellEditor>
+        {{plateMenuItem?.orderNumber}}
       </td>
       <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="plateMenuItem.tableNumber">
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem?.tableNumber}}
-          </ng-template>
-        </p-cellEditor>
+        {{plateMenuItem?.tableNumber}}
       </td>
       <td>
-        <p-cellEditor>
-          <ng-template pTemplate="input">
-            <input pInputText type="text" [(ngModel)]="plateMenuItem.clientName">
-          </ng-template>
-          <ng-template pTemplate="output">
-            {{plateMenuItem?.clientName}}
-          </ng-template>
-        </p-cellEditor>
+        {{plateMenuItem?.clientName}}
       </td>
       <td>
         <span class="p-column-title">Date</span>
@@ -302,6 +281,7 @@
                         [(ngModel)]="plateMenuItem.takeAway" 
                         optionLabel="label"
                         optionValue="value"
+                        dataKey="code"
                         [style]="{'width':'100%'}"
                         appendTo="body"
                         [panelStyle]="{'max-height': '250px'}"

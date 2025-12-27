@@ -33,6 +33,30 @@
   .header-actions {
     display: flex;
     gap: 0.5rem;
+    align-items: center;
+
+    .auto-refresh-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 1rem;
+      background: var(--theme-surface);
+      border-radius: 8px;
+      border: 1px solid var(--theme-border);
+
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--theme-text-primary);
+        white-space: nowrap;
+      }
+
+      ::ng-deep .p-dropdown {
+        .p-dropdown-label {
+          font-size: 0.85rem;
+        }
+      }
+    }
   }
 }
 
