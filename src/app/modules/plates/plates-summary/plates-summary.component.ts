@@ -10,6 +10,7 @@ import {StatsService} from '../../shared/service/stats.service';
 import {Stats, StatsChart} from '../../shared/interface/stats.interface';
 import {MessageService} from 'primeng/api';
 import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
+import {ThemeService} from '../../../services/theme.service';
 
 interface PlateStats {
   plate: Plate;
@@ -93,61 +94,24 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _delayThresholdsService: DelayThresholdsService,
     private _statsService: StatsService,
     private _messageService: MessageService,
-    private _plateMenuItemsService: PlateMenuItemsService
+    private _plateMenuItemsService: PlateMenuItemsService,
+    private _themeService: ThemeService
   ) {
     this.i18n = _i18nService.instance;
     
-    // Opzioni comuni per i grafici
-    this.chartOptions = {
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 15,
-            font: {
-              size: 12
-            }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
-          titleFont: {
-            size: 14
-          },
-          bodyFont: {
-            size: 13
-          }
+    // Initialize chart options based on current theme
+    this._initChartOptions();
+    
+    // Subscribe to theme changes
+    this._subscriptions.add(
+      this._themeService.currentTheme$.subscribe(() => {
+        this._initChartOptions();
+        // Reload chart data to apply new theme colors
+        if (this.platesStats.length > 0) {
+          this.generatePlateCharts();
         }
-      },
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 1,
-            font: {
-              size: 11
-            }
-          },
-          grid: {
-            color: 'rgba(0, 0, 0, 0.05)'
-          }
-        },
-        x: {
-          ticks: {
-            font: {
-              size: 11
-            }
-          },
-          grid: {
-            display: false
-          }
-        }
-      }
-    };
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -192,6 +156,69 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       clearInterval(this._updateInterval);
     }
     this._subscriptions.unsubscribe();
+  }
+
+  private _initChartOptions(): void {
+    const isDark = this._themeService.getCurrentTheme() === 'dark';
+    const textColor = isDark ? '#e2e8f0' : '#1f2937';
+    const gridColor = isDark ? 'rgba(226, 232, 240, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+    const tooltipBg = isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.8)';
+    
+    this.chartOptions = {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            },
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          padding: 12,
+          titleFont: {
+            size: 14
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 11
+            },
+            color: textColor
+          },
+          grid: {
+            color: gridColor
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            },
+            color: textColor
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    };
   }
 
   loadData(): void {

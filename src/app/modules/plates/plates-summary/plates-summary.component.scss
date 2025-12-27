@@ -6,7 +6,7 @@
   max-width: 1400px;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--theme-background);
 }
 
 .summary-header {
@@ -15,11 +15,11 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--theme-border);
 
   h2 {
     margin: 0;
-    color: #333;
+    color: var(--theme-text-primary);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   padding: 4rem;
-  color: #6c757d;
+  color: var(--theme-text-secondary);
 
   i {
     margin-bottom: 1rem;
@@ -62,7 +62,7 @@
 }
 
 .stat-card {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   display: flex;
@@ -114,19 +114,19 @@
       margin: 0;
       font-size: 1.8rem;
       font-weight: 700;
-      color: #333;
+      color: var(--theme-text-primary);
     }
 
     p {
       margin: 0.25rem 0 0 0;
       font-size: 0.9rem;
-      color: #6c757d;
+      color: var(--theme-text-secondary);
     }
   }
 }
 
 .plates-table-container {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -134,7 +134,7 @@
 
   h3 {
     margin: 0 0 1.5rem 0;
-    color: #333;
+    color: var(--theme-text-primary);
     font-size: 1.4rem;
   }
 
@@ -145,24 +145,24 @@
   }
 
   .no-delay {
-    color: #6c757d;
+    color: var(--theme-text-secondary);
     font-style: italic;
   }
 
   .time-badge {
     display: inline-block;
-    background-color: #f8f9fa;
+    background-color: var(--theme-surface);
     padding: 0.25rem 0.75rem;
     border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 500;
-    color: #495057;
+    color: var(--theme-text-primary);
   }
 
   .empty-message {
     text-align: center;
     padding: 3rem;
-    color: #6c757d;
+    color: var(--theme-text-secondary);
 
     i {
       font-size: 3rem;
@@ -179,14 +179,14 @@
 }
 
 .legend-container {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   h4 {
     margin: 0 0 1rem 0;
-    color: #333;
+    color: var(--theme-text-primary);
     font-size: 1.1rem;
   }
 
@@ -202,7 +202,7 @@
     gap: 0.75rem;
 
     span {
-      color: #6c757d;
+      color: var(--theme-text-secondary);
       font-size: 0.95rem;
     }
   }
@@ -223,7 +223,7 @@
 
 .kpi-card {
   flex: 1;
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -274,7 +274,7 @@
 
     h4 {
       margin: 0 0 0.5rem 0;
-      color: #6c757d;
+      color: var(--theme-text-secondary);
       font-size: 0.95rem;
       text-transform: uppercase;
       font-weight: 600;
@@ -289,7 +289,7 @@
 
     .kpi-details {
       margin: 0;
-      color: #999;
+      color: var(--theme-text-secondary);
       font-size: 0.85rem;
     }
   }
@@ -364,7 +364,7 @@
 }
 
 .chart-card {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -376,7 +376,7 @@
 
     h3 {
       margin: 0 0 0.5rem 0;
-      color: #333;
+      color: var(--theme-text-primary);
       font-size: 1.2rem;
       display: flex;
       align-items: center;
@@ -390,7 +390,7 @@
 
     p {
       margin: 0;
-      color: #6c757d;
+      color: var(--theme-text-secondary);
       font-size: 0.9rem;
     }
   }
@@ -433,7 +433,7 @@
       gap: 0.5rem;
 
       span {
-        color: #6c757d;
+        color: var(--theme-text-secondary);
         font-size: 0.85rem;
         white-space: nowrap;
       }
@@ -506,8 +506,8 @@
 :host ::ng-deep {
   .p-datatable {
     .p-datatable-thead > tr > th {
-      background-color: #f8f9fa;
-      color: #495057;
+      background-color: var(--theme-surface);
+      color: var(--theme-text-primary);
       font-weight: 600;
       text-transform: uppercase;
       font-size: 0.85rem;
@@ -520,7 +520,7 @@
     }
 
     .p-datatable-tbody > tr:hover {
-      background-color: #f8f9fa;
+      background-color: var(--theme-surface);
     }
   }
 
@@ -555,7 +555,7 @@
 
       h3 {
         margin: 0;
-        color: #2c3e50;
+        color: var(--theme-text-primary);
         font-size: 1.5rem;
         font-weight: 600;
       }
@@ -563,7 +563,7 @@
   }
 
   .date-filter-card {
-    background: white;
+    background: var(--theme-card-bg);
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -584,7 +584,7 @@
 
       span {
         font-size: 0.95rem;
-        color: #6b7280;
+        color: var(--theme-text-secondary);
         font-weight: 500;
       }
     }
@@ -605,7 +605,7 @@
           align-items: center;
           gap: 0.5rem;
           font-weight: 600;
-          color: #4b5563;
+          color: var(--theme-text-primary);
           font-size: 0.9rem;
 
           i {
@@ -657,7 +657,7 @@
   }
 
   .stats-results {
-    background: white;
+    background: var(--theme-card-bg);
     border-radius: 12px;
     padding: 2rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -695,7 +695,7 @@
 
           .label {
             font-size: 0.85rem;
-            color: #6b7280;
+            color: var(--theme-text-secondary);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -703,7 +703,7 @@
 
           .dates {
             font-size: 1.1rem;
-            color: #2c3e50;
+            color: var(--theme-text-primary);
             font-weight: 600;
             text-transform: capitalize;
           }

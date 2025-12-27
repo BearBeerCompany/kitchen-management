@@ -4,7 +4,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: #f8f9fa;
+  background: var(--theme-surface);
   padding: 1.5rem;
   gap: 1.5rem;
 }
@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--theme-card-bg);
   padding: 1.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -22,7 +22,7 @@
     margin: 0;
     font-size: 1.75rem;
     font-weight: 600;
-    color: #2c3e50;
+    color: var(--theme-text-primary);
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -35,7 +35,7 @@
 }
 
 .categories-tabs {
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 1rem;
@@ -51,7 +51,7 @@
     padding: 0.875rem 1.5rem;
     border: 2px solid var(--category-color, #e5e7eb);
     border-radius: 8px;
-    background: white;
+    background: var(--theme-card-bg);
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -70,12 +70,6 @@
       color: white;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px);
-
-      .category-name,
-      .category-description {
-        color: #202020 !important;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-      }
     }
 
     .category-name {
@@ -83,13 +77,13 @@
       font-size: 0.95rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #2c3e50;
+      color: var(--theme-text-primary);
       transition: color 0.2s ease;
     }
 
     .category-description {
       font-size: 0.8rem;
-      color: #6b7280;
+      color: var(--theme-text-secondary);
       text-transform: capitalize;
       transition: color 0.2s ease;
     }
@@ -105,7 +99,7 @@
 }
 
 .category-header {
-  background: white;
+  background: var(--theme-card-bg);
   padding: 1.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -135,13 +129,13 @@
         margin: 0 0 0.25rem 0;
         font-size: 1.25rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--theme-text-primary);
         text-transform: uppercase;
       }
 
       p {
         margin: 0;
-        color: #6b7280;
+        color: var(--theme-text-secondary);
         font-size: 0.9rem;
       }
     }
@@ -160,26 +154,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: var(--theme-card-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 3rem;
 
   i {
     font-size: 4rem;
-    color: #d1d5db;
+    color: var(--theme-text-disabled);
     margin-bottom: 1rem;
   }
 
   h3 {
     margin: 0 0 0.5rem 0;
     font-size: 1.5rem;
-    color: #6b7280;
+    color: var(--theme-text-secondary);
   }
 
   p {
     margin: 0;
-    color: #9ca3af;
+    color: var(--theme-text-secondary);
     font-size: 0.95rem;
   }
 }
@@ -193,7 +187,7 @@ form {
 
   label {
     font-weight: 600;
-    color: #4b5563;
+    color: var(--theme-text-primary);
     margin-bottom: 0.25rem;
     font-size: 0.9rem;
   }
@@ -233,7 +227,7 @@ form {
     text-transform: capitalize;
     font-size: 1rem;
     padding: 0.75rem 1rem;
-    background: #f3f4f6;
+    background: var(--theme-surface);
     border-radius: 6px;
     margin: 0.5rem 0;
 
@@ -252,7 +246,7 @@ form {
     flex-direction: column;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: #f8f9fa;
+    background: var(--theme-surface);
     border-radius: 12px;
     border: 1px solid #e5e7eb;
     margin: 0.5rem 0 1rem 0;
@@ -311,7 +305,7 @@ form {
           display: block;
           font-size: 0.85rem;
           font-weight: 600;
-          color: #6b7280;
+          color: var(--theme-text-secondary);
           margin-bottom: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -349,7 +343,7 @@ form {
             }
 
             &.selected {
-              border-color: #2c3e50;
+              border-color: var(--theme-text-primary);
               transform: scale(1.05);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
             }
@@ -366,7 +360,7 @@ form {
           display: block;
           font-size: 0.85rem;
           font-weight: 600;
-          color: #6b7280;
+          color: var(--theme-text-secondary);
           margin-bottom: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.5px;
