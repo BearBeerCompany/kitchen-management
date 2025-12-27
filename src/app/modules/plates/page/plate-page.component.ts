@@ -15,7 +15,12 @@ import {PlateQueueManagerService} from "../services/plate-queue-manager.service"
   template: `
     <p-toast></p-toast>
     <div class="page-container">
-      <plate [config]="config" [queue]="queue" [chunk]="10" [showItemDelays]="true"></plate>
+      <plate [config]="config" 
+             [queue]="queue" 
+             [chunk]="10" 
+             [showItemDelays]="true"
+             [plateList]="plateList"
+             (onItemEvent)="handleItemEvent($event)"></plate>
     </div>
   `,
   styles: [`
@@ -83,6 +88,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
   public config!: Plate;
   public queue: ReactiveQueue<PlateMenuItem> = new ReactiveQueue<PlateMenuItem>();
   public showNotify: boolean = false;
+  public plateList: Plate[] = [];
 
   private _subs: Subscription = new Subscription();
   private _id?: string;
@@ -105,6 +111,14 @@ export class PlatePageComponent implements OnInit, OnDestroy {
     if (appComponent)
       appComponent.style.minHeight = '100vh';
 
+    // Carica tutte le piastre per il menu di spostamento
+    this._subs.add(
+      this._plateService.getAll().subscribe((plates: Plate[]) => {
+        // Arricchisci le piastre con le configurazioni quickMove dal localStorage
+        this.plateList = plates.map(plate => this._enrichPlateWithQuickMoveSettings(plate));
+      })
+    );
+
     this._subs.add(this._route.params.subscribe(
       params => {
         this._id = params["id"];
@@ -113,7 +127,7 @@ export class PlatePageComponent implements OnInit, OnDestroy {
 
     this._subs.add(this._plateService.getById(this._id!)
       .subscribe((plate: Plate) => {
-        this.config = plate;
+        this.config = this._enrichPlateWithQuickMoveSettings(plate);
         this._plateService.getStatusById(this._id!).subscribe({
           next: (items: PlateMenuItem[]) => {
             this.queue.values = items;
@@ -147,10 +161,14 @@ export class PlatePageComponent implements OnInit, OnDestroy {
     this._subs.unsubscribe();
   }
 
+  public handleItemEvent(event: any): void {
+    this._plateQueueManagerService.onItemAction(event.plateId, event.item, event.action, event.nextId);
+  }
+
   private _refreshPlateQueue() {
     this._subs.add(
       this._plateService.getById(this.config.id!).subscribe(plate => {
-        this.config = {...config, ...plate};
+        this.config = {...config, ...this._enrichPlateWithQuickMoveSettings(plate)};
         // refresh plate queue
         this._plateService.getStatusById(this.config.id!).subscribe(items => {
           this.queue.values = items;
@@ -158,6 +176,25 @@ export class PlatePageComponent implements OnInit, OnDestroy {
         })
       })
     );
+  }
+
+  private _enrichPlateWithQuickMoveSettings(plate: Plate): Plate {
+    if (!plate.id) return plate;
+    
+    const saved = localStorage.getItem(`plate_quickMove_${plate.id}`);
+    if (saved) {
+      try {
+        const settings = JSON.parse(saved);
+        return {
+          ...plate,
+          quickMoveEnabled: settings.enabled,
+          quickMoveTargetPlateId: settings.targetPlateId
+        };
+      } catch (e) {
+        return plate;
+      }
+    }
+    return plate;
   }
 
 }

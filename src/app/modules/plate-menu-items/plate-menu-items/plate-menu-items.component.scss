@@ -40,13 +40,13 @@
       margin: 0;
       font-size: 1.5rem;
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--theme-text-primary);
     }
 
     .header-subtitle {
       margin: 0.2rem 0 0 0;
       font-size: 0.85rem;
-      color: #6b7280;
+      color: var(--theme-text-secondary);
     }
   }
 
@@ -82,12 +82,12 @@
         .value {
           font-size: 1.25rem;
           font-weight: 700;
-          color: #2c3e50;
+          color: var(--theme-text-primary);
         }
 
         .label {
           font-size: 0.7rem;
-          color: #6b7280;
+          color: var(--theme-text-secondary);
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -111,7 +111,7 @@
         gap: 0.5rem;
         font-size: 0.9rem;
         font-weight: 600;
-        color: #4b5563;
+        color: var(--theme-text-primary);
         cursor: help;
 
         i {
