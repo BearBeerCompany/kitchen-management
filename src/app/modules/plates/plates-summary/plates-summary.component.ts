@@ -244,23 +244,18 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       
       const enabledPlates = plates.filter(p => p.id && p.enabled);
       
-      // Verifica che tutte le code siano inizializzate
-      const allQueuesReady = enabledPlates.every(plate => 
-        this._plateQueueManager.getQueue(plate.id!)
-      );
-      
-      if (!allQueuesReady) {
-        // Se le code non sono pronte, ricaricale
-        this._plateQueueManager.load(plates).subscribe(() => {
-          this.processPlatesData(enabledPlates, totalDelays);
-        });
-      } else {
+      // Ricarica sempre le code per avere dati aggiornati
+      this._plateQueueManager.load(plates).subscribe(() => {
         this.processPlatesData(enabledPlates, totalDelays);
-      }
+      });
     });
   }
 
   private processPlatesData(plates: Plate[], totalDelays: number[]): void {
+    // Svuota gli array prima di ripopolarli
+    this.platesStats = [];
+    totalDelays.length = 0;
+    
     plates.forEach(plate => {
       if (plate.id) {
         const queue = this._plateQueueManager.getQueue(plate.id);
