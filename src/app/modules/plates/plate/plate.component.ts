@@ -426,6 +426,30 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
       return `${mins}min`;
     }
   }
+
+  /**
+   * Calcola se il colore di background è scuro usando la formula della luminosità relativa
+   * @param color - Il colore in formato hex (es: #FF5733)
+   * @returns true se il colore è scuro, false altrimenti
+   */
+  public isColorDark(color: string | undefined): boolean {
+    if (!color) return false;
+    
+    // Rimuove il # se presente
+    const hex = color.replace('#', '');
+    
+    // Converte in RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Calcola la luminosità relativa usando la formula standard
+    // https://www.w3.org/TR/WCAG20/#relativeluminancedef
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Se la luminosità è minore di 0.5, il colore è scuro
+    return luminance < 0.5;
+  }
 }
 
 @NgModule({

@@ -8,7 +8,7 @@
     </button>
   </section>
   <section *ngSwitchCase="plateMode.On" class="on">
-    <header [style.backgroundColor]="config.color!" [class.expanded]="!showExpand">
+    <header [style.backgroundColor]="config.color!" [class.expanded]="!showExpand" [class.dark-bg]="isColorDark(config.color)">
       <div class="header-content">
         <h3>{{config.name}}</h3>
         <div class="header-badges">
