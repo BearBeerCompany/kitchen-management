@@ -5,6 +5,24 @@
       Riepilogo Piastre e Tempi
     </h2>
     <div class="header-actions">
+      <div class="auto-refresh-controls">
+        <p-inputSwitch [(ngModel)]="autoRefreshEnabled" 
+                       (onChange)="onAutoRefreshChange()"
+                       pTooltip="Abilita aggiornamento automatico"
+                       tooltipPosition="bottom">
+        </p-inputSwitch>
+        <label>Auto-refresh</label>
+        <p-dropdown *ngIf="autoRefreshEnabled"
+                    [(ngModel)]="autoRefreshInterval"
+                    [options]="refreshIntervalOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    (onChange)="onIntervalChange()"
+                    [style]="{'width': '120px'}"
+                    pTooltip="Intervallo di aggiornamento"
+                    tooltipPosition="bottom">
+        </p-dropdown>
+      </div>
       <button pButton pRipple 
               icon="pi pi-refresh" 
               label="Aggiorna" 
@@ -51,7 +69,7 @@
 
       <div class="stat-card">
         <div class="stat-icon warning">
-          <i class="pi pi-fire"></i>
+          <i class="pi pi-inbox"></i>
         </div>
         <div class="stat-content">
           <h3>{{globalStats.activePlates}}/{{globalStats.totalPlates}}</h3>

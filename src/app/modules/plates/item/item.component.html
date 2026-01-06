@@ -41,6 +41,17 @@
             pRipple></button>
     <ng-container *ngIf="deleteOverlay" [ngTemplateOutlet]="overlay"></ng-container>
   </span>
+  
+  <!-- Pulsante spostamento rapido per vista espansa -->
+  <span class="item_quick_move" *ngIf="readonly && currentPlate?.quickMoveEnabled && currentPlate?.quickMoveTargetPlateId">
+    <button (click)="onQuickMove()"
+            class="p-button-rounded p-button-text p-button-warning quick-move-button"
+            icon="pi pi-arrow-right"
+            [pTooltip]="'Sposta in ' + getTargetPlateName()"
+            tooltipPosition="top"
+            pButton
+            pRipple></button>
+  </span>
 </div>
 <ng-template #overlay>
   <div class="delete-options__container">

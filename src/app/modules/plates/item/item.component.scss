@@ -232,6 +232,28 @@
     .item_actions {
       display: none; // Nessuna azione su monitor sospeso
     }
+
+    // Pulsante spostamento rapido per vista espansa
+    .item_quick_move {
+      position: absolute;
+      bottom: $spacing-md;
+      right: $spacing-lg;
+      
+      .quick-move-button {
+        width: 56px;
+        height: 56px;
+        
+        ::ng-deep .pi {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+      }
+    }
   }
 }
 

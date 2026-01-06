@@ -10,6 +10,7 @@ import {StatsService} from '../../shared/service/stats.service';
 import {Stats, StatsChart} from '../../shared/interface/stats.interface';
 import {MessageService} from 'primeng/api';
 import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
+import {ThemeService} from '../../../services/theme.service';
 
 interface PlateStats {
   plate: Plate;
@@ -83,8 +84,21 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     return this._delayThresholdsService.getThresholds().danger;
   }
 
+  // Auto-refresh settings
+  public autoRefreshEnabled: boolean = false;
+  public autoRefreshInterval: number = 30000; // default 30 secondi
+  public refreshIntervalOptions = [
+    { label: '10 secondi', value: 10000 },
+    { label: '30 secondi', value: 30000 },
+    { label: '1 minuto', value: 60000 },
+    { label: '2 minuti', value: 120000 },
+    { label: '5 minuti', value: 300000 }
+  ];
+
   private _updateInterval: any;
+  private _autoRefreshInterval: any;
   private _subscriptions: Subscription = new Subscription();
+  private readonly AUTO_REFRESH_STORAGE_KEY = 'summary_auto_refresh_settings';
 
   constructor(
     private _plateService: PlateService,
@@ -93,61 +107,27 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _delayThresholdsService: DelayThresholdsService,
     private _statsService: StatsService,
     private _messageService: MessageService,
-    private _plateMenuItemsService: PlateMenuItemsService
+    private _plateMenuItemsService: PlateMenuItemsService,
+    private _themeService: ThemeService
   ) {
     this.i18n = _i18nService.instance;
     
-    // Opzioni comuni per i grafici
-    this.chartOptions = {
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            padding: 15,
-            font: {
-              size: 12
-            }
-          }
-        },
-        tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
-          titleFont: {
-            size: 14
-          },
-          bodyFont: {
-            size: 13
-          }
+    // Load auto-refresh settings from localStorage
+    this._loadAutoRefreshSettings();
+    
+    // Initialize chart options based on current theme
+    this._initChartOptions();
+    
+    // Subscribe to theme changes
+    this._subscriptions.add(
+      this._themeService.currentTheme$.subscribe(() => {
+        this._initChartOptions();
+        // Reload chart data to apply new theme colors
+        if (this.platesStats.length > 0) {
+          this.generatePlateCharts();
         }
-      },
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 1,
-            font: {
-              size: 11
-            }
-          },
-          grid: {
-            color: 'rgba(0, 0, 0, 0.05)'
-          }
-        },
-        x: {
-          ticks: {
-            font: {
-              size: 11
-            }
-          },
-          grid: {
-            display: false
-          }
-        }
-      }
-    };
+      })
+    );
   }
 
   ngOnInit(): void {
@@ -181,17 +161,78 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     // Carica analisi ordini di oggi
     this.loadOrderAnalysis(new Date(), new Date());
     
-    // Aggiorna ogni 30 secondi
-    this._updateInterval = setInterval(() => {
-      this.loadData();
-    }, 30000);
+    // Avvia auto-refresh se abilitato
+    if (this.autoRefreshEnabled) {
+      this._startAutoRefresh();
+    }
   }
 
   ngOnDestroy(): void {
-    if (this._updateInterval) {
-      clearInterval(this._updateInterval);
-    }
+    this._stopAutoRefresh();
     this._subscriptions.unsubscribe();
+  }
+
+  private _initChartOptions(): void {
+    const isDark = this._themeService.getCurrentTheme() === 'dark';
+    const textColor = isDark ? '#e2e8f0' : '#1f2937';
+    const gridColor = isDark ? 'rgba(226, 232, 240, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+    const tooltipBg = isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.8)';
+    
+    this.chartOptions = {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            },
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          padding: 12,
+          titleFont: {
+            size: 14
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 11
+            },
+            color: textColor
+          },
+          grid: {
+            color: gridColor
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            },
+            color: textColor
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    };
   }
 
   loadData(): void {
@@ -203,23 +244,18 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       
       const enabledPlates = plates.filter(p => p.id && p.enabled);
       
-      // Verifica che tutte le code siano inizializzate
-      const allQueuesReady = enabledPlates.every(plate => 
-        this._plateQueueManager.getQueue(plate.id!)
-      );
-      
-      if (!allQueuesReady) {
-        // Se le code non sono pronte, ricaricale
-        this._plateQueueManager.load(plates).subscribe(() => {
-          this.processPlatesData(enabledPlates, totalDelays);
-        });
-      } else {
+      // Ricarica sempre le code per avere dati aggiornati
+      this._plateQueueManager.load(plates).subscribe(() => {
         this.processPlatesData(enabledPlates, totalDelays);
-      }
+      });
     });
   }
 
   private processPlatesData(plates: Plate[], totalDelays: number[]): void {
+    // Svuota gli array prima di ripopolarli
+    this.platesStats = [];
+    totalDelays.length = 0;
+    
     plates.forEach(plate => {
       if (plate.id) {
         const queue = this._plateQueueManager.getQueue(plate.id);
@@ -341,6 +377,78 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
   refreshData(): void {
     this.loadData();
+  }
+
+  onAutoRefreshChange(): void {
+    this._saveAutoRefreshSettings();
+    
+    if (this.autoRefreshEnabled) {
+      this._startAutoRefresh();
+      this._messageService.add({
+        severity: 'success',
+        summary: 'Auto-refresh Attivato',
+        detail: `Aggiornamento automatico ogni ${this.autoRefreshInterval / 1000} secondi`,
+        life: 3000
+      });
+    } else {
+      this._stopAutoRefresh();
+      this._messageService.add({
+        severity: 'info',
+        summary: 'Auto-refresh Disattivato',
+        detail: 'Aggiornamento automatico disabilitato',
+        life: 3000
+      });
+    }
+  }
+
+  onIntervalChange(): void {
+    this._saveAutoRefreshSettings();
+    
+    if (this.autoRefreshEnabled) {
+      this._stopAutoRefresh();
+      this._startAutoRefresh();
+      this._messageService.add({
+        severity: 'info',
+        summary: 'Intervallo Aggiornato',
+        detail: `Aggiornamento ogni ${this.autoRefreshInterval / 1000} secondi`,
+        life: 3000
+      });
+    }
+  }
+
+  private _startAutoRefresh(): void {
+    this._stopAutoRefresh();
+    this._autoRefreshInterval = setInterval(() => {
+      this.loadData();
+    }, this.autoRefreshInterval);
+  }
+
+  private _stopAutoRefresh(): void {
+    if (this._autoRefreshInterval) {
+      clearInterval(this._autoRefreshInterval);
+      this._autoRefreshInterval = null;
+    }
+  }
+
+  private _loadAutoRefreshSettings(): void {
+    const savedSettings = localStorage.getItem(this.AUTO_REFRESH_STORAGE_KEY);
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        this.autoRefreshEnabled = settings.enabled || false;
+        this.autoRefreshInterval = settings.interval || 30000;
+      } catch (e) {
+        console.error('Error loading auto-refresh settings:', e);
+      }
+    }
+  }
+
+  private _saveAutoRefreshSettings(): void {
+    const settings = {
+      enabled: this.autoRefreshEnabled,
+      interval: this.autoRefreshInterval
+    };
+    localStorage.setItem(this.AUTO_REFRESH_STORAGE_KEY, JSON.stringify(settings));
   }
 
   private generatePlateCharts(): void {

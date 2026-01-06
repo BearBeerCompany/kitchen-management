@@ -49,7 +49,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this._platesService.getAll().subscribe(plates => this.plates = plates);
+    this._platesService.getAll().subscribe(plates => {
+      // Debug: verifica valori slot dal backend
+      console.log('Plates data from backend:', plates);
+      plates.forEach(p => {
+        if (p.slot && p.slot[0] < 0) {
+          console.warn(`⚠️ Piastra "${p.name}" ha slot[0] negativo:`, p.slot[0]);
+        }
+      });
+      
+      this.plates = plates;
+    });
     this._loadSettingsFromLocalStorage();
     this.delayThresholds = this._delayThresholdsService.getThresholds();
     this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
@@ -57,7 +67,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
       color: new FormControl("", Validators.required),
-      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
+      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      quickMoveEnabled: new FormControl(false),
+      quickMoveTargetPlateId: new FormControl("")
     });
   }
 
@@ -89,15 +101,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
+    const plateId = this.selectedPlate?.id;
+    const quickMoveEnabled = this.form?.get("quickMoveEnabled")?.value;
+    const quickMoveTargetPlateId = this.form?.get("quickMoveTargetPlateId")?.value;
+
     if (this.isEditMode) {
       // Update existing plate
       this._platesService.update({
         ...this.form?.value,
         enabled: true,
         slot: [0, this.form?.get("number")?.value],
-        id: this.selectedPlate?.id
+        id: plateId
       }).subscribe(
         _ => {
+          // Salva quickMove settings in localStorage
+          this._saveQuickMoveSettings(plateId!, quickMoveEnabled, quickMoveTargetPlateId);
+          
           this._messageService.add({
             severity: 'success',
             summary: 'Piastra Modificata',
@@ -115,7 +134,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
         enabled: false,
         slot: [0, this.form?.get("number")?.value]
       }).subscribe(
-        _ => {
+        (createdPlate: Plate) => {
+          // Salva quickMove settings in localStorage
+          if (createdPlate.id) {
+            this._saveQuickMoveSettings(createdPlate.id, quickMoveEnabled, quickMoveTargetPlateId);
+          }
+          
           this._messageService.add({
             severity: 'success',
             summary: 'Piastra Creata',
@@ -140,7 +164,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
       color: new FormControl("#3b82f6", Validators.required),
-      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")])
+      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+      quickMoveEnabled: new FormControl(false),
+      quickMoveTargetPlateId: new FormControl("")
     });
     this.display = true;
   }
@@ -150,10 +176,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this._platesService.getById(id).subscribe(
       (plate: Plate) => {
         this.selectedPlate = plate;
+        
+        // Carica quickMove settings dal localStorage
+        const quickMoveSettings = this._loadQuickMoveSettings(id);
+        
         this.form = new FormGroup({
           name: new FormControl(plate.name, Validators.required),
           color: new FormControl(plate.color, Validators.required),
-          number: new FormControl(plate.slot![1], [Validators.required, Validators.pattern("^[0-9]*$")])
+          number: new FormControl(plate.slot![1], [Validators.required, Validators.pattern("^[0-9]*$")]),
+          quickMoveEnabled: new FormControl(quickMoveSettings.enabled),
+          quickMoveTargetPlateId: new FormControl(quickMoveSettings.targetPlateId)
         });
         this.display = true;
       }
@@ -257,6 +289,46 @@ export class SettingsComponent implements OnInit, OnDestroy {
       detail: 'Soglie ritardi ripristinate ai valori predefiniti',
       life: 2000
     });
+  }
+
+  public getAvailablePlates(): Plate[] {
+    return this.plates.filter(p => p.id !== this.selectedPlate?.id);
+  }
+
+  public getPlateSlotDisplay(plate: Plate): string {
+    if (!plate.slot) return '0/0';
+    // Mostra 0 invece di numeri negativi
+    const used = Math.max(0, plate.slot[0]);
+    const total = plate.slot[1];
+    return `${used}/${total}`;
+  }
+
+  public getPlateSlotPercentage(plate: Plate): number {
+    if (!plate.slot || plate.slot[1] === 0) return 0;
+    // Calcola la percentuale, gestendo negativi
+    const used = Math.max(0, plate.slot[0]);
+    const total = plate.slot[1];
+    return Math.min(100, (used / total) * 100);
+  }
+
+  private _saveQuickMoveSettings(plateId: string, enabled: boolean, targetPlateId: string): void {
+    const settings = {
+      enabled: enabled || false,
+      targetPlateId: targetPlateId || ''
+    };
+    localStorage.setItem(`plate_quickMove_${plateId}`, JSON.stringify(settings));
+  }
+
+  private _loadQuickMoveSettings(plateId: string): { enabled: boolean, targetPlateId: string } {
+    const saved = localStorage.getItem(`plate_quickMove_${plateId}`);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return { enabled: false, targetPlateId: '' };
+      }
+    }
+    return { enabled: false, targetPlateId: '' };
   }
 
 }

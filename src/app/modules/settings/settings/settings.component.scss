@@ -42,13 +42,13 @@
       margin: 0;
       font-size: 1.75rem;
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--theme-text-primary);
     }
 
     .header-subtitle {
       margin: 0.25rem 0 0 0;
       font-size: 0.9rem;
-      color: #6b7280;
+      color: var(--theme-text-secondary);
     }
   }
 }
@@ -93,13 +93,13 @@
         margin: 0;
         font-size: 1.25rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--theme-text-primary);
       }
 
       p {
         margin: 0.25rem 0 0 0;
         font-size: 0.85rem;
-        color: #6b7280;
+        color: var(--theme-text-secondary);
       }
     }
   }
@@ -112,28 +112,28 @@
       display: flex;
       gap: 1rem;
       padding: 1rem 1.25rem;
-      background: var(--theme-surface);
-      border: 1px solid var(--theme-border);
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       border-radius: 8px;
       margin-bottom: 1.5rem;
 
       > i {
         font-size: 1.5rem;
-        color: #3b82f6;
+        color: var(--warning-color, #f59e0b);
         flex-shrink: 0;
         margin-top: 0.1rem;
       }
 
       strong {
         display: block;
-        color: #1e40af;
+        color: var(--warning-color, #f59e0b);
         font-size: 0.95rem;
         margin-bottom: 0.25rem;
       }
 
       p {
         margin: 0;
-        color: #1e3a8a;
+        color: var(--theme-text-primary);
         font-size: 0.875rem;
         line-height: 1.5;
       }
@@ -179,7 +179,7 @@
           label {
             font-size: 1rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--theme-text-primary);
             margin: 0;
             cursor: pointer;
           }
@@ -187,7 +187,7 @@
 
         small {
           font-size: 0.875rem;
-          color: #6b7280;
+          color: var(--theme-text-secondary);
           line-height: 1.5;
           padding-left: 1.5rem;
         }
@@ -251,13 +251,13 @@
           label {
             font-size: 1rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--theme-text-primary);
             margin: 0;
           }
 
           small {
             font-size: 0.8rem;
-            color: #6b7280;
+            color: var(--theme-text-secondary);
             line-height: 1.4;
             margin-bottom: 0.5rem;
           }
@@ -314,6 +314,10 @@
       border: 2px solid rgba(255, 255, 255, 0.8);
     }
 
+    .plate-name {
+      color: var(--theme-text-primary);
+    }
+
     .plate-number-badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
@@ -357,7 +361,7 @@
 
       > i {
         font-size: 4rem;
-        color: #d1d5db;
+        color: var(--theme-text-disabled);
         margin-bottom: 1rem;
       }
 
@@ -365,13 +369,13 @@
         margin: 0 0 0.5rem 0;
         font-size: 1.25rem;
         font-weight: 600;
-        color: #4b5563;
+        color: var(--theme-text-primary);
       }
 
       p {
         margin: 0 0 1.5rem 0;
         font-size: 0.95rem;
-        color: #6b7280;
+        color: var(--theme-text-secondary);
         max-width: 400px;
       }
     }
@@ -523,6 +527,53 @@
         }
       }
     }
+  }
+}
+
+// Quick Move Settings
+.quick-move-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--theme-surface);
+  border-radius: 8px;
+  border: 1px solid var(--theme-border);
+
+  .quick-move-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .toggle-label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--theme-text-primary);
+    }
+  }
+
+  .target-plate-select {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--theme-border);
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--theme-text-primary);
+    }
+
+    ::ng-deep .p-dropdown {
+      width: 100%;
+    }
+  }
+
+  .field-hint {
+    font-size: 0.85rem;
+    color: var(--theme-text-secondary);
+    line-height: 1.4;
   }
 }
 
