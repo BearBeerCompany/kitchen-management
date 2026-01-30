@@ -155,17 +155,6 @@
     position: relative;
     background: white !important;
 
-    // Linea divisoria sempre presente
-    &::before {
-      content: '';
-      position: absolute;
-      left: $spacing-lg;
-      right: $spacing-lg;
-      top: calc(2.8em + #{$spacing-md} + #{$spacing-xs});
-      height: 2px;
-      background: #e5e7eb;
-    }
-
     .item_title {
       grid-column: 1;
       grid-row: 1;

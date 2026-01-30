@@ -1,0 +1,153 @@
+<p-toast></p-toast>
+
+<div class="config-container">
+  <!-- Header -->
+  <div class="config-header">
+    <button pButton 
+            pRipple
+            icon="pi pi-arrow-left" 
+            class="p-button-text"
+            (click)="goBack()">
+    </button>
+    <div class="header-title">
+      <i class="pi pi-link"></i>
+      <div>
+        <h2>Configurazione Coppie di Piastre</h2>
+        <p class="header-subtitle">Gestisci le coppie di piastre da visualizzare insieme</p>
+      </div>
+    </div>
+    <button pButton 
+            pRipple
+            label="Nuova Coppia" 
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="openAddDialog()">
+    </button>
+  </div>
+
+  <!-- Pairs List -->
+  <div class="pairs-list" *ngIf="pairs.length > 0">
+    <div class="pair-card" *ngFor="let pair of pairs">
+      <div class="pair-info">
+        <h3>{{ pair.name }}</h3>
+        <div class="plates-info">
+          <span class="plate-badge">
+            <i class="pi pi-inbox"></i>
+            {{ pair.plateName1 || pair.plateId1 }}
+          </span>
+          <i class="pi pi-plus"></i>
+          <span class="plate-badge">
+            <i class="pi pi-inbox"></i>
+            {{ pair.plateName2 || pair.plateId2 }}
+          </span>
+        </div>
+      </div>
+      <div class="pair-actions">
+        <button pButton 
+                pRipple
+                label="Apri" 
+                icon="pi pi-eye"
+                class="p-button-primary"
+                (click)="openPairView(pair.id)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-link"
+                class="p-button-text p-button-info"
+                pTooltip="Copia link condivisibile"
+                (click)="copyShareableLink(pair)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-text"
+                pTooltip="Modifica"
+                (click)="openEditDialog(pair)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-text p-button-danger"
+                pTooltip="Elimina"
+                (click)="deletePair(pair.id)">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="pairs.length === 0">
+    <i class="pi pi-link" style="font-size: 4rem; color: #ccc;"></i>
+    <h3>Nessuna coppia configurata</h3>
+    <p>Crea una nuova coppia di piastre da visualizzare insieme</p>
+    <button pButton 
+            pRipple
+            label="Crea Prima Coppia" 
+            icon="pi pi-plus"
+            (click)="openAddDialog()">
+    </button>
+  </div>
+</div>
+
+<!-- Add/Edit Dialog -->
+<p-dialog [(visible)]="showAddDialog" 
+          [header]="editingPair ? 'Modifica Coppia' : 'Nuova Coppia'"
+          [modal]="true"
+          [style]="{width: '500px'}"
+          [draggable]="false"
+          [resizable]="false">
+  <div class="dialog-content">
+    <div class="field">
+      <label for="pairName">Nome della Coppia</label>
+      <input id="pairName" 
+             type="text" 
+             pInputText 
+             [(ngModel)]="newPairName" 
+             placeholder="Es: Primi e Secondi"
+             class="w-full">
+    </div>
+
+    <div class="field">
+      <label for="plate1">Prima Piastra</label>
+      <p-dropdown id="plate1"
+                  [(ngModel)]="selectedPlate1"
+                  [options]="availablePlates"
+                  optionLabel="name"
+                  placeholder="Seleziona una piastra"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="w-full">
+      </p-dropdown>
+    </div>
+
+    <div class="field">
+      <label for="plate2">Seconda Piastra</label>
+      <p-dropdown id="plate2"
+                  [(ngModel)]="selectedPlate2"
+                  [options]="availablePlates"
+                  optionLabel="name"
+                  placeholder="Seleziona una piastra"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="w-full">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton 
+            pRipple
+            label="Annulla" 
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="closeDialog()">
+    </button>
+    <button pButton 
+            pRipple
+            label="Salva" 
+            icon="pi pi-check"
+            (click)="savePair()"
+            [disabled]="!newPairName || !selectedPlate1 || !selectedPlate2">
+    </button>
+  </ng-template>
+</p-dialog>

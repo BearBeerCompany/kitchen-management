@@ -13,6 +13,13 @@
   <div class="header-actions" *ngIf="!loading">
     <button pButton 
             pRipple
+            label="Coppie Piastre"
+            icon="pi pi-link"
+            class="p-button-secondary"
+            routerLink="/plates/pairs-config">
+    </button>
+    <button pButton 
+            pRipple
             [label]="'Ordini non assegnati' + (unassignedItems.length > 0 ? ' (' + unassignedItems.length + ')' : '')"
             [icon]="showOverlay ? 'pi pi-times' : 'pi pi-list'"
             [class]="showOverlay ? 'p-button-danger' : 'p-button-info'"

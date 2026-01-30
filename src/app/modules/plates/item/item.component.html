@@ -22,7 +22,7 @@
   <span class="item_order_exp" *ngIf="readonly">
     #{{config.orderNumber}} - T: {{config.tableNumber}}
   </span>
-  <span class="item_note" *ngIf="getNotes(config)">{{ getNotes(config) }}</span>
+  <span class="item_note">{{ getNotes(config) }}</span>
   <span class="item_actions" *ngIf="!readonly">
     <img src="assets/img/takeaway.png" 
          *ngIf="config.takeAway" 

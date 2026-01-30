@@ -199,6 +199,60 @@
   }
 }
 
+// Plate Pairs Quick Access
+.plate-pairs-quick-access {
+  max-width: 1200px;
+  margin: 0 auto $spacing-lg;
+  padding: $spacing-lg;
+  background: var(--theme-card-bg);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 2px solid var(--theme-border);
+
+  .quick-access-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+    color: var(--theme-text-primary);
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-lg;
+
+    i {
+      color: $primary-500;
+      font-size: 1.2rem;
+    }
+  }
+
+  .quick-access-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+
+    button {
+      transition: all $transition-base;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-md;
+    
+    .quick-access-buttons {
+      flex-direction: column;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
+
 // Plates Options Overlay (for unassigned items plate selection)
 .plates-options__container {
   position: absolute;
