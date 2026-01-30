@@ -9,6 +9,8 @@ import { GsgIntegrationService } from '../../shared/service/gsg-integration.serv
 import { GsgIntegrationResult } from '../../shared/interface/gsg-integration.interface';
 import { DelayThresholdsService, DelayThresholds } from '../../../services/delay-thresholds.service';
 import { ThemeService } from '../../../services/theme.service';
+import { PlatePairsService, PlatePair } from '../../plates/services/plate-pairs.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'settings',
@@ -29,6 +31,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
   public isDarkTheme: boolean = false;
 
+  // Plate Pairs
+  public platePairs: PlatePair[] = [];
+  public displayPairDialog: boolean = false;
+  public isEditPairMode: boolean = false;
+  public selectedPairId?: string;
+  public pairForm?: FormGroup;
+
   // Color Picker Palette
   public primaryColors: string[] = [
     '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', 
@@ -44,7 +53,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
               private _gsgIntegrationService: GsgIntegrationService,
               private _confirmationService: ConfirmationService,
               private _delayThresholdsService: DelayThresholdsService,
-              private _themeService: ThemeService) {
+              private _themeService: ThemeService,
+              private _platePairsService: PlatePairsService,
+              private _router: Router) {
     this.i18n = i18nService.instance;
   }
 
@@ -64,12 +75,25 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.delayThresholds = this._delayThresholdsService.getThresholds();
     this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
 
+    // Load plate pairs
+    this.subs.add(
+      this._platePairsService.pairs$.subscribe(pairs => {
+        this.platePairs = pairs;
+      })
+    );
+
     this.form = new FormGroup({
       name: new FormControl("", Validators.required),
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
       quickMoveEnabled: new FormControl(false),
       quickMoveTargetPlateId: new FormControl("")
+    });
+
+    this.pairForm = new FormGroup({
+      name: new FormControl("", Validators.required),
+      plateId1: new FormControl("", Validators.required),
+      plateId2: new FormControl("", Validators.required)
     });
   }
 
@@ -329,6 +353,104 @@ export class SettingsComponent implements OnInit, OnDestroy {
       }
     }
     return { enabled: false, targetPlateId: '' };
+  }
+
+  // ========================================
+  // Plate Pairs Methods
+  // ========================================
+
+  public showPairDialog(): void {
+    this.isEditPairMode = false;
+    this.selectedPairId = undefined;
+    this.pairForm?.reset();
+    this.displayPairDialog = true;
+  }
+
+  public showEditPairDialog(pair: PlatePair): void {
+    this.isEditPairMode = true;
+    this.selectedPairId = pair.id;
+    this.pairForm?.patchValue({
+      name: pair.name,
+      plateId1: pair.plateId1,
+      plateId2: pair.plateId2
+    });
+    this.displayPairDialog = true;
+  }
+
+  public savePair(): void {
+    if (!this.pairForm?.valid) return;
+
+    const formValue = this.pairForm.value;
+    const plate1 = this.plates.find(p => p.id === formValue.plateId1);
+    const plate2 = this.plates.find(p => p.id === formValue.plateId2);
+
+    if (!plate1 || !plate2) {
+      this._messageService.add({
+        severity: 'error',
+        summary: 'Errore',
+        detail: 'Selezionare entrambe le piastre'
+      });
+      return;
+    }
+
+    const pairData: Omit<PlatePair, 'id'> = {
+      name: formValue.name,
+      plateId1: formValue.plateId1,
+      plateId2: formValue.plateId2,
+      plateName1: plate1.name,
+      plateName2: plate2.name
+    };
+
+    if (this.isEditPairMode && this.selectedPairId) {
+      this._platePairsService.updatePair(this.selectedPairId, pairData);
+      this._messageService.add({
+        severity: 'success',
+        summary: 'Coppia Modificata',
+        detail: `La coppia "${formValue.name}" è stata modificata`
+      });
+    } else {
+      this._platePairsService.addPair(pairData);
+      this._messageService.add({
+        severity: 'success',
+        summary: 'Coppia Creata',
+        detail: `La coppia "${formValue.name}" è stata creata`
+      });
+    }
+
+    this.displayPairDialog = false;
+  }
+
+  public deletePair(pairId: string): void {
+    this._confirmationService.confirm({
+      message: 'Confermi di voler eliminare questa coppia di piastre?',
+      accept: () => {
+        this._platePairsService.deletePair(pairId);
+        this._messageService.add({
+          severity: 'success',
+          summary: 'Coppia Eliminata',
+          detail: 'La coppia è stata eliminata'
+        });
+      }
+    });
+  }
+
+  public openPairView(pairId: string): void {
+    window.open(`${window.location.origin}/#/plates/pair/${pairId}`, '_blank');
+  }
+
+  public copyPairLink(pairId: string): void {
+    const url = `${window.location.origin}/#/plates/pair/${pairId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      this._messageService.add({
+        severity: 'success',
+        summary: 'Link Copiato',
+        detail: 'Il link è stato copiato negli appunti'
+      });
+    });
+  }
+
+  public getEnabledPlates(): Plate[] {
+    return this.plates.filter(p => p.enabled);
   }
 
 }

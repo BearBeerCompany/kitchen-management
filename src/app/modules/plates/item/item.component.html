@@ -1,4 +1,7 @@
-<div class="item_container" [class.expanded]="readonly">
+<div class="item_container" 
+     [class.expanded]="readonly"
+     [class.delay-warning]="delaySeverity === 'warning'"
+     [class.delay-danger]="delaySeverity === 'danger'">
   <p-tag *ngIf="delayMinutes > 0 && showDelay"
          class="item-delay-badge"
          [severity]="delaySeverity"

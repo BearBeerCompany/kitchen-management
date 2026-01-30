@@ -24,6 +24,17 @@
 
   padding: $spacing-sm $spacing-md;
 
+  // Sfondi colorati sfumati per item in ritardo
+  &.delay-warning {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.03) 100%) !important;
+    border-left: 4px solid rgba(251, 191, 36, 0.6);
+  }
+
+  &.delay-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.04) 100%) !important;
+    border-left: 4px solid rgba(239, 68, 68, 0.7);
+  }
+
   .item-delay-badge {
     position: absolute;
     top: -8px;
@@ -154,6 +165,17 @@
     align-items: start;
     position: relative;
     background: white !important;
+
+    // Sfondi colorati sfumati per vista espansa
+    &.delay-warning {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%) !important;
+      border-left: 5px solid rgba(251, 191, 36, 0.7);
+    }
+
+    &.delay-danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(239, 68, 68, 0.06) 100%) !important;
+      border-left: 5px solid rgba(239, 68, 68, 0.8);
+    }
 
     .item_title {
       grid-column: 1;

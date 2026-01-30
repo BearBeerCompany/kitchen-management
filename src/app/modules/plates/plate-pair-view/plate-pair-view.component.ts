@@ -120,12 +120,9 @@ export class PlatePairViewComponent implements OnInit, OnDestroy {
 
   private _loadQueues(): void {
     if (this.plate1Config && this.plate2Config) {
-      console.log('[PlatePairView] Loading queues for plates:', this.plate1Config.id, this.plate2Config.id);
-      
       this._subs.add(
         this._plateService.getStatusById(this.plate1Config.id!).subscribe(
           (items: PlateMenuItem[]) => {
-            console.log('[PlatePairView] Loaded items for plate1:', this.plate1Config!.id, items.length, 'items');
             this.queue1.values = items;
             this.queue1.refresh();
           }
@@ -135,7 +132,6 @@ export class PlatePairViewComponent implements OnInit, OnDestroy {
       this._subs.add(
         this._plateService.getStatusById(this.plate2Config.id!).subscribe(
           (items: PlateMenuItem[]) => {
-            console.log('[PlatePairView] Loaded items for plate2:', this.plate2Config!.id, items.length, 'items');
             this.queue2.values = items;
             this.queue2.refresh();
           }
@@ -230,5 +226,11 @@ export class PlatePairViewComponent implements OnInit, OnDestroy {
       }
     }
     return plate;
+  }
+
+  public onPlateViewModeChange(viewMode: 'rows' | 'columns', plate: Plate): void {
+    if (plate.id) {
+      localStorage.setItem(`plate_viewMode_${plate.id}`, viewMode);
+    }
   }
 }

@@ -9,7 +9,8 @@
              [chunk]="10"
              [showItemDelays]="showItemDelays"
              [plateList]="getEnabledPlateList(plate1Config)"
-             (onItemEvent)="handleItemEvent($event)">
+             (onItemEvent)="handleItemEvent($event)"
+             (viewModeChange)="onPlateViewModeChange($event, plate1Config)">
       </plate>
     </div>
 
@@ -21,7 +22,8 @@
              [chunk]="10"
              [showItemDelays]="showItemDelays"
              [plateList]="getEnabledPlateList(plate2Config)"
-             (onItemEvent)="handleItemEvent($event)">
+             (onItemEvent)="handleItemEvent($event)"
+             (viewModeChange)="onPlateViewModeChange($event, plate2Config)">
       </plate>
     </div>
   </div>
