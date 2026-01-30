@@ -61,14 +61,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this._platesService.getAll().subscribe(plates => {
-      // Debug: verifica valori slot dal backend
-      console.log('Plates data from backend:', plates);
-      plates.forEach(p => {
-        if (p.slot && p.slot[0] < 0) {
-          console.warn(`⚠️ Piastra "${p.name}" ha slot[0] negativo:`, p.slot[0]);
-        }
-      });
-      
       this.plates = plates;
     });
     this._loadSettingsFromLocalStorage();
