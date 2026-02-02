@@ -30,6 +30,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public showItemDelays: boolean = false;
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
   public isDarkTheme: boolean = false;
+  public currentLanguage: 'it' | 'en' = 'it';
+  public availableLanguages: {code: 'it' | 'en', label: string, flag: string}[] = [];
 
   // Plate Pairs
   public platePairs: PlatePair[] = [];
@@ -66,6 +68,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this._loadSettingsFromLocalStorage();
     this.delayThresholds = this._delayThresholdsService.getThresholds();
     this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
+
+    // Load current language and available languages
+    this.availableLanguages = this.i18nService.getAvailableLanguages();
+    this.subs.add(
+      this.i18nService.currentLanguage$.subscribe(lang => {
+        this.currentLanguage = lang;
+      })
+    );
 
     // Load plate pairs
     this.subs.add(
@@ -443,6 +453,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public getEnabledPlates(): Plate[] {
     return this.plates.filter(p => p.enabled);
+  }
+
+  public onLanguageChange(language: 'it' | 'en'): void {
+    this.i18nService.setLanguage(language);
+    this._messageService.add({
+      severity: 'success',
+      summary: language === 'it' ? 'Lingua Modificata' : 'Language Changed',
+      detail: language === 'it' ? 'La lingua è stata modificata con successo' : 'Language has been changed successfully'
+    });
   }
 
 }

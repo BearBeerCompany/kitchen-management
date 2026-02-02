@@ -3,7 +3,7 @@
     <!-- Logo/Brand -->
     <div class="navbar-brand">
       <i class="pi pi-server brand-icon"></i>
-      <span class="brand-text">Kitchen Manager</span>
+      <span class="brand-text">{{i18n.NAVBAR.BRAND}}</span>
     </div>
 
     <!-- Navigation Items -->
@@ -42,10 +42,10 @@
       <button class="nav-item" 
               [class.active]="selectedRoute === routing.PlatesSummary"
               (click)="onNavClick(routing.PlatesSummary)"
-              pTooltip="Riepilogo"
+              [pTooltip]="i18n.SUMMARY.TITLE"
               tooltipPosition="top">
         <i class="pi pi-chart-bar nav-icon"></i>
-        <span class="nav-label">Riepilogo</span>
+        <span class="nav-label">{{i18n.NAVBAR.SUMMARY}}</span>
       </button>
 
       <button class="nav-item" 

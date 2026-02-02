@@ -12,34 +12,6 @@
     </div>
   </div>
 
-  <!-- GSG Integration Section -->
-  <div class="settings-card">
-    <div class="card-header">
-      <div class="header-content">
-        <i class="pi pi-database"></i>
-        <div>
-          <h3>Inizializzazione GSG</h3>
-          <p>Importa categorie e voci di menù dal sistema GSG</p>
-        </div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="gsg-info-alert">
-        <i class="pi pi-info-circle"></i>
-        <div>
-          <strong>Attenzione:</strong>
-          <p>L'inizializzazione sovrascriverà tutti i dati esistenti di ordini, categorie e voci di menù.</p>
-        </div>
-      </div>
-      <button pButton pRipple 
-        label="Inizializza da GSG"
-        icon="pi pi-download"
-        class="p-button-info"
-        (click)="onGSGInit()">
-      </button>
-    </div>
-  </div>
-
   <!-- Display Settings Section -->
   <div class="settings-card">
     <div class="card-header">
@@ -81,6 +53,52 @@
           <small>Visualizza i badge di ritardo sugli elementi nella dashboard delle piastre</small>
         </div>
         <p-inputSwitch inputId="showItemDelays" [(ngModel)]="showItemDelays" (onChange)="onShowItemDelaysChange()"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language Settings Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-globe"></i>
+        <div>
+          <h3>{{i18n.SETTINGS.LANGUAGE.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.LANGUAGE.DESCRIPTION}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
+            <i class="pi pi-language"></i>
+            <label for="languageSelect">{{i18n.SETTINGS.LANGUAGE.SELECT_LABEL}}</label>
+          </div>
+          <small>{{i18n.SETTINGS.LANGUAGE.SELECT_DESC}}</small>
+        </div>
+        <p-dropdown 
+          inputId="languageSelect"
+          [options]="availableLanguages" 
+          [(ngModel)]="currentLanguage"
+          (onChange)="onLanguageChange($event.value)"
+          optionLabel="label" 
+          optionValue="code"
+          appendTo="body"
+          [style]="{'width': '200px'}">
+          <ng-template let-lang pTemplate="selectedItem">
+            <div class="language-item">
+              <span class="language-flag">{{lang.flag}}</span>
+              <span>{{lang.label}}</span>
+            </div>
+          </ng-template>
+          <ng-template let-lang pTemplate="item">
+            <div class="language-item">
+              <span class="language-flag">{{lang.flag}}</span>
+              <span>{{lang.label}}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
       </div>
     </div>
   </div>
@@ -342,6 +360,34 @@
           (click)="showPairDialog()">
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- GSG Integration Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-database"></i>
+        <div>
+          <h3>Inizializzazione GSG</h3>
+          <p>Importa categorie e voci di menù dal sistema GSG</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="gsg-info-alert">
+        <i class="pi pi-info-circle"></i>
+        <div>
+          <strong>Attenzione:</strong>
+          <p>L'inizializzazione sovrascriverà tutti i dati esistenti di ordini, categorie e voci di menù.</p>
+        </div>
+      </div>
+      <button pButton pRipple 
+        label="Inizializza da GSG"
+        icon="pi pi-download"
+        class="p-button-info"
+        (click)="onGSGInit()">
+      </button>
     </div>
   </div>
 </div>
