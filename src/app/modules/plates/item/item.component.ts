@@ -8,6 +8,7 @@ import {ButtonModule} from "primeng/button";
 import {TooltipModule} from "primeng/tooltip";
 import {TagModule} from "primeng/tag";
 import {DelayThresholdsService} from "../../../services/delay-thresholds.service";
+import {I18nService} from "../../../services/i18n.service";
 
 @Component({
   selector: 'item',
@@ -32,8 +33,12 @@ export class ItemComponent implements OnInit {
   // Delay tracking per item
   public delayMinutes: number = 0;
   public delaySeverity: 'success' | 'warning' | 'danger' = 'success';
+  public readonly i18n: any;
 
-  constructor(private _delayThresholdsService: DelayThresholdsService) {}
+  constructor(private _delayThresholdsService: DelayThresholdsService,
+              public i18nService: I18nService) {
+    this.i18n = i18nService.instance;
+  }
 
   public ngOnInit(): void {
     this.calculateItemDelay();

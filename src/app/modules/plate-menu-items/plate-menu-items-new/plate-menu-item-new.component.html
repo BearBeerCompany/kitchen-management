@@ -6,8 +6,8 @@
     <div class="header-title">
       <i class="pi pi-plus-circle"></i>
       <div>
-        <h2>Creazione Nuovo Ordine</h2>
-        <p class="header-subtitle">Compila i dati dell'ordine e seleziona i prodotti dal menù</p>
+        <h2>{{i18n.ORDERS.NEW_ORDER_PAGE.TITLE}}</h2>
+        <p class="header-subtitle">{{i18n.ORDERS.NEW_ORDER_PAGE.SUBTITLE}}</p>
       </div>
     </div>
   </div>
@@ -16,7 +16,7 @@
   <div class="order-info-card">
     <div class="card-header">
       <i class="pi pi-file-edit"></i>
-      <h3>Informazioni Ordine</h3>
+      <h3>{{i18n.ORDERS.NEW_ORDER_PAGE.INFO_TITLE}}</h3>
     </div>
     <div class="card-body">
       <form [formGroup]="form!">
@@ -24,7 +24,7 @@
           <div class="form-field">
             <label for="orderNumber">
               <i class="pi pi-hashtag"></i>
-              Numero Ordine
+              {{i18n.ORDERS.NEW_ORDER_PAGE.ORDER_NUMBER}}
             </label>
             <p-inputNumber 
               [max]="1000"
@@ -34,33 +34,33 @@
               id="orderNumber"
               placeholder="0"
             ></p-inputNumber>
-            <small class="field-hint">Numero identificativo dell'ordine</small>
+            <small class="field-hint">{{i18n.ORDERS.NEW_ORDER_PAGE.ORDER_NUMBER_HINT}}</small>
           </div>
           
           <div class="form-field">
             <label for="tableNumber">
               <i class="pi pi-table"></i>
-              Numero Tavolo
+              {{i18n.ORDERS.NEW_ORDER_PAGE.TABLE_NUMBER}}
             </label>
             <input pInputText 
               type="text" 
               id="tableNumber" 
               formControlName="tableNumber" 
-              placeholder="Es: 12" />
-            <small class="field-hint">Tavolo di destinazione</small>
+              [placeholder]="i18n.ORDERS.NEW_ORDER_PAGE.TABLE_PLACEHOLDER" />
+            <small class="field-hint">{{i18n.ORDERS.NEW_ORDER_PAGE.TABLE_NUMBER_HINT}}</small>
           </div>
           
           <div class="form-field">
             <label for="clientName">
               <i class="pi pi-user"></i>
-              Nome Cliente
+              {{i18n.ORDERS.NEW_ORDER_PAGE.CLIENT_NAME}}
             </label>
             <input pInputText 
               type="text" 
               id="clientName" 
               formControlName="clientName" 
-              placeholder="Es: Mario Rossi" />
-            <small class="field-hint">Nome del cliente (opzionale)</small>
+              [placeholder]="i18n.ORDERS.NEW_ORDER_PAGE.CLIENT_PLACEHOLDER" />
+            <small class="field-hint">{{i18n.ORDERS.NEW_ORDER_PAGE.CLIENT_NAME_HINT}}</small>
           </div>
         </div>
       </form>
@@ -73,10 +73,10 @@
       <div class="card-header">
         <div class="header-content">
           <i class="pi pi-list"></i>
-          <h3>Seleziona Prodotti</h3>
+          <h3>{{i18n.ORDERS.NEW_ORDER_PAGE.SELECT_PRODUCTS}}</h3>
         </div>
         <span class="items-count" *ngIf="plateMenuItems.length">
-          {{plateMenuItems.length}} {{plateMenuItems.length === 1 ? 'prodotto' : 'prodotti'}}
+          {{plateMenuItems.length}} {{plateMenuItems.length === 1 ? i18n.ORDERS.NEW_ORDER_PAGE.PRODUCT_COUNT_SINGLE : i18n.ORDERS.NEW_ORDER_PAGE.PRODUCT_COUNT_PLURAL}}
         </span>
       </div>
       <div class="card-body">
@@ -115,7 +115,7 @@
       <div class="card-header">
         <div class="header-content">
           <i class="pi pi-shopping-bag"></i>
-          <h3>Riepilogo Ordine</h3>
+          <h3>{{i18n.ORDERS.NEW_ORDER_PAGE.ORDER_SUMMARY}}</h3>
         </div>
       </div>
       
@@ -123,7 +123,7 @@
         <div class="table-toolbar">
           <div class="toolbar-left">
             <button pButton pRipple 
-              label="Salva Ordine" 
+              [label]="i18n.ORDERS.NEW_ORDER_PAGE.SAVE_ORDER" 
               icon="pi pi-check" 
               class="p-button-success" 
               (click)="savePkmis()" 
@@ -132,14 +132,14 @@
           </div>
           <div class="toolbar-right">
             <button pButton pRipple 
-              label="Cancella Selezionati" 
+              [label]="i18n.ORDERS.NEW_ORDER_PAGE.DELETE_SELECTED" 
               icon="pi pi-trash" 
               class="p-button-danger p-button-outlined" 
               (click)="deleteSelectedProducts()"
               [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length">
             </button>
             <p-splitButton 
-              label="Assegna Piastra" 
+              [label]="i18n.ORDERS.NEW_ORDER_PAGE.ASSIGN_PLATE" 
               icon="pi pi-inbox" 
               [model]="platesAction" 
               styleClass="p-button-info"
@@ -166,31 +166,31 @@
               <th>
                 <div class="header-content">
                   <i class="pi pi-shopping-cart"></i>
-                  <span>Prodotto</span>
+                  <span>{{i18n.ORDERS.NEW_ORDER_PAGE.PRODUCT}}</span>
                 </div>
               </th>
               <th>
                 <div class="header-content">
                   <i class="pi pi-tag"></i>
-                  <span>Categoria</span>
+                  <span>{{i18n.ORDERS.TABLE_HEADERS.CATEGORY}}</span>
                 </div>
               </th>
               <th>
                 <div class="header-content">
                   <i class="pi pi-inbox"></i>
-                  <span>Piastra</span>
+                  <span>{{i18n.ORDERS.TABLE_HEADERS.PLATE}}</span>
                 </div>
               </th>
               <th>
                 <div class="header-content">
                   <i class="pi pi-comment"></i>
-                  <span>Note</span>
+                  <span>{{i18n.ORDERS.NEW_ORDER_PAGE.NOTES}}</span>
                 </div>
               </th>
               <th style="width:8rem">
                 <div class="header-content">
                   <i class="pi pi-cog"></i>
-                  <span>Azioni</span>
+                  <span>{{i18n.ORDERS.TABLE_HEADERS.ACTIONS}}</span>
                 </div>
               </th>
             </tr>
@@ -221,7 +221,7 @@
                       optionLabel="label"
                       optionValue="value"
                       [style]="{'width':'100%'}"
-                      placeholder="Seleziona piastra">
+                      [placeholder]="i18n.ORDERS.NEW_ORDER_PAGE.SELECT_PLATE">
                     </p-dropdown>
                   </ng-template>
                   <ng-template pTemplate="output">
@@ -233,7 +233,7 @@
                     </span>
                     <span class="no-plate" *ngIf="!plateMenuItem.plate">
                       <i class="pi pi-minus-circle"></i>
-                      Non assegnata
+                      {{i18n.ORDERS.NEW_ORDER_PAGE.NOT_ASSIGNED}}
                     </span>
                   </ng-template>
                 </p-cellEditor>
@@ -244,7 +244,7 @@
                     <input pInputText 
                       type="text" 
                       [(ngModel)]="plateMenuItem.notes"
-                      placeholder="Aggiungi note">
+                      [placeholder]="i18n.ORDERS.NEW_ORDER_PAGE.ADD_NOTES">
                   </ng-template>
                   <ng-template pTemplate="output">
                     <span class="notes-text" *ngIf="plateMenuItem.notes">
@@ -262,7 +262,7 @@
                   icon="pi pi-pencil"
                   (click)="onRowEditInit(plateMenuItem)" 
                   class="p-button-rounded p-button-text p-button-info"
-                  pTooltip="Modifica"
+                  [pTooltip]="i18n.COMMON.EDIT"
                   tooltipPosition="top">
                 </button>
                 <button *ngIf="editing" pButton pRipple 
@@ -271,7 +271,7 @@
                   icon="pi pi-check"
                   (click)="onRowEditSave(plateMenuItem)" 
                   class="p-button-rounded p-button-text p-button-success"
-                  pTooltip="Salva"
+                  [pTooltip]="i18n.COMMON.SAVE"
                   tooltipPosition="top">
                 </button>
                 <button *ngIf="editing" pButton pRipple 
@@ -280,7 +280,7 @@
                   icon="pi pi-times"
                   (click)="onRowEditCancel(plateMenuItem, ri)" 
                   class="p-button-rounded p-button-text p-button-danger"
-                  pTooltip="Annulla"
+                  [pTooltip]="i18n.COMMON.UNDO"
                   tooltipPosition="top">
                 </button>
               </td>
@@ -292,8 +292,8 @@
               <td colspan="6" class="empty-message">
                 <div class="empty-state">
                   <i class="pi pi-shopping-cart"></i>
-                  <h4>Nessun prodotto selezionato</h4>
-                  <p>Seleziona i prodotti dal menù per aggiungerli all'ordine</p>
+                  <h4>{{i18n.ORDERS.NEW_ORDER_PAGE.NO_PRODUCTS_SELECTED}}</h4>
+                  <p>{{i18n.ORDERS.NEW_ORDER_PAGE.NO_PRODUCTS_DESC}}</p>
                 </div>
               </td>
             </tr>

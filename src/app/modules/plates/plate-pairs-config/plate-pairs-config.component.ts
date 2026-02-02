@@ -4,6 +4,7 @@ import { PlateService } from '../services/plate.service';
 import { Plate } from '../plate.interface';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { I18nService } from '../../../services/i18n.service';
 
 @Component({
   selector: 'app-plate-pairs-config',
@@ -15,6 +16,7 @@ export class PlatePairsConfigComponent implements OnInit {
   public availablePlates: Plate[] = [];
   public showAddDialog = false;
   public editingPair: PlatePair | null = null;
+  public readonly i18n: any;
   
   // Form fields
   public newPairName = '';
@@ -25,8 +27,11 @@ export class PlatePairsConfigComponent implements OnInit {
     private _platePairsService: PlatePairsService,
     private _plateService: PlateService,
     private _router: Router,
-    private _messageService: MessageService
-  ) {}
+    private _messageService: MessageService,
+    public i18nService: I18nService
+  ) {
+    this.i18n = i18nService.instance;
+  }
 
   ngOnInit(): void {
     this._loadData();

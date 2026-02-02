@@ -6,14 +6,14 @@
          class="item-delay-badge"
          [severity]="delaySeverity"
          [value]="'⏱ ' + getDelayLabel()"
-         [pTooltip]="'In lavorazione da ' + getDelayLabel()"
+         [pTooltip]="i18n.ITEM.IN_PROGRESS_SINCE + ' ' + getDelayLabel()"
          tooltipPosition="top"></p-tag>
   
   <!-- Icona asporto per vista espansa -->
   <img src="assets/img/takeaway.png" 
        *ngIf="config.takeAway && readonly" 
        class="takeaway-icon"
-       [pTooltip]="'Ordine da Asporto'"
+       [pTooltip]="i18n.ITEM.TAKEAWAY_ORDER"
        tooltipPosition="top">
   
   <span class="item_title">
@@ -30,7 +30,7 @@
     <img src="assets/img/takeaway.png" 
          *ngIf="config.takeAway" 
          class="takeaway-icon"
-         [pTooltip]="'Ordine da Asporto'"
+         [pTooltip]="i18n.ITEM.TAKEAWAY_ORDER"
          tooltipPosition="top">
     <button (click)="onDone()"
             class="p-button-rounded p-button-text p-button-success"
@@ -62,10 +62,10 @@
       <span class="info-option">
         <i class="pi pi-info-circle"></i>
         <div class="info-details">
-          <div><strong>Data:</strong> {{config.createdDate}}</div>
+          <div><strong>{{i18n.ITEM.DATE}}:</strong> {{config.createdDate}}</div>
           <div><strong>Tavolo:</strong> {{config.tableNumber}}</div>
           <div><strong>Cliente:</strong> {{config.clientName}}</div>
-          <div><strong>Ordine:</strong> {{config.orderNumber}}</div>
+          <div><strong>{{i18n.ITEM.ORDER}}:</strong> {{config.orderNumber}}</div>
         </div>
       </span>
       <span (click)="opt.command!()" *ngFor="let opt of deleteOptions" class="action-option">

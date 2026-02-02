@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output, OnChanges, SimpleChanges} from '@angular/core';
 import {MenuItem} from "../../plate-menu-items/plate-menu-item";
+import {I18nService} from "../../../services/i18n.service";
 
 @Component({
   selector: 'menu-item-list',
@@ -17,8 +18,13 @@ export class MenuItemListComponent implements OnChanges {
 
   public searchText: string = '';
   public filteredItems: MenuItem[] = [];
+  public readonly i18n: any;
 
   private _editableMenuItemMap: Map<string, MenuItem> = new Map<string, MenuItem>();
+
+  constructor(public i18nService: I18nService) {
+    this.i18n = i18nService.instance;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['items']) {
