@@ -1,0 +1,916 @@
+// Global PrimeNG Component Overrides
+// Apply modern styling to all PrimeNG components across the app
+
+@import 'theme';
+@import 'mixins';
+
+// Theme-aware global styles
+body {
+  background: var(--theme-background);
+  color: var(--theme-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+// Modern Dialog Styling - Global styles (no ::ng-deep needed in global files)
+// Global Dialog Styles - Applied to ALL dialogs
+.p-dialog {
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+    max-height: 90vh;
+    
+    // Default responsive width
+    width: 90vw !important;
+    max-width: 600px !important;
+    
+    // Size modifiers
+    &.dialog-sm {
+      max-width: 400px !important;
+    }
+    
+    &.dialog-md {
+      max-width: 600px !important;
+    }
+    
+    &.dialog-lg {
+      max-width: 800px !important;
+    }
+    
+    &.dialog-xl {
+      max-width: 1000px !important;
+    }
+
+    .p-dialog-header {
+      background: linear-gradient(135deg, $primary-600 0%, $primary-700 100%) !important;
+      color: white !important;
+      padding: 1.5rem 2rem;
+      border-bottom: none;
+
+      .p-dialog-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        i {
+          font-size: 1.5rem;
+        }
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+        width: 2.5rem;
+        height: 2.5rem;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+
+        &:active {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 2rem;
+      background: var(--theme-card-bg);
+      color: var(--theme-text-primary);
+      max-height: calc(90vh - 180px);
+      overflow-y: auto;
+      
+      // Custom scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: var(--theme-surface);
+        border-radius: 4px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: var(--theme-border);
+        border-radius: 4px;
+        
+        &:hover {
+          background: $primary-500;
+        }
+      }
+    }
+
+    .p-dialog-footer {
+      padding: 1.25rem 2rem;
+      background: var(--theme-surface);
+      border-top: 1px solid var(--theme-border);
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+
+      .p-button {
+        min-width: 100px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: none !important;
+        
+        // Primary/Success button (Save, Confirm, etc)
+        &.p-button-success {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+          
+          &:disabled {
+            background: #d1d5db !important;
+            box-shadow: none !important;
+            opacity: 0.6;
+          }
+        }
+        
+        // Danger button (Delete, Remove, etc)
+        &.p-button-danger {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+        
+        // Default primary button
+        &:not(.p-button-text):not(.p-button-outlined):not(.p-button-success):not(.p-button-danger) {
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+          color: white !important;
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+          
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+            transform: translateY(-1px);
+          }
+          
+          &:active:not(:disabled) {
+            transform: translateY(0);
+          }
+        }
+        
+        // Text button (Cancel, Close, etc)
+        &.p-button-text {
+          background: transparent !important;
+          color: var(--theme-text-secondary) !important;
+          box-shadow: none !important;
+          
+          &:hover:not(:disabled) {
+            background: var(--theme-border) !important;
+            color: var(--theme-text-primary) !important;
+          }
+          
+          &.p-button-secondary {
+            color: #6b7280 !important;
+            
+            &:hover:not(:disabled) {
+              background: rgba(107, 114, 128, 0.1) !important;
+              color: #4b5563 !important;
+            }
+          }
+        }
+        
+        // Outlined button
+        &.p-button-outlined {
+          background: transparent !important;
+          border: 2px solid var(--theme-border) !important;
+          color: var(--theme-text-primary) !important;
+          box-shadow: none !important;
+          
+          &:hover:not(:disabled) {
+            background: rgba(59, 130, 246, 0.05) !important;
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+          }
+        }
+        
+        // Icon styling
+        .p-button-icon {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  // Form fields styling inside dialogs
+  .p-dialog {
+    .form-field {
+      margin-bottom: 1.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: var(--theme-text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: $primary-500;
+          font-size: 1rem;
+        }
+
+        &.section-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--theme-text-secondary);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 0.75rem;
+        }
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="email"],
+      textarea,
+      .p-inputtext,
+      .p-inputnumber {
+        width: 100%;
+      }
+
+      small {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.85rem;
+        color: var(--theme-text-secondary);
+
+        &.p-error {
+          color: $danger-500;
+        }
+      }
+    }
+  }
+
+  // Apply to all dialogs with class .modern-dialog
+  .modern-dialog {
+    @include modern-dialog;
+
+    .p-dialog {
+      border-radius: $dialog-border-radius;
+      box-shadow: $dialog-shadow;
+      overflow: hidden;
+    }
+  }
+
+  // Apply to all tables with class .modern-table
+  .modern-table {
+    @include modern-table;
+  }
+
+  // Global table improvements
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      background: $table-header-bg;
+      color: #f8fafc; // Slate-50 - testo chiaro ma non bianco puro
+      font-weight: $font-weight-semibold;
+      padding: $spacing-md $spacing-lg;
+      border: none;
+      border-bottom: 2px solid rgba(148, 163, 184, 0.3); // Subtle separator
+      font-size: $font-size-sm;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+      
+      // Subtle top border for depth
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+      .p-sortable-column-icon {
+        color: rgba(248, 250, 252, 0.7);
+        transition: color 0.2s ease;
+      }
+      
+      &:hover .p-sortable-column-icon {
+        color: #f8fafc;
+      }
+
+      .p-column-title {
+        font-weight: $font-weight-semibold;
+      }
+    }
+
+    .p-datatable-tbody > tr {
+      transition: $transition-fast;
+
+      &:hover {
+        background: $table-row-hover-bg;
+      }
+
+      &.p-highlight {
+        background: $table-row-selected-bg;
+        color: $text-primary;
+      }
+
+      > td {
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $table-border-color;
+        font-size: $font-size-sm;
+        vertical-align: middle;
+      }
+    }
+
+    &.p-datatable-hoverable-rows {
+      .p-datatable-tbody > tr:not(.p-highlight):hover {
+        background: $table-row-hover-bg;
+        cursor: pointer;
+      }
+    }
+  }
+
+  // Modern Button Styling
+  .p-button {
+    padding: $button-padding-y $button-padding-x;
+    border-radius: $button-border-radius;
+    font-weight: $button-font-weight;
+    transition: $transition-base;
+    border: none;
+
+    &:not(.p-button-text):not(.p-button-outlined) {
+      &.p-button-success {
+        @include modern-button-success;
+      }
+
+      &.p-button-danger {
+        @include modern-button-danger;
+      }
+
+      &:not(.p-button-success):not(.p-button-danger):not(.p-button-warning):not(.p-button-info) {
+        @include modern-button-primary;
+      }
+    }
+
+    &.p-button-outlined {
+      background: transparent;
+      transition: $transition-base;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.1);
+      }
+    }
+
+    &.p-button-sm {
+      padding: 0.5rem 1rem;
+      font-size: $font-size-sm;
+    }
+
+    &.p-button-lg {
+      padding: 1rem 2rem;
+      font-size: $font-size-lg;
+    }
+  }
+
+  // Modern Input Styling
+  .p-inputtext {
+    padding: $input-padding-y $input-padding-x;
+    border: 1px solid $input-border-color;
+    border-radius: $input-border-radius;
+    font-size: $font-size-base;
+    transition: $transition-base;
+
+    &:enabled:focus {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-shadow;
+      outline: none;
+    }
+  }
+
+  .p-inputnumber-input {
+    padding: $input-padding-y $input-padding-x;
+    border-radius: $input-border-radius;
+  }
+
+  // Improved InputNumber with compact buttons - Stacked layout
+  .p-inputnumber.p-inputnumber-buttons-stacked {
+    .p-inputnumber-button-group {
+      width: 2.5rem !important;
+    }
+    
+    .p-inputnumber-button {
+      padding: 0 !important;
+      height: 50% !important;
+      border-radius: 0 !important;
+      
+      &.p-inputnumber-button-up {
+        border-top-right-radius: $input-border-radius !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      }
+      
+      &.p-inputnumber-button-down {
+        border-bottom-right-radius: $input-border-radius !important;
+      }
+      
+      .p-button-icon {
+        font-size: 0.875rem !important;
+      }
+    }
+    
+    .p-inputnumber-input {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+
+  // Improved InputNumber with compact buttons - Horizontal layout
+  .p-inputnumber.p-inputnumber-buttons-horizontal {
+    .p-inputnumber-button {
+      width: 2.5rem !important;
+      padding: 0 !important;
+      
+      &.p-inputnumber-button-up {
+        border-top-right-radius: $input-border-radius !important;
+        border-bottom-right-radius: $input-border-radius !important;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+      }
+      
+      &.p-inputnumber-button-down {
+        border-top-left-radius: $input-border-radius !important;
+        border-bottom-left-radius: $input-border-radius !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+      }
+      
+      .p-button-icon {
+        font-size: 0.875rem !important;
+      }
+    }
+    
+    .p-inputnumber-input {
+      border-radius: 0 !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+  }
+
+  // Modern Dropdown Styling
+  .p-dropdown {
+    border: 1px solid $input-border-color;
+    border-radius: $input-border-radius;
+    transition: $transition-base;
+
+    &:not(.p-disabled):hover {
+      border-color: $input-focus-border-color;
+    }
+
+    &:not(.p-disabled).p-focus {
+      border-color: $input-focus-border-color;
+      box-shadow: $input-focus-shadow;
+    }
+
+    .p-dropdown-label {
+      padding: $input-padding-y $input-padding-x;
+    }
+  }
+
+  // Modern Calendar Styling
+  .p-calendar {
+    .p-inputtext {
+      padding: $input-padding-y $input-padding-x;
+      border-radius: $input-border-radius;
+    }
+  }
+
+  // Modern Card Styling
+  .p-card {
+    @include modern-card;
+
+    .p-card-header {
+      @include card-header;
+    }
+
+    .p-card-body {
+      @include card-body;
+    }
+  }
+
+  // Modern Tag/Badge Styling
+  .p-tag {
+    padding: $badge-padding-y $badge-padding-x;
+    border-radius: $badge-border-radius;
+    font-size: $badge-font-size;
+    font-weight: $badge-font-weight;
+
+    &.p-tag-success {
+      background: $success-500;
+      color: white;
+    }
+
+    &.p-tag-warning {
+      background: $warning-500;
+      color: white;
+    }
+
+    &.p-tag-danger {
+      background: $danger-500;
+      color: white;
+    }
+
+    &.p-tag-info {
+      background: $primary-500;
+      color: white;
+    }
+  }
+
+  // Modern TabView Styling
+  .p-tabview {
+    .p-tabview-nav {
+      background: transparent;
+      border-bottom: 2px solid $border;
+
+      li {
+        .p-tabview-nav-link {
+          padding: $spacing-md $spacing-lg;
+          font-weight: $font-weight-semibold;
+          border: none;
+          color: $text-secondary;
+          transition: $transition-base;
+
+          &:hover {
+            background: $gray-100;
+            color: $text-primary;
+          }
+        }
+
+        &.p-highlight {
+          .p-tabview-nav-link {
+            color: $primary-500;
+            border-bottom: 2px solid $primary-500;
+            background: transparent;
+          }
+        }
+      }
+    }
+
+    .p-tabview-panels {
+      background: transparent;
+    }
+  }
+
+  // Modern Toast Styling
+  .p-toast {
+    z-index: 9999 !important; // Assicura che siano sempre visibili sopra tutto
+    
+    .p-toast-message {
+      border-radius: $radius-lg;
+      box-shadow: $shadow-lg;
+      margin: $spacing-md 0;
+
+      &.p-toast-message-success {
+        background: $success-50;
+        border: 1px solid $success-200;
+        color: $success-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $success-600;
+        }
+      }
+
+      &.p-toast-message-error {
+        background: $danger-50;
+        border: 1px solid $danger-200;
+        color: $danger-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $danger-600;
+        }
+      }
+
+      &.p-toast-message-warn {
+        background: $warning-50;
+        border: 1px solid $warning-200;
+        color: $warning-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $warning-600;
+        }
+      }
+
+      &.p-toast-message-info {
+        background: $primary-50;
+        border: 1px solid $primary-200;
+        color: $primary-900;
+
+        .p-toast-message-icon,
+        .p-toast-icon-close-icon {
+          color: $primary-600;
+        }
+      }
+    }
+  }
+
+  // Modern Confirm Dialog
+  .p-confirm-dialog {
+    @include modern-dialog;
+  }
+
+  // Loading Spinner
+  .p-progress-spinner {
+    .p-progress-spinner-circle {
+      stroke: $primary-500;
+    }
+  }
+
+  // Checkbox & Radio
+  .p-checkbox,
+  .p-radiobutton {
+    .p-checkbox-box,
+    .p-radiobutton-box {
+      border: 2px solid $input-border-color;
+      transition: $transition-base;
+
+      &:not(.p-disabled):hover {
+        border-color: $primary-500;
+      }
+
+      &.p-highlight {
+        border-color: $primary-500;
+        background: $primary-500;
+      }
+    }
+  }
+
+  // Input Switch
+  .p-inputswitch {
+    &.p-inputswitch-checked {
+      .p-inputswitch-slider {
+        background: $primary-500;
+      }
+    }
+
+    .p-inputswitch-slider {
+      transition: $transition-base;
+    }
+  }
+
+// Animation Keyframes
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// Responsive Table Styles
+@media (max-width: 1200px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.7rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.4rem 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.3px;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.4rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    // Riduci dimensioni icone e badge
+    .pi {
+      font-size: 0.9rem;
+    }
+
+    .p-tag {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .p-button {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .p-datatable {
+    font-size: 0.75rem;
+
+    .p-datatable-wrapper {
+      overflow-x: auto;
+    }
+
+    // Forza layout compatto per le righe
+    .p-datatable-tbody > tr {
+      display: table-row !important;
+      height: auto !important;
+      
+      > td {
+        display: table-cell !important;
+        padding: 0.4rem 0.3rem !important;
+        font-size: 0.7rem !important;
+        line-height: 1.3 !important;
+        vertical-align: middle !important;
+        white-space: nowrap;
+      }
+    }
+
+    .p-datatable-thead > tr > th {
+      padding: 0.4rem 0.3rem !important;
+      font-size: 0.6rem !important;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+    }
+
+    // Riduci dimensioni elementi interni
+    .pi {
+      font-size: 0.85rem !important;
+    }
+
+    .p-tag {
+      font-size: 0.65rem !important;
+      padding: 0.2rem 0.35rem !important;
+      line-height: 1.2;
+    }
+
+    .p-button {
+      padding: 0.35rem 0.5rem !important;
+      font-size: 0.7rem !important;
+      min-width: auto !important;
+      
+      .p-button-icon {
+        font-size: 0.85rem !important;
+        margin: 0 !important;
+      }
+      
+      .p-button-label {
+        padding: 0 0.25rem;
+      }
+    }
+
+    // Dropdown e input più compatti
+    .p-dropdown {
+      font-size: 0.7rem !important;
+      
+      .p-dropdown-label {
+        padding: 0.3rem 0.4rem !important;
+      }
+    }
+
+    .p-inputtext,
+    .p-inputnumber input {
+      padding: 0.3rem 0.4rem !important;
+      font-size: 0.7rem !important;
+      line-height: 1.3 !important;
+    }
+
+    // Checkbox più piccoli
+    .p-checkbox {
+      width: 1rem !important;
+      height: 1rem !important;
+      
+      .p-checkbox-box {
+        width: 1rem !important;
+        height: 1rem !important;
+      }
+    }
+
+    // Badge categoria più compatti
+    .category-badge {
+      font-size: 0.65rem !important;
+      padding: 0.2rem 0.4rem !important;
+    }
+
+    // Progress bar più sottili
+    .p-progressbar {
+      height: 0.5rem !important;
+    }
+  }
+
+  // Riduci padding container su mobile
+  .orders-management-container,
+  .settings-container {
+    padding: 0.5rem !important;
+  }
+
+  .page-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem !important;
+  }
+
+  .orders-toolbar,
+  .toolbar-section {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem !important;
+
+    .toolbar-left,
+    .toolbar-center,
+    .toolbar-right {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  // Card tabelle più compatte
+  .table-container {
+    border-radius: 8px;
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .p-datatable {
+    .p-datatable-thead > tr > th {
+      padding: 0.25rem 0.3rem;
+      font-size: 0.55rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.25rem 0.3rem;
+      font-size: 0.65rem;
+    }
+
+    // Mostra solo le prime 4 colonne su schermi molto piccoli
+    .p-datatable-thead > tr > th:nth-child(n+5),
+    .p-datatable-tbody > tr > td:nth-child(n+5) {
+      display: none;
+    }
+  }
+}
+
+// Utility Classes
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}

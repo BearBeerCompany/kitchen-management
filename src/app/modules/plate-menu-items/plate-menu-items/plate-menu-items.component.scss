@@ -1,19 +1,208 @@
 @import 'mixins';
 
-h3 {
-  @include title-center;
+// Modern Orders Management Styles
+.orders-management-container {
+  padding: 1rem;
+  background: var(--theme-background);
+  min-height: 100vh;
+}
 
-  margin-bottom: 10px;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--theme-card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  gap: 1.5rem;
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    > i {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      border-radius: 10px;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--theme-text-primary);
+    }
+
+    .header-subtitle {
+      margin: 0.2rem 0 0 0;
+      font-size: 0.85rem;
+      color: var(--theme-text-secondary);
+    }
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0 1rem;
+    border-left: 2px solid #e5e7eb;
+    border-right: 2px solid #e5e7eb;
+
+    .stat-mini {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      > i {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3f4f6;
+        color: #3b82f6;
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+
+      .stat-mini-content {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+
+        .value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--theme-text-primary);
+        }
+
+        .label {
+          font-size: 0.7rem;
+          color: var(--theme-text-secondary);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    .notify-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: #f3f4f6;
+      border-radius: 8px;
+
+      label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--theme-text-primary);
+        cursor: help;
+
+        i {
+          color: #3b82f6;
+        }
+      }
+    }
+  }
+}
+
+// Stats grid removed - now inline in header
+
+.orders-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--theme-card-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+
+  .toolbar-left,
+  .toolbar-right {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-center {
+    flex: 1;
+    min-width: 250px;
+    max-width: 500px;
+
+    .search-input {
+      width: 100%;
+
+      input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 0.9rem;
+
+        &:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+
+      i {
+        left: 0.875rem;
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
+// Table container
+.table-container {
+  background: var(--theme-card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+
+  &.edit-mode {
+    overflow: visible;
+  }
+}// Contenitore per gestire l'overflow
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 :host ::ng-deep {
   .table-header {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
 
     .table-header-buttons {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
   }
 
@@ -21,9 +210,47 @@ h3 {
     position: -webkit-sticky;
     position: sticky;
     top: 0;
+    z-index: 1;
   }
 
   .p-datatable-orders {
+    // Limita la larghezza massima della tabella per schermi grandi
+    max-width: 100%;
+    
+    // IMPORTANTE: quando c'è una riga in editing, rimuovi tutti gli overflow
+    &:has(.p-row-editing) {
+      overflow: visible !important;
+      
+      .p-datatable-wrapper {
+        overflow: visible !important;
+      }
+      
+      .p-datatable-table {
+        overflow: visible !important;
+      }
+
+      .p-datatable-tbody {
+        overflow: visible !important;
+      }
+      
+      tbody {
+        overflow: visible !important;
+      }
+      
+      table {
+        overflow: visible !important;
+      }
+    }
+    
+    // Quando NON c'è editing, mantieni overflow normale
+    &:not(:has(.p-row-editing)) {
+      overflow-x: auto;
+      
+      .p-datatable-wrapper {
+        overflow-x: auto;
+      }
+    }
+
     .p-datatable-header {
       padding: 1rem;
       text-align: left;
@@ -36,10 +263,36 @@ h3 {
 
     .p-datatable-thead > tr > th {
       text-align: left;
+      white-space: nowrap;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .p-datatable-tbody > tr > td {
       cursor: auto;
+      vertical-align: middle;
+      max-width: 200px;
+      
+      // Rimuovi overflow solo per le righe in editing
+      &:not(.p-cell-editing) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    
+    // Le celle in editing non devono avere overflow o limiti di altezza
+    .p-datatable-tbody > tr.p-row-editing {
+      overflow: visible !important;
+      max-height: none !important;
+      height: auto !important;
+      
+      > td {
+        overflow: visible !important;
+        max-height: none !important;
+        height: auto !important;
+        position: relative;
+      }
     }
 
     .p-dropdown-label:not(.p-placeholder) {
@@ -49,6 +302,78 @@ h3 {
     .p-datatable-orders .p-datatable-tbody > tr > td .p-column-title {
       display: none;
     }
+
+    // Migliora la visibilità dei campi in editing
+    .p-editable-column.p-cell-editing {
+      background-color: #f8f9fa !important;
+      box-shadow: inset 0 0 0 2px #3b82f6;
+      transition: all 0.2s ease;
+    }
+
+    // Stile per gli input in edit mode
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      min-width: 80px;
+      box-sizing: border-box;
+    }
+
+    .p-dropdown,
+    .p-treeselect {
+      width: 100%;
+      min-width: 120px;
+
+      .p-dropdown-label,
+      .p-treeselect-label {
+        padding: 0.4rem;
+      }
+    }
+    
+    // TreeSelect specifico - assicura che il container non limiti il panel
+    .p-treeselect {
+      position: relative;
+      
+      .p-treeselect-panel {
+        min-width: 100%;
+      }
+    }
+
+    // Fix per evitare che i dropdown vengano tagliati durante l'editing
+    .p-datatable-tbody > tr.p-row-editing {
+      position: relative;
+      z-index: 100;
+      
+      > td {
+        overflow: visible !important;
+        position: static !important; // Cambiato da relative a static
+        
+        // Assicura che i contenuti delle celle possano espandersi
+        > * {
+          overflow: visible !important;
+        }
+      }
+      
+      // Celle con editor attivo
+      .p-cell-editing {
+        overflow: visible !important;
+        
+        .p-dropdown,
+        .p-treeselect {
+          position: static !important; // Permette al panel di espandersi liberamente
+          overflow: visible !important;
+        }
+      }
+    }
+
+    // Rendi le colonne più compatte
+    .p-datatable-thead > tr > th {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.5rem 0.5rem;
+    }
   }
 
   .plate-badge {
@@ -57,6 +382,9 @@ h3 {
     text-transform: uppercase;
     font-weight: 700;
     font-size: 16px;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
   }
 
   .category-badge {
@@ -65,13 +393,700 @@ h3 {
     font-weight: 500;
     font-size: 14px;
     border: 2px solid;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
   }
 
+  // Responsive per laptop piccoli e tablet (fino a 1440px) - MacBook 13"
+  @media screen and (max-width: 1440px) {
+    .p-datatable-orders {
+      font-size: 0.85rem;
+
+      .p-datatable-header {
+        font-size: 1.1rem;
+      }
+
+      .p-datatable-thead > tr > th,
+      .p-datatable-tbody > tr > td {
+        padding: 0.4rem 0.3rem;
+        font-size: 0.85rem;
+      }
+
+      // Nascondi colonne meno critiche per laptop 13"
+      .p-datatable-thead > tr > th:nth-child(7), // Data
+      .p-datatable-tbody > tr > td:nth-child(7),
+      .p-datatable-thead > tr > th:nth-child(12), // Note Panino
+      .p-datatable-tbody > tr > td:nth-child(12) {
+        display: none;
+      }
+
+      // Riduci larghezza dropdown e input
+      .p-dropdown,
+      .p-treeselect {
+        min-width: 100px;
+        font-size: 0.85rem;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        min-width: 60px;
+        font-size: 0.85rem;
+        padding: 0.3rem;
+      }
+
+      // Badge più compatti
+      .plate-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+        min-width: 50px;
+      }
+
+      .category-badge {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.35rem;
+      }
+
+      // Pulsanti azioni più piccoli
+      .p-button.p-button-rounded {
+        width: 2rem;
+        height: 2rem;
+        
+        .p-button-icon {
+          font-size: 0.85rem;
+        }
+      }
+    }
+
+    .table-header {
+      font-size: 0.95rem;
+      gap: 0.75rem;
+
+      .table-header-buttons {
+        gap: 0.4rem;
+
+        button {
+          font-size: 0.8rem;
+          padding: 0.4rem 0.8rem;
+
+          .p-button-icon {
+            font-size: 0.9rem;
+          }
+        }
+
+        .p-input-icon-left input {
+          font-size: 0.85rem;
+          padding: 0.4rem 0.4rem 0.4rem 2rem;
+        }
+      }
+    }
+
+    h3 {
+      font-size: 1.3rem;
+    }
+  }
+
+  // Responsive per tablet (fino a 1024px)
+  @media screen and (max-width: 1024px) {
+    .p-datatable-orders {
+      font-size: 0.8rem;
+
+      .p-datatable-header {
+        font-size: 1rem;
+      }
+
+      .p-datatable-thead > tr > th,
+      .p-datatable-tbody > tr > td {
+        padding: 0.35rem 0.25rem;
+      }
+
+      // Nascondi più colonne su tablet
+      .p-datatable-thead > tr > th:nth-child(3), // Categoria
+      .p-datatable-tbody > tr > td:nth-child(3),
+      .p-datatable-thead > tr > th:nth-child(6), // Nome Cliente  
+      .p-datatable-tbody > tr > td:nth-child(6),
+      .p-datatable-thead > tr > th:nth-child(7), // Data
+      .p-datatable-tbody > tr > td:nth-child(7),
+      .p-datatable-thead > tr > th:nth-child(11), // Note Ordine
+      .p-datatable-tbody > tr > td:nth-child(11),
+      .p-datatable-thead > tr > th:nth-child(12), // Note Panino
+      .p-datatable-tbody > tr > td:nth-child(12) {
+        display: none;
+      }
+    }
+
+    .table-header {
+      font-size: 0.9rem;
+
+      .table-header-buttons {
+        width: 100%;
+        justify-content: flex-start;
+
+        button {
+          font-size: 0.75rem;
+          padding: 0.4rem 0.7rem;
+        }
+      }
+    }
+  }
+
+  // Responsive per mobile (fino a 768px)
+  @media screen and (max-width: 768px) {
+    .p-datatable-orders {
+      font-size: 0.85rem;
+
+      .p-datatable-header {
+        font-size: 1rem;
+        padding: 0.75rem;
+      }
+
+      .p-paginator {
+        padding: 0.5rem;
+      }
+
+      // Nascondi più colonne su mobile (mostra solo le essenziali)
+      .p-datatable-thead > tr > th:nth-child(3), // Categoria
+      .p-datatable-tbody > tr > td:nth-child(3),
+      .p-datatable-thead > tr > th:nth-child(6), // Nome Cliente
+      .p-datatable-tbody > tr > td:nth-child(6),
+      .p-datatable-thead > tr > th:nth-child(7), // Data
+      .p-datatable-tbody > tr > td:nth-child(7),
+      .p-datatable-thead > tr > th:nth-child(10), // Asporto
+      .p-datatable-tbody > tr > td:nth-child(10),
+      .p-datatable-thead > tr > th:nth-child(11), // Note Ordine
+      .p-datatable-tbody > tr > td:nth-child(11),
+      .p-datatable-thead > tr > th:nth-child(12), // Note Panino
+      .p-datatable-tbody > tr > td:nth-child(12) {
+        display: none;
+      }
+
+      // Ridimensiona checkbox
+      .p-datatable-thead > tr > th:first-child,
+      .p-datatable-tbody > tr > td:first-child {
+        width: 2rem;
+        padding: 0.25rem;
+      }
+
+      // Ridimensiona colonna azioni
+      .p-datatable-thead > tr > th:last-child,
+      .p-datatable-tbody > tr > td:last-child {
+        width: 5rem;
+        padding: 0.25rem;
+      }
+
+      .p-button {
+        padding: 0.375rem;
+        
+        .p-button-icon {
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .table-header {
+      flex-direction: column;
+      align-items: stretch;
+
+      .table-header-buttons {
+        flex-direction: column;
+        
+        > div {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        button {
+          flex: 1;
+          min-width: 100px;
+          font-size: 0.8rem;
+          padding: 0.4rem 0.75rem;
+        }
+
+        .p-input-icon-left {
+          width: 100%;
+
+          input {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  // Responsive per schermi molto piccoli (fino a 480px)
+  @media screen and (max-width: 480px) {
+    .p-datatable-orders {
+      .p-datatable-header {
+        font-size: 0.9rem;
+      }
+
+      // Mostra solo colonne critiche
+      .p-datatable-thead > tr > th:nth-child(5), // Tavolo
+      .p-datatable-tbody > tr > td:nth-child(5) {
+        display: none;
+      }
+    }
+  }
 }
 
 .show-notify-container {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: -20px;
   margin-left: 30px;
+
+  label {
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  @media screen and (max-width: 768px) {
+    margin-top: 0;
+    margin-left: 0;
+  }
+}
+
+// Batch Edit Dialog Styles
+:host ::ng-deep {
+  .batch-edit-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background-color: #e3f2fd;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #2196f3;
+
+    i {
+      color: #2196f3;
+      font-size: 1.25rem;
+      margin-top: 0.125rem;
+      flex-shrink: 0;
+    }
+
+    > div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    span {
+      color: #1565c0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+
+      strong {
+        font-weight: 600;
+      }
+    }
+
+    .batch-edit-note {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #424242;
+      font-style: italic;
+      line-height: 1.4;
+    }
+  }
+
+  .p-dialog {
+    .field {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+      }
+
+      small {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+
+      textarea {
+        width: 100%;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 0.5rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        resize: vertical;
+
+        &:focus {
+          outline: none;
+          border-color: #2196f3;
+          box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+
+        &::placeholder {
+          color: #999;
+          font-style: italic;
+        }
+      }
+    }
+
+    .p-dropdown {
+      width: 100%;
+    }
+
+    // Fix allineamento dropdown stati
+    .status-item-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+
+      .status-label {
+        display: inline-block;
+        line-height: 1;
+      }
+    }
+  }
+
+  // Stile per il pulsante Modifica Batch
+  .p-button-warning {
+    background-color: #ff9800;
+    border-color: #ff9800;
+
+    &:enabled:hover {
+      background-color: #f57c00;
+      border-color: #f57c00;
+    }
+
+    &:enabled:active {
+      background-color: #ef6c00;
+      border-color: #ef6c00;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  // Modern Table Styles
+  .p-datatable-orders-modern {
+    .p-datatable-thead > tr > th {
+      // background: Ora usa lo stile globale da global-overrides.scss
+      // color: Ora usa lo stile globale
+      font-weight: 600;
+      padding: 0.65rem 0.75rem;
+      border: none;
+      font-size: 0.85rem;
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+
+        i {
+          font-size: 0.8rem;
+          opacity: 0.9;
+        }
+      }
+
+      .p-sortable-column-icon {
+        color: white;
+      }
+    }
+
+    .p-datatable-tbody > tr {
+      &:hover {
+        background: #f8f9fa;
+      }
+
+      &.p-highlight {
+        background: #eff6ff;
+      }
+
+      > td {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+        vertical-align: middle;
+
+        // Previeni overflow in edit mode
+        input,
+        .p-dropdown,
+        textarea {
+          font-size: 0.875rem;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+          padding: 0.4rem 0.5rem;
+          width: 100%;
+        }
+
+        // Action buttons inline
+        &.actions-cell {
+          white-space: nowrap;
+          
+          button {
+            display: inline-flex !important;
+            margin: 0 0.15rem !important;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+
+    // Fix overflow in edit mode
+    .p-datatable-wrapper {
+      overflow-x: auto;
+    }
+
+    &:has(.p-row-editing) {
+      .p-datatable-wrapper {
+        overflow-x: visible;
+      }
+
+      tr.p-row-editing > td {
+        overflow: visible;
+        
+        .p-dropdown {
+          min-width: 150px;
+        }
+      }
+    }
+
+    .empty-message {
+      padding: 0 !important;
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+
+        i {
+          font-size: 4rem;
+          color: #d1d5db;
+          margin-bottom: 1rem;
+        }
+
+        h4 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.25rem;
+          color: #4b5563;
+        }
+
+        p {
+          margin: 0;
+          color: #9ca3af;
+          font-size: 0.95rem;
+        }
+      }
+    }
+  }
+
+  // Batch Edit Dialog Styles
+  .batch-edit-dialog {
+    .p-dialog-header {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px 12px 0 0;
+
+      .dialog-header-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+
+        i {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 8px;
+          font-size: 1.25rem;
+        }
+
+        .dialog-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          display: block;
+        }
+
+        .dialog-subtitle {
+          font-size: 0.85rem;
+          opacity: 0.9;
+          display: block;
+          margin-top: 0.25rem;
+        }
+      }
+
+      .p-dialog-header-icon {
+        color: white;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+
+    .p-dialog-content {
+      padding: 1.5rem;
+    }
+
+    .batch-edit-info-card {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+
+      .info-icon {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #3b82f6;
+        color: white;
+        border-radius: 8px;
+        flex-shrink: 0;
+        font-size: 1.1rem;
+      }
+
+      .info-content {
+        h4 {
+          margin: 0 0 0.25rem 0;
+          font-size: 0.95rem;
+          color: #1e3a8a;
+          font-weight: 600;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.85rem;
+          color: #1e40af;
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .batch-edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: #4b5563;
+          font-size: 0.9rem;
+
+          i {
+            color: #3b82f6;
+            font-size: 0.9rem;
+          }
+        }
+
+        .p-dropdown,
+        .p-inputtextarea {
+          width: 100%;
+        }
+
+        .field-hint {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8rem;
+          color: #f59e0b;
+
+          i {
+            font-size: 0.8rem;
+          }
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0;
+        }
+
+        .plate-item {
+          padding: 0.5rem;
+          border-radius: 4px;
+          color: white;
+          font-weight: 600;
+        }
+      }
+    }
+
+    .p-dialog-footer {
+      padding: 1rem 1.5rem;
+      border-top: 2px solid #f3f4f6;
+
+      .dialog-footer-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .orders-management-container {
+    padding: 1rem;
+  }
+
+  .orders-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+
+    .toolbar-left,
+    .toolbar-right,
+    .toolbar-center {
+      width: 100%;
+      max-width: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .quick-stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

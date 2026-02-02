@@ -1,120 +1,367 @@
-@import 'mixins';
+@import '../../../sass/theme';
+@import '../../../sass/mixins';
 
+// ========================================
+// ITEM NORMALE (Carousel multi-plate)
+// ========================================
 .item_container {
-  height: 100%;
   width: 100%;
+  min-height: 80px;
+  height: auto;
 
-  background: white;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
+  background: white !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
 
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+  column-gap: $spacing-md;
+  row-gap: 0;
+  align-items: center;
   position: relative;
 
-  padding-right: 5px;
+  padding: $spacing-sm $spacing-md;
 
-  .item_title {
-    grid-column: 1/1;
-    grid-row: 1/2;
-    position: relative;
+  // Sfondi colorati sfumati per item in ritardo
+  &.delay-warning {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.12) 0%, rgba(251, 191, 36, 0.03) 100%) !important;
+    border-left: 4px solid rgba(251, 191, 36, 0.6);
+  }
 
-    text-transform: uppercase;
-    font-weight: bold;
-    border-bottom: 1px solid black;
+  &.delay-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.04) 100%) !important;
+    border-left: 4px solid rgba(239, 68, 68, 0.7);
+  }
 
-    i {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+  .item-delay-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    z-index: 10;
+    
+    ::ng-deep .p-tag {
+      font-size: 14px;
+      font-weight: 800;
+      padding: 6px 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      cursor: help;
+      
+      // Animazione pulsante per stati warning e danger
+      &.p-tag-warning,
+      &.p-tag-danger {
+        animation: pulse-badge 2s ease-in-out infinite;
+      }
     }
-
-    @include center-flex;
+  }
+  
+  @keyframes pulse-badge {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+    }
+    50% {
+      transform: scale(1.08);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
   }
 
-  .item_order {
-    width: 100%;
-    height: 100%;
-    grid-column: 2/2;
-    grid-row: 1/2;
-
-    text-transform: capitalize;
-    font-weight: bold;
-
-    @include center-flex;
-
-    border-radius: 0 20px 0 0;
-    border-bottom: 1px solid black;
+  // Titolo piatto (colonna 1, riga 1)
+  .item_title {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 19px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #1f2937 !important;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
+  // Info ordine e note (colonna 1, riga 2)
+  .item_order,
   .item_order_exp {
-    width: 100%;
-    height: 100%;
-    grid-column: 2/2;
-    grid-row: 1/2;
-
-    text-transform: capitalize;
-    font-weight: bold;
-
-    @include center-flex;
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 15px;
+    font-weight: 600;
+    color: #4b5563 !important;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
   }
 
   .item_note {
-    grid-column: 1/2;
-    grid-row: 2/2;
+    grid-column: 1 / 3;
+    grid-row: 3;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #4b5563 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-top: $spacing-xs;
+    border-top: 1px solid #e5e7eb;
+  }
 
-    @include center-flex;
+  // Azioni con icona asporto (colonna 2, riga 1-2)
+  .item_actions {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    display: flex;
+    flex-direction: row;
+    gap: $spacing-sm;
+    align-items: center;
+    justify-content: flex-end;
+    align-self: start;
+    padding-top: $spacing-xs;
 
-    ul {
-      margin: 0;
+    .takeaway-icon {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      animation: pulse-takeaway 2s ease-in-out infinite;
+      cursor: help;
+    }
 
-      list-style: none;
+    button {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      
+      ::ng-deep .pi {
+        font-size: 20px;
+      }
+    }
+  }
+  
+  @keyframes pulse-takeaway {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.9;
     }
   }
 
-  .item_actions {
-    grid-column: 2/2;
-    grid-row: 2/2;
+  // ========================================
+  // ITEM ESPANSO (Monitor sospeso - ceiling display)
+  // ========================================
+  &.expanded {
+    height: 165px;
+    padding: $spacing-md $spacing-lg;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    row-gap: $spacing-xs;
+    border: 3px solid #e5e7eb;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    align-items: start;
+    position: relative;
+    background: white !important;
 
-    @include center-flex;
-    justify-content: space-evenly;
+    // Sfondi colorati sfumati per vista espansa
+    &.delay-warning {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%) !important;
+      border-left: 5px solid rgba(251, 191, 36, 0.7);
+    }
+
+    &.delay-danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.18) 0%, rgba(239, 68, 68, 0.06) 100%) !important;
+      border-left: 5px solid rgba(239, 68, 68, 0.8);
+    }
+
+    .item_title {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+      white-space: normal;
+      overflow: visible;
+      text-align: left;
+      color: #1f2937 !important;
+    }
+
+    .item_order_exp {
+      grid-column: 1;
+      grid-row: 2;
+      font-size: 22px;
+      font-weight: 700;
+      color: #4b5563 !important;
+      text-align: left;
+    }
+
+    // Icona asporto centrata orizzontalmente e verticalmente
+    .takeaway-icon {
+      position: absolute;
+      right: 50%;
+      transform: translateX(50%);
+      top: $spacing-lg;
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      animation: pulse-takeaway 2s ease-in-out infinite;
+    }
+
+    .item_note {
+      grid-column: 1;
+      grid-row: 3;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.5;
+      white-space: normal;
+      word-wrap: break-word;
+      overflow: visible;
+      text-overflow: unset;
+      padding-top: $spacing-md;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #4b5563 !important;
+    }
+
+    .item-delay-badge {
+      top: -12px;
+      right: -12px;
+      
+      ::ng-deep .p-tag {
+        font-size: 18px;
+        padding: $spacing-sm $spacing-lg;
+        border: 3px solid rgba(255, 255, 255, 0.95);
+      }
+    }
+
+    .item_actions {
+      display: none; // Nessuna azione su monitor sospeso
+    }
+
+    // Pulsante spostamento rapido per vista espansa
+    .item_quick_move {
+      position: absolute;
+      bottom: $spacing-md;
+      right: $spacing-lg;
+      
+      .quick-move-button {
+        width: 56px;
+        height: 56px;
+        
+        ::ng-deep .pi {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+        }
+      }
+    }
   }
 }
 
 .delete-options__container {
   position: absolute;
-  top: 0;
+  top: 100%;
   right: 0;
-  z-index: 1;
+  margin-top: $spacing-xs;
+  z-index: 100;
+  min-width: 280px;
 
-  background-color: white;
-  width: 50%;
+  background: var(--theme-card-bg);
+  border: 2px solid var(--theme-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  align-items: baseline;
+  gap: 2px;
+  padding: $spacing-xs;
 
-  border: 1px solid black;
-  border-radius: 5px;
+  animation: fadeIn 0.2s ease;
 
-  span {
+  .info-option {
     width: 100%;
-    padding: 5px;
+    padding: $spacing-sm $spacing-md;
+    background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+    cursor: default;
+    margin-bottom: $spacing-xs;
+
+    i {
+      font-size: 18px;
+      color: $primary-600;
+      margin-bottom: $spacing-xs;
+    }
+
+    .info-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: var(--theme-text-primary);
+
+      div {
+        display: flex;
+        gap: $spacing-xs;
+
+        strong {
+          min-width: 60px;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  .action-option,
+  .plate-option {
+    width: 100%;
+    padding: $spacing-sm $spacing-md;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: transparent;
+
+    i {
+      font-size: 16px;
+      color: var(--theme-text-secondary);
+      flex-shrink: 0;
+    }
 
     label {
-      margin-left: 10px;
-
-      &:hover {
-        cursor: pointer;
-      }
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--theme-text-primary);
+      cursor: pointer;
+      margin: 0;
     }
 
     &:hover {
-      cursor: pointer;
-      background-color: gainsboro;
-      border: 1px solid black;
-      border-radius: 5px;
+      background: var(--theme-surface);
+      transform: translateX(4px);
+
+      i {
+        color: var(--theme-primary);
+      }
+    }
+
+    &:active {
+      transform: translateX(2px) scale(0.98);
     }
   }
 }

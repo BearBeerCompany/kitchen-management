@@ -1,7 +1,14 @@
+// Import global design system
+@import 'app/sass/theme';
+@import 'app/sass/mixins';
+@import 'app/sass/global-overrides';
+
 html, body {
   margin: 0;
   height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  background: $background;
+  color: $text-primary;
 }
 
 ::-webkit-scrollbar {
@@ -20,4 +27,56 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.6);
+}
+
+// Fix per dropdown e treeselect panels in editing mode delle tabelle
+// Con appendTo="body" vengono renderizzati fuori dalla tabella
+.p-dropdown-panel,
+.p-treeselect-panel {
+  z-index: 9999 !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,.16), 0 3px 6px rgba(0,0,0,.23) !important;
+}
+
+// Assicura che i dropdown in edit mode siano visibili
+.p-datatable .p-datatable-tbody > tr.p-row-editing {
+  z-index: 100 !important;
+  position: relative !important;
+  
+  > td {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    
+    .p-cell-editing {
+      overflow: visible !important;
+      max-height: none !important;
+    }
+  }
+  
+  .p-dropdown,
+  .p-treeselect {
+    overflow: visible !important;
+  }
+  
+  // Forza i contenitori dei dropdown ad essere visibili
+  .p-dropdown-trigger,
+  .p-treeselect-trigger {
+    overflow: visible !important;
+  }
+}
+
+// Rimuovi completamente overflow quando una riga è in editing
+.p-datatable:has(.p-row-editing) {
+  overflow: visible !important;
+  
+  .p-datatable-wrapper,
+  .p-datatable-table,
+  .p-datatable-tbody,
+  tbody,
+  table,
+  tr,
+  td {
+    overflow: visible !important;
+    max-height: none !important;
+  }
 }

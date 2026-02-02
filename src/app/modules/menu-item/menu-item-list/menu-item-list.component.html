@@ -1,60 +1,108 @@
-<section>
-  <p-table [value]="items!" dataKey="id" [scrollable]="true" editMode="row">
-    <ng-template pTemplate="header">
-      <tr>
-        <th [style]="{'width':'50%'}">Nome</th>
-        <th>Descrizione</th>
-        <th>Id esterno (GSG)</th>
-        <th></th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-item let-editing="editing" let-ri="rowIndex">
-      <tr [pEditableRow]="item">
-        <td>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input pInputText type="text" [(ngModel)]="item.name">
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{item.name}}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input pInputText type="text" [(ngModel)]="item.description">
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{item.description}}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input pInputText type="number" [(ngModel)]="item.externalId">
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{item.externalId}}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td style="display: flex; justify-content: flex-end; align-items: center;">
-          <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
-                  (click)="onRowEditInit(item)" class="p-button-rounded p-button-text"></button>
-          <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
-                  (click)="delete.emit(item)" class="p-button-rounded p-button-text p-button-danger"></button>
-          <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
-                  (click)="onRowEditSave(item)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
-          <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
-                  (click)="onRowEditCancel(item, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-  <div id="item-list__empty" *ngIf="items?.length == 0">
-    <i class="pi pi-book"></i>
-    <p>Nessun prodotto Inserito in <span>{{categoryName}}</span></p>
+<div class="menu-items-container">
+  <div class="search-bar">
+    <span class="p-input-icon-left">
+      <i class="pi pi-search"></i>
+      <input type="text" 
+             pInputText 
+             placeholder="Cerca prodotto per nome o descrizione..." 
+             [(ngModel)]="searchText"
+             (input)="onSearch()">
+    </span>
+    <div class="items-count">
+      <i class="pi pi-shopping-bag"></i>
+      <span>{{filteredItems.length}} prodotti</span>
+    </div>
   </div>
-</section>
+
+  <div class="items-grid" *ngIf="filteredItems.length > 0">
+    <div *ngFor="let item of filteredItems; let i = index" 
+         class="item-card"
+         [class.editing]="isEditing(item)">
+      
+      <div class="card-header">
+        <div class="item-number" [style.background-color]="categoryColor">
+          #{{item.externalId || '—'}}
+        </div>
+        <div class="card-actions" *ngIf="!isEditing(item)">
+          <button pButton pRipple 
+                  icon="pi pi-pencil"
+                  class="p-button-rounded p-button-text p-button-sm"
+                  pTooltip="Modifica"
+                  tooltipPosition="top"
+                  (click)="onRowEditInit(item)">
+          </button>
+          <button pButton pRipple 
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                  pTooltip="Elimina"
+                  tooltipPosition="top"
+                  (click)="onDelete(item)">
+          </button>
+        </div>
+        <div class="card-actions" *ngIf="isEditing(item)">
+          <button pButton pRipple 
+                  icon="pi pi-check"
+                  class="p-button-rounded p-button-text p-button-success p-button-sm"
+                  pTooltip="Salva"
+                  tooltipPosition="top"
+                  (click)="onRowEditSave(item)">
+          </button>
+          <button pButton pRipple 
+                  icon="pi pi-times"
+                  class="p-button-rounded p-button-text p-button-danger p-button-sm"
+                  pTooltip="Annulla"
+                  tooltipPosition="top"
+                  (click)="onRowEditCancel(item, i)">
+          </button>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <div class="item-name">
+          <ng-container *ngIf="!isEditing(item)">
+            <i class="pi pi-tag"></i>
+            <span>{{item.name}}</span>
+          </ng-container>
+          <input *ngIf="isEditing(item)" 
+                 pInputText 
+                 type="text" 
+                 [(ngModel)]="item.name"
+                 placeholder="Nome prodotto">
+        </div>
+
+        <div class="item-description">
+          <ng-container *ngIf="!isEditing(item)">
+            <i class="pi pi-align-left"></i>
+            <span>{{item.description || 'Nessuna descrizione'}}</span>
+          </ng-container>
+          <textarea *ngIf="isEditing(item)" 
+                    pInputTextarea 
+                    [(ngModel)]="item.description"
+                    placeholder="Descrizione prodotto"
+                    rows="2">
+          </textarea>
+        </div>
+
+        <div class="item-external-id" *ngIf="isEditing(item)">
+          <label>ID Esterno (GSG)</label>
+          <input pInputText 
+                 type="number" 
+                 [(ngModel)]="item.externalId"
+                 placeholder="ID esterno">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredItems.length === 0 && (!items || items.length === 0)">
+    <i class="pi pi-inbox"></i>
+    <h4>Nessun prodotto in {{categoryName}}</h4>
+    <p>Inizia aggiungendo il primo prodotto a questa categoria</p>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredItems.length === 0 && items && items.length > 0">
+    <i class="pi pi-search"></i>
+    <h4>Nessun risultato</h4>
+    <p>Nessun prodotto corrisponde alla ricerca "{{searchText}}"</p>
+  </div>
+</div>

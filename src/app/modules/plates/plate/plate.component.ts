@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, NgModule, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, NgModule, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {ItemEvent, mode, Plate, PlateInterface} from "../plate.interface";
 import {I18nService} from "../../../services/i18n.service";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -21,17 +21,19 @@ import {ItemsOverlayComponentModule} from "../items-overlay/items-overlay.compon
 import {ItemOverlayRowComponentModule} from "../item-overlay-row/item-overlay-row.component";
 import {MenuModule} from "primeng/menu";
 import {MenuItem} from 'primeng/api';
+import {DelayThresholdsService} from "../../../services/delay-thresholds.service";
 
 @Component({
   selector: 'plate',
   templateUrl: './plate.component.html',
   styleUrls: ['./plate.component.scss']
 })
-export class PlateComponent implements OnInit, OnDestroy {
+export class PlateComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() public config!: Plate;
   @Input() public plateList: Plate[] = [];
   @Input() public queue!: ReactiveQueue<PlateMenuItem>;
+  @Input() public showItemDelays: boolean = false;
 
   get chunk(): number {
     return this._display_chunk;
@@ -62,25 +64,53 @@ export class PlateComponent implements OnInit, OnDestroy {
   public sortingOptions: MenuItem[] = [];
   public selectedSortingType: SortType = "DATE_ASC";
   public viewMode: 'rows' | 'columns' = 'rows';
+  
+  // Delay tracking
+  public maxDelayMinutes: number = 0;
+  public avgDelayMinutes: number = 0;
+  public delaySeverity: 'success' | 'warning' | 'danger' = 'success';
 
   private queue$: Subscription = new Subscription();
   private _display_chunk: number = 20;
+  private _delayUpdateInterval: any;
 
   constructor(public i18nService: I18nService,
               private _route: ActivatedRoute,
               private _elementRef: ElementRef,
-              private _router: Router) {
+              private _router: Router,
+              private _delayThresholdsService: DelayThresholdsService) {
     this.i18n = i18nService.instance;
     this._elementRef.nativeElement.style.setProperty("--items-chunk", this._display_chunk);
-    this.viewMode = this.showExpand ? 'rows' : 'columns';
+  }
+
+  public ngOnChanges(changes: SimpleChanges): void {
+    // Quando config viene settato o cambia, carica la view mode SE la route è già stata processata
+    if (changes['config'] && changes['config'].currentValue && changes['config'].currentValue.id) {
+      // Usa setTimeout per assicurarsi che la route sia stata processata
+      setTimeout(() => {
+        this.loadViewModeFromStorage();
+      }, 0);
+    }
   }
 
   public ngOnInit(): void {
+    // Non caricare view mode subito - aspetta che la route sia pronta
+    
     this._route.params.subscribe(
       params => {
-        this.showExpand = !params["id"];
+        // Controlla se siamo nella vista di coppia (pair/:id)
+        const urlSegments = this._router.url.split('/');
+        const isPairView = urlSegments.includes('pair');
+        
+        // Se siamo nella vista di coppia, showExpand = false per permettere view mode
+        // Altrimenti, showExpand dipende dalla presenza del parametro id
+        this.showExpand = isPairView ? false : !params["id"];
         this.readonly = !this.showExpand;
-        this.viewMode = 'columns'; // default is columns view mode for expanded plate
+        
+        // Carica view mode SOLO dopo aver processato la route
+        if (this.config?.id) {
+          this.loadViewModeFromStorage();
+        }
       }
     );
 
@@ -96,8 +126,16 @@ export class PlateComponent implements OnInit, OnDestroy {
         if (this.todoItems.length == 0) {
           this.showOverlay = false;
         }
+        
+        // Calcola il ritardo ogni volta che cambiano gli items
+        this.calculateDelay();
       })
     );
+
+    // Aggiorna il ritardo ogni minuto
+    this._delayUpdateInterval = setInterval(() => {
+      this.calculateDelay();
+    }, 60000); // 60 secondi
 
     this.sortingOptions = [{
       label: 'Ordine',
@@ -135,6 +173,9 @@ export class PlateComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.queue$.unsubscribe();
+    if (this._delayUpdateInterval) {
+      clearInterval(this._delayUpdateInterval);
+    }
   }
 
   public onMouseEnter(): void {
@@ -274,11 +315,152 @@ export class PlateComponent implements OnInit, OnDestroy {
     this.onItemEvent.emit(event);
   }
 
-  public onViewMode(mode: 'rows' | 'columns') {
-    this.viewMode = mode;
-    if (this.showExpand) {
-      this.viewModeChange.emit(mode);
+  public onViewMode(mode?: 'rows' | 'columns') {
+    // Se non è specificato il mode, togglea tra rows e columns
+    if (!mode) {
+      this.viewMode = this.viewMode === 'rows' ? 'columns' : 'rows';
+    } else {
+      this.viewMode = mode;
     }
+    
+    // Salva in localStorage
+    localStorage.setItem(`plate_viewMode_${this.config?.id || 'default'}`, this.viewMode);
+    
+    if (this.showExpand) {
+      this.viewModeChange.emit(this.viewMode);
+    }
+  }
+
+  private loadViewModeFromStorage(): void {
+    if (!this.config?.id) {
+      // Se non c'è ancora config, usa default
+      this.viewMode = 'columns';
+      return;
+    }
+    
+    // Controlla direttamente l'URL per determinare se siamo in vista di coppia
+    const currentUrl = this._router.url;
+    const isPairView = currentUrl.includes('/pair/');
+    const isExpandedView = currentUrl.includes(`/plates/${this.config.id}`);
+    
+    // Se è nella vista carousel (non è pair view e non è expanded view), forza sempre rows
+    if (!isPairView && !isExpandedView) {
+      this.viewMode = 'rows';
+      return;
+    }
+    
+    // Se è espansa o in vista di coppia, carica da localStorage
+    const savedViewMode = localStorage.getItem(`plate_viewMode_${this.config.id}`);
+    
+    if (savedViewMode === 'rows' || savedViewMode === 'columns') {
+      this.viewMode = savedViewMode;
+    } else {
+      // Default per vista espansa/coppia: columns
+      this.viewMode = 'columns';
+    }
+  }
+
+  /**
+   * Calcola il ritardo degli ordini in Progress
+   * Ritardo = tempo trascorso dalla creazione dell'ordine
+   */
+  public calculateDelay(): void {
+    if (!this.progressItems || this.progressItems.length === 0) {
+      this.maxDelayMinutes = 0;
+      this.avgDelayMinutes = 0;
+      this.delaySeverity = 'success';
+      return;
+    }
+
+    const now = new Date().getTime();
+    const delays: number[] = [];
+
+    for (const item of this.progressItems) {
+      if (item.createdDate) {
+        const createdTime = new Date(item.createdDate).getTime();
+        const delayMs = now - createdTime;
+        const delayMinutes = Math.floor(delayMs / 60000); // converti in minuti
+        delays.push(delayMinutes);
+      }
+    }
+
+    if (delays.length === 0) {
+      this.maxDelayMinutes = 0;
+      this.avgDelayMinutes = 0;
+      this.delaySeverity = 'success';
+      return;
+    }
+
+    // Calcola max e media
+    this.maxDelayMinutes = Math.max(...delays);
+    this.avgDelayMinutes = Math.floor(delays.reduce((a, b) => a + b, 0) / delays.length);
+
+    // Determina il colore in base al ritardo massimo usando le soglie configurabili
+    this.delaySeverity = this._delayThresholdsService.getSeverity(this.maxDelayMinutes);
+  }
+
+  /**
+   * Formatta il tempo in formato leggibile (es. "15min" o "1h 30min")
+   */
+  public getDelayLabel(): string {
+    if (this.maxDelayMinutes === 0) {
+      return '';
+    }
+
+    const hours = Math.floor(this.maxDelayMinutes / 60);
+    const minutes = this.maxDelayMinutes % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}min`;
+    } else {
+      return `${minutes}min`;
+    }
+  }
+
+  /**
+   * Ottiene il tooltip con informazioni dettagliate sul ritardo
+   */
+  public getDelayTooltip(): string {
+    if (this.progressItems.length === 0) {
+      return '';
+    }
+
+    return `Ritardo Max: ${this.getDelayLabel()}\nRitardo Medio: ${this.formatMinutes(this.avgDelayMinutes)}\nOrdini in Corso: ${this.progressItems.length}`;
+  }
+
+  private formatMinutes(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${mins}min`;
+    } else {
+      return `${mins}min`;
+    }
+  }
+
+  /**
+   * Calcola se il colore di background è scuro usando la formula della luminosità relativa
+   * @param color - Il colore in formato hex (es: #FF5733)
+   * @returns true se il colore è scuro, false altrimenti
+   */
+  public isColorDark(color: string | undefined): boolean {
+    if (!color) return false;
+    
+    // Rimuove il # se presente
+    const hex = color.replace('#', '');
+    
+    // Converte in RGB
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    // Calcola la luminosità relativa usando la formula standard
+    // https://www.w3.org/TR/WCAG20/#relativeluminancedef
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+    // Se la luminosità è minore di 0.5, il colore è scuro
+    return luminance < 0.5;
   }
 }
 

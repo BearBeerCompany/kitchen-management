@@ -1,242 +1,330 @@
-@import 'mixins';
+@import '../../../sass/theme';
+@import '../../../sass/mixins';
 
-h3 {
-  @include title-center;
+// Modern Page Header - Optimized for ceiling display
+.plates-page-header {
+  background: var(--theme-card-bg);
+  border-bottom: 2px solid var(--theme-border);
+  padding: $spacing-sm $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-md;
 
-  position: relative;
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
 
-  button {
-    position: absolute;
-    right: 10%;
-    z-index: 1000;
-
-    width: 200px;
-    height: 45px;
-
-    font-size: 14px;
-    background-color: transparent;
-    transition: background-color 500ms linear;
-
-    padding: 10px;
-    border: 3px solid var(--primary-500);
-    border-radius: 10px;
-
-    span {
-      cursor: pointer;
-      display: inline-block;
-      position: relative;
-      transition: 0.5s;
-
-      &:after {
-        content: '\00bb';
-        position: absolute;
-        transform: rotate(90deg);
-        opacity: 0;
-        top: 0;
-        right: -20px;
-        transition: 0.5s;
-      }
+    i {
+      font-size: 2rem;
+      color: $primary-500;
+      background: linear-gradient(135deg, $primary-50 0%, $primary-100 100%);
+      padding: $spacing-md;
+      border-radius: $radius-md;
+      box-shadow: $shadow-sm;
     }
 
-    p-badge {
+    h2 {
+      margin: 0;
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: var(--theme-text-primary);
+    }
+
+    .header-subtitle {
+      margin: $spacing-xs 0 0 0;
+      font-size: $font-size-sm;
+      color: var(--theme-text-secondary);
+    }
+  }
+
+  .header-actions {
+    position: relative;
+    display: flex;
+    gap: $spacing-md;
+
+    items-overlay {
       position: absolute;
-      top: -10px;
-      right: -10px;
-    }
-
-    &:hover {
-      cursor: pointer;
-
-      span {
-        padding-right: 25px;
-
-        &:after {
-          opacity: 1;
-          right: 0;
-        }
+      right: 0;
+      top: calc(100% + $spacing-md);
+      z-index: $z-index-dropdown;
+      min-width: 400px;
+      max-height: 60vh;
+      box-shadow: $shadow-lg;
+      
+      ::ng-deep section {
+        border-radius: $radius-lg;
+        border: 1px solid var(--theme-border);
+        background: var(--theme-card-bg);
       }
     }
   }
 
-  .button__active-overlay {
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: $spacing-lg;
 
-    background-color: var(--primary-100);
-    transition: background-color 500ms linear;
+    .header-actions {
+      width: 100%;
+      
+      button {
+        width: 100%;
+      }
 
-    span {
-      padding-right: 25px;
-
-      &:after {
-        content: '\00bb';
-        transform: rotate(-90deg);
-        opacity: 1;
-        top: 0;
-        right: 0;
+      items-overlay {
+        min-width: 100%;
       }
     }
   }
+}
 
-  items-overlay {
-    height: 210px;
-    width: 40%;
-    margin: 0;
+// Modern Carousel Container - Optimized for ceiling display
+.modern-carousel-container {
+  position: relative;
+  padding: 0 $spacing-xl;
+  margin-bottom: $spacing-lg;
 
+  .carousel-nav-button {
     position: absolute;
-    right: 10%;
-    top: 56px;
-    z-index: 1000;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: $z-index-fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: $radius-full;
+    background: var(--theme-card-bg);
+    border: 3px solid var(--theme-primary);
+    box-shadow: $shadow-lg;
+    
+    .pi {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--theme-primary);
+    }
 
-    font-weight: 100;
-    font-size: 16px;
+    &.carousel-nav-previous {
+      left: $spacing-sm;
+    }
 
-    ::ng-deep section {
-      border: 1px solid black;
+    &.carousel-nav-next {
+      right: $spacing-sm;
     }
   }
 }
 
 .plates-carousel {
-  overflow-y: hidden;
-  overflow-x: hidden;
-
-  height: 90%;
-
+  overflow: hidden;
+  height: calc(100vh - 180px); // Più spazio per le plate
   display: flex;
   flex-direction: row;
-  align-items: center;
-  flex-wrap: nowrap;
-
+  align-items: stretch;
+  gap: $spacing-lg;
+  padding: $spacing-md 0;
   position: relative;
 
-  plate {
-    height: 90%;
-    flex-basis: calc(100% / var(--chunk));
-  }
-
-  .carousel-button {
-    height: 50px;
-    width: 50px;
-
-    position: absolute;
-    z-index: 1000;
-
+  .carousel-loading {
+    width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-
-    border: 1px transparent;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.0);
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.5s ease;
+    justify-content: center;
+    gap: $spacing-lg;
+    color: var(--theme-text-secondary);
 
     i {
-      color: white;
+      color: $primary-500;
     }
 
-    [hidden] {
-      display: none !important;
+    p {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
     }
-
   }
 
-  #carousel__previous-page {
-    left: 0;
+  plate {
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    flex-basis: calc((100% - (var(--chunk) - 1) * #{$spacing-lg}) / var(--chunk));
+    transition: none; // Rimosso hover per display a soffitto
+  }
+
+  @media (max-width: $breakpoint-xl) {
+    gap: $spacing-md;
+  }
+
+  @media (max-width: $breakpoint-lg) {
+    min-height: 500px;
+  }
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    min-height: auto;
+    gap: $spacing-lg;
+  }
+}
+
+// Modern Pagination Dots
+.carousel-pagination {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-md;
+  padding: $spacing-lg 0;
+  margin-bottom: $spacing-xl;
+
+  .pagination-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: $radius-full;
+    background: var(--theme-border);
+    border: none;
+    cursor: pointer;
+    transition: all $transition-base;
+    padding: 0;
 
     &:hover {
-      left: 10px;
-      background-color: var(--primary-500);
-      cursor: pointer;
+      background: $primary-300;
+      transform: scale(1.2);
     }
-  }
 
-  #carousel__next-page {
-    right: 0;
-
-    &:hover {
-      right: 10px;
-      background-color: var(--primary-500);
-      cursor: pointer;
+    &.active {
+      background: $primary-500;
+      width: 32px;
+      transform: scale(1);
     }
   }
 }
 
-.carousel__next-page-event {
-  right: 10px !important;
-  background-color: var(--primary-500) !important;
+// Plate Pairs Quick Access
+.plate-pairs-quick-access {
+  max-width: 1200px;
+  margin: 0 auto $spacing-lg;
+  padding: $spacing-lg;
+  background: var(--theme-card-bg);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 2px solid var(--theme-border);
+
+  .quick-access-header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+    color: var(--theme-text-primary);
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-lg;
+
+    i {
+      color: $primary-500;
+      font-size: 1.2rem;
+    }
+  }
+
+  .quick-access-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-sm;
+
+    button {
+      transition: all $transition-base;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-md;
+    
+    .quick-access-buttons {
+      flex-direction: column;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
 }
 
-.carousel__left-page-event {
-  left: 10px !important;
-  background-color: var(--primary-500) !important;
-}
 
+// Plates Options Overlay (for unassigned items plate selection)
 .plates-options__container {
   position: absolute;
-  top: 56px;
-  left: 90%;
-  right: 1%;
-  z-index: 1000;
-
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  font-weight: 100;
-
+  top: calc(100% + $spacing-md);
+  right: 0;
+  z-index: $z-index-dropdown;
+  min-width: 200px;
+  background: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: $radius-lg;
+  box-shadow: $shadow-lg;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
-  align-items: baseline;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
 
   span {
     width: 100%;
-    padding: 5px;
+    padding: $spacing-md $spacing-lg;
+    transition: background $transition-fast;
+    cursor: pointer;
+    border-bottom: 1px solid var(--theme-divider);
 
-    label {
-      margin-left: 10px;
-
-      &:hover {
-        cursor: pointer;
-      }
+    &:last-child {
+      border-bottom: none;
     }
 
     &:hover {
+      background: var(--theme-hover);
+    }
+
+    label {
       cursor: pointer;
-      background-color: gainsboro;
-      border: 1px solid black;
-      border-radius: 5px;
+      font-weight: $font-weight-semibold;
+      color: var(--theme-text-primary);
     }
   }
 }
 
-#paginator {
-  width: 100%;
-  height: 20px;
+// Responsive adjustments
+@media (max-width: $breakpoint-lg) {
+  .modern-carousel-container {
+    padding: 0 $spacing-lg;
 
-  @include center-flex();
-  flex-direction: row;
-
-  .circle {
-    width: 10px;
-    height: 10px;
-
-    background-color: var(--gray-400);
-    border: 1px solid transparent;
-    border-radius: 50%;
-
-    margin-left: 10px;
-    margin-right: 10px;
-  }
-
-  .active {
-    background-color: var(--primary-500);
+    .carousel-nav-button {
+      width: 40px;
+      height: 40px;
+    }
   }
 }
 
-.show-notify-container {
-  display: flex;
-  align-items: flex-start;
-  margin-top: -20px;
-  margin-left: 30px;
+@media (max-width: $breakpoint-md) {
+  .modern-carousel-container {
+    padding: 0;
+
+    .carousel-nav-button {
+      display: none; // Hide navigation buttons on mobile, use swipe
+    }
+  }
+
+  .plates-carousel {
+    flex-direction: column;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    height: calc(100vh - 200px) !important;
+    
+    plate {
+      flex: none;
+      height: auto;
+      min-height: 400px;
+    }
+  }
 }
+

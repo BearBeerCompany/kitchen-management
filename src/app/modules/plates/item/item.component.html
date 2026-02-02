@@ -1,22 +1,37 @@
-<div class="item_container">
+<div class="item_container" 
+     [class.expanded]="readonly"
+     [class.delay-warning]="delaySeverity === 'warning'"
+     [class.delay-danger]="delaySeverity === 'danger'">
+  <p-tag *ngIf="delayMinutes > 0 && showDelay"
+         class="item-delay-badge"
+         [severity]="delaySeverity"
+         [value]="'⏱ ' + getDelayLabel()"
+         [pTooltip]="'In lavorazione da ' + getDelayLabel()"
+         tooltipPosition="top"></p-tag>
+  
+  <!-- Icona asporto per vista espansa -->
+  <img src="assets/img/takeaway.png" 
+       *ngIf="config.takeAway && readonly" 
+       class="takeaway-icon"
+       [pTooltip]="'Ordine da Asporto'"
+       tooltipPosition="top">
+  
   <span class="item_title">
-    <i class="pi pi-info-circle"
-       [pTooltip]="config.createdDate + '\n Tavolo: ' + config.tableNumber + '\n Cliente: ' + config.clientName + '\n Ordine: ' + config.orderNumber"
-       tooltipPosition="top"></i>
     {{config.menuItem.name}}
   </span>
-  <span class="item_order" *ngIf="!readonly; else itemOrderExpanded">
-    <img src="assets/img/takeaway.png" *ngIf="config.takeAway" style="margin-right: 1rem; height: 30px;">
+  <span class="item_order" *ngIf="!readonly">
     #{{config.orderNumber}} - T: {{config.tableNumber}}
   </span>
-  <ng-template #itemOrderExpanded>
-    <span class="item_order_exp">
-      <img src="assets/img/takeaway.png" *ngIf="config.takeAway" style="margin-right: 1.5rem; height: 60px;">
-      #{{config.orderNumber}} - T: {{config.tableNumber}}
-    </span>
-  </ng-template>
+  <span class="item_order_exp" *ngIf="readonly">
+    #{{config.orderNumber}} - T: {{config.tableNumber}}
+  </span>
   <span class="item_note">{{ getNotes(config) }}</span>
   <span class="item_actions" *ngIf="!readonly">
+    <img src="assets/img/takeaway.png" 
+         *ngIf="config.takeAway" 
+         class="takeaway-icon"
+         [pTooltip]="'Ordine da Asporto'"
+         tooltipPosition="top">
     <button (click)="onDone()"
             class="p-button-rounded p-button-text p-button-success"
             icon="pi pi-check"
@@ -29,17 +44,37 @@
             pRipple></button>
     <ng-container *ngIf="deleteOverlay" [ngTemplateOutlet]="overlay"></ng-container>
   </span>
+  
+  <!-- Pulsante spostamento rapido per vista espansa -->
+  <span class="item_quick_move" *ngIf="readonly && currentPlate?.quickMoveEnabled && currentPlate?.quickMoveTargetPlateId">
+    <button (click)="onQuickMove()"
+            class="p-button-rounded p-button-text p-button-warning quick-move-button"
+            icon="pi pi-arrow-right"
+            [pTooltip]="'Sposta in ' + getTargetPlateName()"
+            tooltipPosition="top"
+            pButton
+            pRipple></button>
+  </span>
 </div>
 <ng-template #overlay>
   <div class="delete-options__container">
     <ng-container *ngIf="!showPlateList">
-      <span (click)="opt.command!()" *ngFor="let opt of deleteOptions">
+      <span class="info-option">
+        <i class="pi pi-info-circle"></i>
+        <div class="info-details">
+          <div><strong>Data:</strong> {{config.createdDate}}</div>
+          <div><strong>Tavolo:</strong> {{config.tableNumber}}</div>
+          <div><strong>Cliente:</strong> {{config.clientName}}</div>
+          <div><strong>Ordine:</strong> {{config.orderNumber}}</div>
+        </div>
+      </span>
+      <span (click)="opt.command!()" *ngFor="let opt of deleteOptions" class="action-option">
         <i [class]="opt.icon"></i>
         <label>{{opt.label}}</label>
       </span>
     </ng-container>
     <ng-container *ngIf="showPlateList">
-      <span (click)="onPlateMoved(p)" *ngFor="let p of plateList">
+      <span (click)="onPlateMoved(p)" *ngFor="let p of plateList" class="plate-option">
         <label>{{p.name}}</label>
       </span>
     </ng-container>

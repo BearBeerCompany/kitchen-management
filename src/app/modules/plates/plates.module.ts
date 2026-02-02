@@ -11,11 +11,36 @@ import {MessageService} from "primeng/api";
 import {ItemsOverlayComponentModule} from "./items-overlay/items-overlay.component";
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormsModule } from '@angular/forms';
+import { PlatesSummaryComponent } from './plates-summary/plates-summary.component';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
+import { CalendarModule } from 'primeng/calendar';
+import { ChartModule } from 'primeng/chart';
+import { DropdownModule } from 'primeng/dropdown';
+import { PlateMenuItemsService } from '../shared/service/plate-menu-items.service';
+import { PlatePairsConfigComponent } from './plate-pairs-config/plate-pairs-config.component';
+import { PlatePairViewComponent } from './plate-pair-view/plate-pair-view.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 
 const routes: Routes = [
   {
     path: '',
     component: PlatesComponent
+  },
+  {
+    path: 'summary',
+    component: PlatesSummaryComponent
+  },
+  {
+    path: 'pairs-config',
+    component: PlatePairsConfigComponent
+  },
+  {
+    path: 'pair/:id',
+    component: PlatePairViewComponent
   },
   {
     path: ':id',
@@ -26,7 +51,10 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     PlatePageComponent,
-    PlatesComponent
+    PlatesComponent,
+    PlatesSummaryComponent,
+    PlatePairsConfigComponent,
+    PlatePairViewComponent
   ],
   imports: [
     CommonModule,
@@ -37,9 +65,18 @@ const routes: Routes = [
     ItemsOverlayComponentModule,
     ToastModule,
     InputSwitchModule,
-    FormsModule
+    FormsModule,
+    TableModule,
+    TagModule,
+    ButtonModule,
+    TooltipModule,
+    CalendarModule,
+    ChartModule,
+    DropdownModule,
+    DialogModule,
+    InputTextModule
   ],
-  providers: [MessageService]
+  providers: [MessageService, PlateMenuItemsService]
 })
 export class PlatesModule {
 }

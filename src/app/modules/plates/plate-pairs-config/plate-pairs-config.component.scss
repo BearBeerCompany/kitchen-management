@@ -1,0 +1,141 @@
+.config-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.config-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+
+    i {
+      font-size: 2rem;
+      color: #3b82f6;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .header-subtitle {
+      margin: 0.25rem 0 0 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.pairs-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.pair-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .pair-info {
+    flex: 1;
+
+    h3 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1.3rem;
+      color: #333;
+    }
+
+    .plates-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+
+      .plate-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #f3f4f6;
+        border-radius: 6px;
+        font-weight: 500;
+        color: #374151;
+
+        i {
+          color: #3b82f6;
+        }
+      }
+
+      > i {
+        color: #9ca3af;
+      }
+    }
+  }
+
+  .pair-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+
+  h3 {
+    margin: 1rem 0 0.5rem 0;
+    color: #333;
+  }
+
+  p {
+    margin-bottom: 2rem;
+  }
+}
+
+.dialog-content {
+  padding: 1rem 0;
+
+  .field {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    input,
+    ::ng-deep .p-dropdown {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep {
+  .w-full {
+    width: 100%;
+  }
+}

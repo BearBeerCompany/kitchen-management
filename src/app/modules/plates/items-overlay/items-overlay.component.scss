@@ -72,3 +72,33 @@ section {
     }
   }
 }
+
+// Responsive mobile
+@media screen and (max-width: 768px) {
+  section {
+    width: 100% !important;
+    height: calc(100vh - 200px) !important;
+    max-height: 70vh !important;
+    position: fixed;
+    top: 120px;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    margin: 0 !important;
+    border-radius: 10px 10px 0 0;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+    
+    .items-overlay__rows-container {
+      padding-bottom: 20px;
+      
+      ::ng-deep {
+        .items-overlay__row {
+          width: 90%;
+          padding: 15px 10px;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+}
