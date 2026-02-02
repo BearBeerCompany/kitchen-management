@@ -457,11 +457,19 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public onLanguageChange(language: 'it' | 'en'): void {
     this.i18nService.setLanguage(language);
+    
+    // Mostra messaggio prima del reload
     this._messageService.add({
       severity: 'success',
       summary: language === 'it' ? 'Lingua Modificata' : 'Language Changed',
-      detail: language === 'it' ? 'La lingua è stata modificata con successo' : 'Language has been changed successfully'
+      detail: language === 'it' ? 'Ricaricamento in corso...' : 'Reloading...',
+      life: 1000
     });
+    
+    // Ricarica la pagina dopo un breve delay per mostrare il messaggio
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   }
 
 }
