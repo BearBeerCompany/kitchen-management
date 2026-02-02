@@ -6,6 +6,8 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {I18nService} from "../../../services/i18n.service";
 import {MenuItemsService} from "../../plate-menu-items/services/menu-items.service";
 import {ConfirmationService, MessageService} from "primeng/api";
+import {Plate} from "../../plates/plate.interface";
+import {PlateService} from "../../plates/services/plate.service";
 
 @Component({
   selector: 'menu-item',
@@ -18,6 +20,7 @@ export class MenuItemComponent implements OnInit {
 
   public categories$: Observable<Category[]> = of([]);
   public items$: Observable<MenuItem[]> = of([]);
+  public plates$: Observable<Plate[]> = of([]);
   public selectedCategory?: Category;
   public categoryForm?: FormGroup | undefined;
   public menuItemForm?: FormGroup | undefined;
@@ -36,19 +39,22 @@ export class MenuItemComponent implements OnInit {
               private _i18nService: I18nService,
               private _menuItemsService: MenuItemsService,
               private _messageService: MessageService,
-              private _confirmationService: ConfirmationService) {
+              private _confirmationService: ConfirmationService,
+              private _plateService: PlateService) {
     this.i18n = _i18nService.instance;
   }
 
   ngOnInit(): void {
     this.categories$ = this._categoryService.getAll();
+    this.plates$ = this._plateService.getAll();
 
     this.categoryForm = new FormGroup({
       name: new FormControl("", Validators.required),
       description: new FormControl("", Validators.required),
       color: new FormControl("", Validators.required),
       id: new FormControl(null),
-      externalId: new FormControl(-1)
+      externalId: new FormControl(-1),
+      plateId: new FormControl(null)
     });
 
     this.menuItemForm = new FormGroup({
@@ -66,22 +72,43 @@ export class MenuItemComponent implements OnInit {
   }
 
   public onCategorySubmit(): void {
+    const plateId = this.categoryForm?.get('plateId')?.value;
+    const categoryId = this.categoryForm?.get('id')?.value;
+    
     this._getFormCallback("category")
       .subscribe((category: Category | MenuItem) => {
         this.selectedCategory = category as Category;
-        this._categoryService.getAll()
+        
+        // Se c'è un plateId e una categoria salvata, effettua l'associazione
+        if (plateId && (categoryId || category.id)) {
+          this._categoryService.associatePlate(categoryId || category.id!, plateId)
             .subscribe(
-              (response: Category[]) => {
-                this._messageService.add({
-                  severity: 'success',
-                  summary: this.isEdit ? 'Categoria aggiornata' : 'Categoria creata',
-                  detail: `La categoria è stata ${this.isEdit ? 'modificata' : 'creata'} correttamente`
-                });
-                this.categories$ = of(response);
-                this.categoryDisplay = false;
-                this.isEdit = false;
-              })
+              () => {
+                this._refreshCategoriesAndShowSuccess();
+              },
+              (error) => {
+                console.error('Error associating plate:', error);
+                this._refreshCategoriesAndShowSuccess();
+              }
+            );
+        } else {
+          this._refreshCategoriesAndShowSuccess();
+        }
+      });
+  }
 
+  private _refreshCategoriesAndShowSuccess(): void {
+    this._categoryService.getAll()
+      .subscribe(
+        (response: Category[]) => {
+          this._messageService.add({
+            severity: 'success',
+            summary: this.isEdit ? 'Categoria aggiornata' : 'Categoria creata',
+            detail: `La categoria è stata ${this.isEdit ? 'modificata' : 'creata'} correttamente`
+          });
+          this.categories$ = of(response);
+          this.categoryDisplay = false;
+          this.isEdit = false;
         }
       );
   }
@@ -124,6 +151,7 @@ export class MenuItemComponent implements OnInit {
     this.categoryForm!.get('color')?.setValue(this.selectedCategory?.color);
     this.categoryForm!.get('id')?.setValue(this.selectedCategory?.id);
     this.categoryForm!.get('externalId')?.setValue(this.selectedCategory?.externalId);
+    this.categoryForm!.get('plateId')?.setValue((this.selectedCategory as any)?.plateId || null);
     this.categoryDisplay = true;
     this.isEdit = true;
   }
