@@ -4,13 +4,13 @@
       <i class="pi pi-search"></i>
       <input type="text" 
              pInputText 
-             placeholder="Cerca prodotto per nome o descrizione..." 
+             [placeholder]="i18n.ITEM.SEARCH_PLACEHOLDER" 
              [(ngModel)]="searchText"
              (input)="onSearch()">
     </span>
     <div class="items-count">
       <i class="pi pi-shopping-bag"></i>
-      <span>{{filteredItems.length}} prodotti</span>
+      <span>{{filteredItems.length}} {{i18n.ITEM.PRODUCTS_COUNT}}</span>
     </div>
   </div>
 
@@ -27,14 +27,14 @@
           <button pButton pRipple 
                   icon="pi pi-pencil"
                   class="p-button-rounded p-button-text p-button-sm"
-                  pTooltip="Modifica"
+                  [pTooltip]="i18n.COMMON.EDIT"
                   tooltipPosition="top"
                   (click)="onRowEditInit(item)">
           </button>
           <button pButton pRipple 
                   icon="pi pi-trash"
                   class="p-button-rounded p-button-text p-button-danger p-button-sm"
-                  pTooltip="Elimina"
+                  [pTooltip]="i18n.COMMON.DELETE"
                   tooltipPosition="top"
                   (click)="onDelete(item)">
           </button>
@@ -43,14 +43,14 @@
           <button pButton pRipple 
                   icon="pi pi-check"
                   class="p-button-rounded p-button-text p-button-success p-button-sm"
-                  pTooltip="Salva"
+                  [pTooltip]="i18n.COMMON.SAVE"
                   tooltipPosition="top"
                   (click)="onRowEditSave(item)">
           </button>
           <button pButton pRipple 
                   icon="pi pi-times"
                   class="p-button-rounded p-button-text p-button-danger p-button-sm"
-                  pTooltip="Annulla"
+                  [pTooltip]="i18n.COMMON.UNDO"
                   tooltipPosition="top"
                   (click)="onRowEditCancel(item, i)">
           </button>
@@ -67,28 +67,28 @@
                  pInputText 
                  type="text" 
                  [(ngModel)]="item.name"
-                 placeholder="Nome prodotto">
+                 [placeholder]="i18n.ITEM.PRODUCT_NAME_PLACEHOLDER">
         </div>
 
         <div class="item-description">
           <ng-container *ngIf="!isEditing(item)">
             <i class="pi pi-align-left"></i>
-            <span>{{item.description || 'Nessuna descrizione'}}</span>
+            <span>{{item.description || i18n.ITEM.NO_DESCRIPTION}}</span>
           </ng-container>
           <textarea *ngIf="isEditing(item)" 
                     pInputTextarea 
                     [(ngModel)]="item.description"
-                    placeholder="Descrizione prodotto"
+                    [placeholder]="i18n.ITEM.PRODUCT_DESC_PLACEHOLDER"
                     rows="2">
           </textarea>
         </div>
 
         <div class="item-external-id" *ngIf="isEditing(item)">
-          <label>ID Esterno (GSG)</label>
+          <label>{{i18n.ITEM.EXTERNAL_ID_LABEL}}</label>
           <input pInputText 
                  type="number" 
                  [(ngModel)]="item.externalId"
-                 placeholder="ID esterno">
+                 [placeholder]="i18n.ITEM.EXTERNAL_ID_PLACEHOLDER">
         </div>
       </div>
     </div>
@@ -96,8 +96,8 @@
 
   <div class="empty-state" *ngIf="filteredItems.length === 0 && (!items || items.length === 0)">
     <i class="pi pi-inbox"></i>
-    <h4>Nessun prodotto in {{categoryName}}</h4>
-    <p>Inizia aggiungendo il primo prodotto a questa categoria</p>
+    <h4>{{i18n.ITEM.NO_PRODUCTS}} {{categoryName}}</h4>
+    <p>{{i18n.ITEM.NO_PRODUCTS_DESC}}</p>
   </div>
 
   <div class="empty-state" *ngIf="filteredItems.length === 0 && items && items.length > 0">

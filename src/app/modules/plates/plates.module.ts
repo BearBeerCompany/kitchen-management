@@ -20,6 +20,10 @@ import { CalendarModule } from 'primeng/calendar';
 import { ChartModule } from 'primeng/chart';
 import { DropdownModule } from 'primeng/dropdown';
 import { PlateMenuItemsService } from '../shared/service/plate-menu-items.service';
+import { PlatePairsConfigComponent } from './plate-pairs-config/plate-pairs-config.component';
+import { PlatePairViewComponent } from './plate-pair-view/plate-pair-view.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 
 const routes: Routes = [
   {
@@ -31,6 +35,14 @@ const routes: Routes = [
     component: PlatesSummaryComponent
   },
   {
+    path: 'pairs-config',
+    component: PlatePairsConfigComponent
+  },
+  {
+    path: 'pair/:id',
+    component: PlatePairViewComponent
+  },
+  {
     path: ':id',
     component: PlatePageComponent
   }
@@ -40,7 +52,9 @@ const routes: Routes = [
   declarations: [
     PlatePageComponent,
     PlatesComponent,
-    PlatesSummaryComponent
+    PlatesSummaryComponent,
+    PlatePairsConfigComponent,
+    PlatePairViewComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +72,9 @@ const routes: Routes = [
     TooltipModule,
     CalendarModule,
     ChartModule,
-    DropdownModule
+    DropdownModule,
+    DialogModule,
+    InputTextModule
   ],
   providers: [MessageService, PlateMenuItemsService]
 })

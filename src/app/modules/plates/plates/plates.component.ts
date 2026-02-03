@@ -9,6 +9,8 @@ import {PlateService} from "../services/plate.service";
 import {WebSocketService} from "../../../services/web-socket-service";
 import {PKMINotification} from "../../../services/pkmi-notification";
 import {PlateMenuItemsService} from "../../shared/service/plate-menu-items.service";
+import {PlatePair, PlatePairsService} from "../services/plate-pairs.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'plates',
@@ -33,6 +35,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public loading: boolean = true;
   public showNotify: boolean = false;
   public showItemDelays: boolean = false;
+  public platePairs: PlatePair[] = [];
 
   private readonly _MIN_DELTA_SWIPE = 90;
 
@@ -50,7 +53,9 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
               private _plateService: PlateService,
               private _messageService: MessageService,
               private _webSocketService: WebSocketService,
-              private _plateMenuItemService: PlateMenuItemsService) {
+              private _plateMenuItemService: PlateMenuItemsService,
+              private _platePairsService: PlatePairsService,
+              private _router: Router) {
     this.i18n = i18nService.instance;
     this._pkmiNotification$ = this._webSocketService.pkmiNotifications$;
     this._elementRef.nativeElement.style.setProperty("--chunk", this.DISPLAY_CHUNK);
@@ -59,6 +64,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnInit(): void {
     this._loadPlatesConfig();
     this._loadSettingsFromLocalStorage();
+    this._loadPlatePairs();
 
     this._queue$.add(
       this._pkmiNotification$.subscribe((notification: PKMINotification | null) => {
@@ -290,5 +296,18 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public onShowItemDelaysChange(): void {
     localStorage.setItem('plates_showItemDelays', this.showItemDelays.toString());
+  }
+
+  private _loadPlatePairs(): void {
+    this._queue$.add(
+      this._platePairsService.pairs$.subscribe(pairs => {
+        this.platePairs = pairs;
+      })
+    );
+  }
+
+  public openPairView(pairId: string): void {
+    const url = `${window.location.origin}/#/plates/pair/${pairId}`;
+    window.open(url, '_blank');
   }
 }

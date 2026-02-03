@@ -3,9 +3,9 @@
   <div class="header-section">
     <h2 class="page-title">
       <i class="pi pi-book"></i>
-      Gestione Menù
+      {{i18n.ITEM.TITLE}}
     </h2>
-    <button pButton pRipple label="Nuova Categoria"
+    <button pButton pRipple [label]="i18n.ITEM.NEW_CATEGORY"
             icon="pi pi-plus-circle"
             class="p-button-rounded p-button-success"
             (click)="onCategoryCreate()">
@@ -42,18 +42,18 @@
         <button pButton pRipple
                 icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-plain"
-                pTooltip="Modifica Categoria"
+                [pTooltip]="i18n.ITEM.EDIT_CATEGORY"
                 tooltipPosition="bottom"
                 (click)="editCategory()">
         </button>
         <button pButton pRipple
                 icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-danger"
-                pTooltip="Elimina Categoria"
+                [pTooltip]="i18n.ITEM.DELETE_CATEGORY"
                 tooltipPosition="bottom"
                 (click)="deleteCategory()">
         </button>
-        <button pButton pRipple label="Aggiungi Prodotto"
+        <button pButton pRipple [label]="i18n.ITEM.ADD_PRODUCT"
                 icon="pi pi-plus"
                 class="p-button-rounded p-button-success"
                 (click)="onMenuItemCreate()">
@@ -63,8 +63,8 @@
 
     <menu-item-list
       [items]="(items$ | async)!"
-      [categoryName]="selectedCategory?.name!"
-      [categoryColor]="selectedCategory?.color!"
+      [categoryName]="selectedCategory.name!"
+      [categoryColor]="selectedCategory.color!"
       (edit)="onMenuItemEdit($event)"
       (delete)="onMenuItemDelete($event)">
     </menu-item-list>
@@ -72,8 +72,8 @@
 
   <div class="empty-state" *ngIf="!selectedCategory">
     <i class="pi pi-inbox"></i>
-    <h3>Seleziona una categoria</h3>
-    <p>Scegli una categoria dalla barra superiore per visualizzare e gestire i prodotti</p>
+    <h3>{{i18n.ITEM.SELECT_CATEGORY}}</h3>
+    <p>{{i18n.ITEM.SELECT_CATEGORY_DESC}}</p>
   </div>
 </div>
 <p-dialog 
@@ -82,33 +82,33 @@
   styleClass="dialog-lg">
   <ng-template pTemplate="header">
     <i class="pi pi-tag"></i>
-    {{isEdit ? 'Modifica Categoria' : 'Creazione Categoria'}}
+    {{isEdit ? i18n.ITEM.EDIT_CATEGORY : i18n.ITEM.CREATE_CATEGORY}}
   </ng-template>
   
   <form (ngSubmit)="onCategorySubmit()" [formGroup]="categoryForm!">
     <div class="form-field">
-      <label>Nome</label>
+      <label>{{i18n.COMMON.NAME}}</label>
       <input formControlName="name"
              pInputText
              type="text">
     </div>
     
     <div class="form-field">
-      <label>Descrizione</label>
+      <label>{{i18n.COMMON.DESCRIPTION}}</label>
       <input formControlName="description"
              pInputText
              type="text">
     </div>
     
     <div class="form-field">
-      <label>Colore</label>
+      <label>{{i18n.COMMON.COLOR}}</label>
       <div class="modern-color-picker">
         <div class="color-preview" [style.background-color]="categoryForm?.get('color')?.value">
-          <span class="preview-text">Anteprima Colore</span>
+          <span class="preview-text">{{i18n.ITEM.COLOR_PREVIEW}}</span>
         </div>
         <div class="color-palette">
           <div class="palette-section">
-            <label class="section-label">Seleziona Colore</label>
+            <label class="section-label">{{i18n.ITEM.SELECT_COLOR}}</label>
             <div class="color-grid">
               <button type="button" 
                       class="color-option"
@@ -123,7 +123,7 @@
             </div>
           </div>
           <div class="custom-color-section">
-            <label class="section-label">Colore Personalizzato</label>
+            <label class="section-label">{{i18n.ITEM.CUSTOM_COLOR}}</label>
             <input type="color" 
                    class="custom-color-input"
                    [value]="categoryForm?.get('color')?.value"
@@ -134,10 +134,21 @@
     </div>
     
     <div class="form-field">
-      <label>Identificativo esterno</label>
+      <label>{{i18n.COMMON.EXTERNAL_ID}}</label>
       <input formControlName="externalId"
              pInputText
              type="number">
+    </div>
+    
+    <div class="form-field">
+      <label>
+        <i class="pi pi-th-large"></i>
+        {{i18n.ITEM.PLATE_ASSOCIATED}}
+      </label>
+      <select formControlName="plateId" class="form-select">
+        <option [value]="null">{{i18n.ITEM.NO_PLATE}}</option>
+        <option *ngFor="let plate of (plates$ | async)" [value]="plate.id">{{plate.name}}</option>
+      </select>
     </div>
   </form>
   
@@ -161,19 +172,19 @@
   styleClass="dialog-md">
   <ng-template pTemplate="header">
     <i class="pi pi-shopping-bag"></i>
-    {{isEdit ? 'Modifica Prodotto' : 'Aggiungi Prodotto'}}
+    {{isEdit ? i18n.ITEM.EDIT_PRODUCT : i18n.ITEM.ADD_PRODUCT}}
   </ng-template>
   
   <form (ngSubmit)="onMenuItemSubmit()" [formGroup]="menuItemForm!">
     <div class="form-field">
-      <label>Nome</label>
+      <label>{{i18n.COMMON.NAME}}</label>
       <input formControlName="name"
              pInputText
              type="text">
     </div>
     
     <div class="form-field">
-      <label>Descrizione</label>
+      <label>{{i18n.COMMON.DESCRIPTION}}</label>
       <input formControlName="description"
              pInputText
              type="text">
@@ -182,13 +193,13 @@
     <div class="form-field">
       <label class="section-label">
         <i class="pi pi-tag"></i>
-        Categoria
+        {{i18n.ITEM.CATEGORY}}
       </label>
       <p style="margin: 0; font-weight: 600; color: var(--theme-text-primary);">{{selectedCategory?.name}}</p>
     </div>
     
     <div class="form-field">
-      <label>Identificativo esterno</label>
+      <label>{{i18n.COMMON.EXTERNAL_ID}}</label>
       <input formControlName="externalId"
              pInputText
              type="number">
@@ -208,7 +219,7 @@
   </ng-template>
 </p-dialog>
 
-<p-confirmDialog header="Conferma eliminazione"
+<p-confirmDialog [header]="i18n.ITEM.DELETE_CONFIRMATION"
                  icon="pi pi-exclamation-triangle"
                  acceptLabel="Si"
                  rejectLabel="No">

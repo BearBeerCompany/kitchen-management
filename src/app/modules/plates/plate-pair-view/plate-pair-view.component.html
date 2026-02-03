@@ -1,0 +1,35 @@
+<p-toast></p-toast>
+
+<div class="pair-view-container" *ngIf="(pair || (plateId1 && plateId2)) && plate1Config && plate2Config">
+  <!-- Dual Plate View - Full Screen like expanded view -->
+  <div class="dual-plate-view">
+    <div class="plate-container">
+      <plate [config]="plate1Config"
+             [queue]="queue1"
+             [chunk]="10"
+             [showItemDelays]="showItemDelays"
+             [plateList]="getEnabledPlateList(plate1Config)"
+             (onItemEvent)="handleItemEvent($event)"
+             (viewModeChange)="onPlateViewModeChange($event, plate1Config)">
+      </plate>
+    </div>
+
+    <div class="plate-divider"></div>
+
+    <div class="plate-container">
+      <plate [config]="plate2Config"
+             [queue]="queue2"
+             [chunk]="10"
+             [showItemDelays]="showItemDelays"
+             [plateList]="getEnabledPlateList(plate2Config)"
+             (onItemEvent)="handleItemEvent($event)"
+             (viewModeChange)="onPlateViewModeChange($event, plate2Config)">
+      </plate>
+    </div>
+  </div>
+</div>
+
+<div class="loading-container" *ngIf="!(pair || (plateId1 && plateId2)) || !plate1Config || !plate2Config">
+  <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
+  <p>Caricamento coppia di piastre...</p>
+</div>

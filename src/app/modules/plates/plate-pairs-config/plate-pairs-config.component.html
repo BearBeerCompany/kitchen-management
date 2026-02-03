@@ -1,0 +1,153 @@
+<p-toast></p-toast>
+
+<div class="config-container">
+  <!-- Header -->
+  <div class="config-header">
+    <button pButton 
+            pRipple
+            icon="pi pi-arrow-left" 
+            class="p-button-text"
+            (click)="goBack()">
+    </button>
+    <div class="header-title">
+      <i class="pi pi-link"></i>
+      <div>
+        <h2>{{i18n.SETTINGS.PAIRS.TITLE}} - {{i18n.COMMON.EDIT}}</h2>
+        <p class="header-subtitle">{{i18n.SETTINGS.PAIRS.DESCRIPTION}}</p>
+      </div>
+    </div>
+    <button pButton 
+            pRipple
+            [label]="i18n.SETTINGS.PAIRS.NEW_PAIR" 
+            icon="pi pi-plus"
+            class="p-button-success"
+            (click)="openAddDialog()">
+    </button>
+  </div>
+
+  <!-- Pairs List -->
+  <div class="pairs-list" *ngIf="pairs.length > 0">
+    <div class="pair-card" *ngFor="let pair of pairs">
+      <div class="pair-info">
+        <h3>{{ pair.name }}</h3>
+        <div class="plates-info">
+          <span class="plate-badge">
+            <i class="pi pi-inbox"></i>
+            {{ pair.plateName1 || pair.plateId1 }}
+          </span>
+          <i class="pi pi-plus"></i>
+          <span class="plate-badge">
+            <i class="pi pi-inbox"></i>
+            {{ pair.plateName2 || pair.plateId2 }}
+          </span>
+        </div>
+      </div>
+      <div class="pair-actions">
+        <button pButton 
+                pRipple
+                [label]="i18n.SETTINGS.PAIRS.OPEN" 
+                icon="pi pi-eye"
+                class="p-button-primary"
+                (click)="openPairView(pair.id)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-link"
+                class="p-button-text p-button-info"
+                [pTooltip]="i18n.PLATE.COPY_LINK_SHARABLE"
+                (click)="copyShareableLink(pair)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-pencil"
+                class="p-button-text"
+                [pTooltip]="i18n.COMMON.EDIT"
+                (click)="openEditDialog(pair)">
+        </button>
+        <button pButton 
+                pRipple
+                icon="pi pi-trash"
+                class="p-button-text p-button-danger"
+                [pTooltip]="i18n.COMMON.DELETE"
+                (click)="deletePair(pair.id)">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="pairs.length === 0">
+    <i class="pi pi-link" style="font-size: 4rem; color: #ccc;"></i>
+    <h3>{{i18n.SETTINGS.PAIRS.NO_PAIRS}}</h3>
+    <p>{{i18n.SETTINGS.PAIRS.NO_PAIRS_DESC}}</p>
+    <button pButton 
+            pRipple
+            [label]="i18n.SETTINGS.PAIRS.CREATE_FIRST" 
+            icon="pi pi-plus"
+            (click)="openAddDialog()">
+    </button>
+  </div>
+</div>
+
+<!-- Add/Edit Dialog -->
+<p-dialog [(visible)]="showAddDialog" 
+          [header]="editingPair ? i18n.SETTINGS.PAIRS.EDIT_PAIR : i18n.SETTINGS.PAIRS.NEW_PAIR"
+          [modal]="true"
+          [style]="{width: '500px'}"
+          [draggable]="false"
+          [resizable]="false">
+  <div class="dialog-content">
+    <div class="field">
+      <label for="pairName">{{i18n.SETTINGS.PAIRS.PAIR_NAME_LABEL}}</label>
+      <input id="pairName" 
+             type="text" 
+             pInputText 
+             [(ngModel)]="newPairName" 
+             [placeholder]="i18n.PLATE.PLATE_NAME_PLACEHOLDER"
+             class="w-full">
+    </div>
+
+    <div class="field">
+      <label for="plate1">{{i18n.SETTINGS.PAIRS.FIRST_PLATE}}</label>
+      <p-dropdown id="plate1"
+                  [(ngModel)]="selectedPlate1"
+                  [options]="availablePlates"
+                  optionLabel="name"
+                  [placeholder]="i18n.PLATE.SELECT_FIRST_PLATE"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="w-full">
+      </p-dropdown>
+    </div>
+
+    <div class="field">
+      <label for="plate2">{{i18n.SETTINGS.PAIRS.SECOND_PLATE}}</label>
+      <p-dropdown id="plate2"
+                  [(ngModel)]="selectedPlate2"
+                  [options]="availablePlates"
+                  optionLabel="name"
+                  [placeholder]="i18n.PLATE.SELECT_SECOND_PLATE"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="w-full">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton 
+            pRipple
+            [label]="i18n.COMMON.UNDO" 
+            icon="pi pi-times"
+            class="p-button-text"
+            (click)="closeDialog()">
+    </button>
+    <button pButton 
+            pRipple
+            [label]="i18n.COMMON.SAVE" 
+            icon="pi pi-check"
+            (click)="savePair()"
+            [disabled]="!newPairName || !selectedPlate1 || !selectedPlate2">
+    </button>
+  </ng-template>
+</p-dialog>

@@ -84,24 +84,30 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    // Quando config viene settato o cambia, carica la view mode
-    if (changes['config'] && changes['config'].currentValue) {
-      this.loadViewModeFromStorage();
+    // Quando config viene settato o cambia, carica la view mode SE la route è già stata processata
+    if (changes['config'] && changes['config'].currentValue && changes['config'].currentValue.id) {
+      // Usa setTimeout per assicurarsi che la route sia stata processata
+      setTimeout(() => {
+        this.loadViewModeFromStorage();
+      }, 0);
     }
   }
 
   public ngOnInit(): void {
-    // Carica view mode da localStorage se config è già disponibile
-    if (this.config?.id) {
-      this.loadViewModeFromStorage();
-    }
+    // Non caricare view mode subito - aspetta che la route sia pronta
     
     this._route.params.subscribe(
       params => {
-        this.showExpand = !params["id"];
+        // Controlla se siamo nella vista di coppia (pair/:id)
+        const urlSegments = this._router.url.split('/');
+        const isPairView = urlSegments.includes('pair');
+        
+        // Se siamo nella vista di coppia, showExpand = false per permettere view mode
+        // Altrimenti, showExpand dipende dalla presenza del parametro id
+        this.showExpand = isPairView ? false : !params["id"];
         this.readonly = !this.showExpand;
         
-        // Ricarica view mode dopo aver settato showExpand
+        // Carica view mode SOLO dopo aver processato la route
         if (this.config?.id) {
           this.loadViewModeFromStorage();
         }
@@ -332,18 +338,24 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
     
-    // Se è nella vista carousel (showExpand = true), forza sempre rows
-    if (this.showExpand) {
+    // Controlla direttamente l'URL per determinare se siamo in vista di coppia
+    const currentUrl = this._router.url;
+    const isPairView = currentUrl.includes('/pair/');
+    const isExpandedView = currentUrl.includes(`/plates/${this.config.id}`);
+    
+    // Se è nella vista carousel (non è pair view e non è expanded view), forza sempre rows
+    if (!isPairView && !isExpandedView) {
       this.viewMode = 'rows';
       return;
     }
     
-    // Se è espansa, carica da localStorage
+    // Se è espansa o in vista di coppia, carica da localStorage
     const savedViewMode = localStorage.getItem(`plate_viewMode_${this.config.id}`);
+    
     if (savedViewMode === 'rows' || savedViewMode === 'columns') {
       this.viewMode = savedViewMode;
     } else {
-      // Default per vista espansa: columns
+      // Default per vista espansa/coppia: columns
       this.viewMode = 'columns';
     }
   }

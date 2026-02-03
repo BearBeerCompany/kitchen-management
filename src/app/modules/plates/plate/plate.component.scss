@@ -336,7 +336,7 @@ section {
     align-items: center;
     justify-content: center;
     padding: $spacing-4xl;
-    gap: $spacing-xl;
+    gap: $spacing-md;
 
     h3 {
       text-transform: uppercase;
@@ -347,9 +347,31 @@ section {
       margin: 0;
     }
 
-    i#empty {
-      font-size: 120px;
+    .empty-icon {
+      width: 120px;
+      height: 120px;
       color: var(--theme-border);
+      opacity: 0.25;
+      //animation: waiting-pulse 3s ease-in-out infinite;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+    }
+    
+    .empty-subtitle {
+      font-size: $font-size-base;
+      color: var(--theme-text-tertiary);
+      font-style: italic;
+      margin: 0;
+      opacity: 0.6;
+    }
+  }
+  
+  @keyframes waiting-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.4;
+    }
+    50% {
+      transform: scale(1.05);
       opacity: 0.5;
     }
   }
