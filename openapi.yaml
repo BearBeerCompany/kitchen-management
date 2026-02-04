@@ -1,58 +1,100 @@
 openapi: 3.0.3
 info:
-  title: Kitchen Management API
-  description: |
-    REST API per il sistema di gestione cucina MusicFestOn.
-    
-    Questo sistema gestisce:
-    - Categorie e Menu Items
-    - Piatti (postazioni di lavoro)
-    - Ordini sui piatti
-    - Statistiche
-    - Integrazione GSG
-    
-    **Frontend Service Files**:
-    - Category: `src/app/modules/plate-menu-items/services/category.service.ts`
-    - Menu Items: `src/app/modules/plate-menu-items/services/menu-items.service.ts`
-    - Plates: `src/app/modules/plates/services/plate.service.ts`
-    - Plate Menu Items: `src/app/modules/shared/service/plate-menu-items.service.ts`
-    - Stats: `src/app/modules/shared/service/stats.service.ts`
-    - GSG: `src/app/modules/shared/service/gsg-integration.service.ts`
-  version: 1.0.0
+  title: Kitchen Management Server API
+  description: Kitchen Management Backend Server - REST API per la gestione di cucine, piastra, ordini e statistiche
+  version: 2.0.0
   contact:
     name: BearBeerCompany
-    url: https://github.com/BearBeerCompany/kitchen-management
+    url: https://github.com/BearBeerCompany/kitchen-management-server
 
 servers:
-  - url: http://10.10.1.12:8080
-    description: Development server
-  - url: http://localhost:8081
-    description: Production server
+  - url: http://localhost:8080
+    description: Server locale di sviluppo
 
 tags:
   - name: Category
-    description: Gestione categorie di menu items
-  - name: Menu Item
-    description: Gestione menu items
+    description: Gestione delle categorie di menù
+  - name: Kitchen Menu Item
+    description: Gestione degli articoli del menù di cucina
   - name: Plate
-    description: Gestione piatti (postazioni di lavoro)
-  - name: Plate Menu Item
-    description: Gestione ordini sui piatti
+    description: Gestione dei piastra/postazioni
+  - name: Plate Kitchen Menu Item
+    description: Gestione delle associazioni tra piastra e articoli di menù (ordini)
   - name: Stats
-    description: Statistiche del sistema
+    description: Statistiche sugli ordini
   - name: GSG Integration
     description: Integrazione con sistema esterno GSG
 
 paths:
+  # Category endpoints
+  /category/{id}:
+    get:
+      tags:
+        - Category
+      summary: Recupera una categoria per ID
+      operationId: getCategoryById
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID della categoria
+      responses:
+        '200':
+          description: Categoria trovata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '404':
+          description: Categoria non trovata
+    delete:
+      tags:
+        - Category
+      summary: Elimina una categoria per ID
+      operationId: deleteCategory
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID della categoria
+      responses:
+        '200':
+          description: Categoria eliminata con successo
+        '404':
+          description: Categoria non trovata
+          
   /category:
     get:
       tags:
         - Category
       summary: Recupera tutte le categorie
       operationId: getAllCategories
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       responses:
         '200':
-          description: Lista categorie recuperata con successo
+          description: Lista di categorie
           content:
             application/json:
               schema:
@@ -64,6 +106,13 @@ paths:
         - Category
       summary: Crea una nuova categoria
       operationId: createCategory
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -82,6 +131,13 @@ paths:
         - Category
       summary: Aggiorna una categoria esistente
       operationId: updateCategory
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -95,183 +151,262 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
-
-  /category/{id}:
-    get:
-      tags:
-        - Category
-      summary: Recupera una categoria specifica
-      operationId: getCategoryById
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Categoria recuperata con successo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Category'
-    delete:
-      tags:
-        - Category
-      summary: Elimina una categoria
-      operationId: deleteCategory
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Categoria eliminata con successo
-
+                
   /category/{id}/items:
     get:
       tags:
         - Category
-      summary: Recupera tutti gli items di una categoria
-      operationId: getCategoryItems
+      summary: Recupera tutti gli articoli di una categoria
+      operationId: getItemsByCategoryId
       parameters:
-        - $ref: '#/components/parameters/IdPathParam'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID della categoria
       responses:
         '200':
-          description: Items della categoria recuperati con successo
+          description: Lista di articoli della categoria
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/MenuItem'
+                  $ref: '#/components/schemas/KitchenMenuItem'
 
-  /category/{id}/plate:
-    get:
-      tags:
-        - Category
-      summary: Recupera il piatto associato a una categoria
-      deprecated: true
-      description: "DEPRECATED: Questa funzionalità è stata sostituita. Ora le categorie sono associate alle piastre tramite l'array 'categories' nel modello Plate."
-      operationId: getCategoryPlate
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Associazione piatto recuperata
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  plateId:
-                    type: string
-                    nullable: true
-    post:
-      tags:
-        - Category
-      summary: Associa un piatto a una categoria
-      deprecated: true
-      description: "DEPRECATED: Questa funzionalità è stata sostituita. Ora le categorie sono associate alle piastre tramite l'array 'categories' nel modello Plate. Utilizzare PUT /plate con l'array categories."
-      operationId: associatePlateToCategory
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - plateId
-              properties:
-                plateId:
-                  type: string
-      responses:
-        '200':
-          description: Piatto associato con successo
-
-  /item:
-    get:
-      tags:
-        - Menu Item
-      summary: Recupera tutti i menu items
-      operationId: getAllMenuItems
-      responses:
-        '200':
-          description: Lista menu items recuperata con successo
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MenuItem'
-    post:
-      tags:
-        - Menu Item
-      summary: Crea un nuovo menu item
-      operationId: createMenuItem
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MenuItem'
-      responses:
-        '200':
-          description: Menu item creato con successo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MenuItem'
-    put:
-      tags:
-        - Menu Item
-      summary: Aggiorna un menu item esistente
-      operationId: updateMenuItem
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MenuItem'
-      responses:
-        '200':
-          description: Menu item aggiornato con successo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MenuItem'
-
+  # Kitchen Menu Item endpoints
   /item/{id}:
     get:
       tags:
-        - Menu Item
-      summary: Recupera un menu item specifico
-      operationId: getMenuItemById
+        - Kitchen Menu Item
+      summary: Recupera un articolo per ID
+      operationId: getKitchenMenuItemById
       parameters:
-        - $ref: '#/components/parameters/IdPathParam'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID dell'articolo
       responses:
         '200':
-          description: Menu item recuperato con successo
+          description: Articolo trovato
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MenuItem'
+                $ref: '#/components/schemas/KitchenMenuItem'
+        '404':
+          description: Articolo non trovato
     delete:
       tags:
-        - Menu Item
-      summary: Elimina un menu item
-      operationId: deleteMenuItem
+        - Kitchen Menu Item
+      summary: Elimina un articolo per ID
+      operationId: deleteKitchenMenuItem
       parameters:
-        - $ref: '#/components/parameters/IdPathParam'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID dell'articolo
       responses:
         '200':
-          description: Menu item eliminato con successo
+          description: Articolo eliminato con successo
+        '404':
+          description: Articolo non trovato
+          
+  /item:
+    get:
+      tags:
+        - Kitchen Menu Item
+      summary: Recupera tutti gli articoli del menù
+      operationId: getAllKitchenMenuItems
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      responses:
+        '200':
+          description: Lista di articoli del menù
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KitchenMenuItem'
+    post:
+      tags:
+        - Kitchen Menu Item
+      summary: Crea un nuovo articolo del menù
+      operationId: createKitchenMenuItem
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KitchenMenuItem'
+      responses:
+        '200':
+          description: Articolo creato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KitchenMenuItem'
+    put:
+      tags:
+        - Kitchen Menu Item
+      summary: Aggiorna un articolo del menù esistente
+      operationId: updateKitchenMenuItem
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KitchenMenuItem'
+      responses:
+        '200':
+          description: Articolo aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KitchenMenuItem'
 
+  # Plate endpoints
+  /plate/{id}:
+    get:
+      tags:
+        - Plate
+      summary: Recupera un piatto per ID
+      operationId: getPlateById
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del piatto
+      responses:
+        '200':
+          description: Piatto trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plate'
+        '404':
+          description: Piatto non trovato
+    patch:
+      tags:
+        - Plate
+      summary: Abilita o disabilita un piatto
+      operationId: patchPlate
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del piatto
+        - name: enable
+          in: query
+          required: true
+          schema:
+            type: boolean
+          description: Flag per abilitare/disabilitare il piatto
+      responses:
+        '200':
+          description: Piatto aggiornato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plate'
+    delete:
+      tags:
+        - Plate
+      summary: Elimina un piatto per ID
+      operationId: deletePlate
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del piatto
+      responses:
+        '200':
+          description: Piatto eliminato con successo
+        '404':
+          description: Piatto non trovato
+          
   /plate:
     get:
       tags:
         - Plate
-      summary: Recupera tutti i piatti
+      summary: Recupera tutti i piastra
       operationId: getAllPlates
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       responses:
         '200':
-          description: Lista piatti recuperata con successo
+          description: Lista di piastra
           content:
             application/json:
               schema:
@@ -283,6 +418,13 @@ paths:
         - Plate
       summary: Crea un nuovo piatto
       operationId: createPlate
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -301,6 +443,13 @@ paths:
         - Plate
       summary: Aggiorna un piatto esistente
       operationId: updatePlate
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -314,164 +463,207 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Plate'
-
-  /plate/{id}:
-    get:
-      tags:
-        - Plate
-      summary: Recupera un piatto specifico
-      operationId: getPlateById
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Piatto recuperato con successo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Plate'
-    delete:
-      tags:
-        - Plate
-      summary: Elimina un piatto
-      operationId: deletePlate
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Piatto eliminato con successo
-    patch:
-      tags:
-        - Plate
-      summary: Abilita/disabilita un piatto
-      operationId: switchPlate
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-        - name: enable
-          in: query
-          required: true
-          schema:
-            type: boolean
-          description: true per abilitare, false per disabilitare
-      responses:
-        '200':
-          description: Piatto modificato con successo
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Plate'
-
+                
   /plate/status/{id}:
     get:
       tags:
         - Plate
-      summary: Recupera lo stato corrente di un piatto
+      summary: Recupera lo stato degli ordini di un piatto
       operationId: getPlateStatus
       parameters:
-        - $ref: '#/components/parameters/IdPathParam'
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID del piatto
       responses:
         '200':
-          description: Stato piatto recuperato con successo
+          description: Stato del piatto
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PlateMenuItem'
+                  $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
 
+  # Plate Kitchen Menu Item endpoints
+  /plate-item/{id}:
+    get:
+      tags:
+        - Plate Kitchen Menu Item
+      summary: Recupera un ordine per ID
+      operationId: getPlateKitchenMenuItemById
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID dell'ordine
+      responses:
+        '200':
+          description: Ordine trovato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+        '404':
+          description: Ordine non trovato
+          
   /plate-item:
     get:
       tags:
-        - Plate Menu Item
-      summary: Recupera ordini paginati con filtri
-      operationId: getAllPlateMenuItems
+        - Plate Kitchen Menu Item
+      summary: Recupera tutti gli ordini con filtri e paginazione
+      operationId: getAllPlateKitchenMenuItems
       parameters:
-        - name: statuses
-          in: query
+        - name: Content-Type
+          in: header
+          required: true
           schema:
             type: string
-            example: "TODO,PROGRESS"
-          description: Stati degli ordini separati da virgola (TODO, PROGRESS, DONE, CANCELLED)
+            default: application/json
+        - name: statuses
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/ItemStatus'
+          description: Lista di stati per filtrare gli ordini
         - name: offset
           in: query
+          required: false
           schema:
             type: integer
             default: 0
-          description: Numero di elementi da saltare
+          description: Offset per la paginazione
         - name: size
           in: query
+          required: false
           schema:
             type: integer
-            default: 1000
+            default: 20
           description: Numero di elementi per pagina
         - name: tableNumber
           in: query
+          required: false
           schema:
             type: string
-          description: Filtra per numero tavolo
+          description: Numero del tavolo
         - name: clientName
           in: query
+          required: false
           schema:
             type: string
-          description: Filtra per nome cliente
+          description: Nome del cliente
         - name: itemId
           in: query
+          required: false
           schema:
             type: string
-          description: Filtra per ID del menu item
+          description: ID dell'articolo del menù
         - name: orderNumber
           in: query
+          required: false
           schema:
-            type: string
-          description: Filtra per numero ordine
+            type: integer
+          description: Numero dell'ordine
       responses:
         '200':
-          description: Pagina di ordini recuperata con successo
+          description: Lista paginata di ordini
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PagePlateMenuItem'
+                type: object
+                properties:
+                  elements:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+                  offset:
+                    type: integer
+                  size:
+                    type: integer
+                  totalPage:
+                    type: integer
+                  totalSize:
+                    type: integer
     post:
       tags:
-        - Plate Menu Item
+        - Plate Kitchen Menu Item
       summary: Crea un nuovo ordine
-      operationId: createPlateMenuItem
+      operationId: createPlateKitchenMenuItem
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlateMenuItem'
+              $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
       responses:
         '200':
-          description: Ordine creato con successo
+          description: Ordine creato con successo (invia notifica WebSocket)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlateMenuItem'
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
     put:
       tags:
-        - Plate Menu Item
-      summary: Aggiorna un ordine
-      operationId: updatePlateMenuItem
+        - Plate Kitchen Menu Item
+      summary: Aggiorna un ordine esistente
+      operationId: updatePlateKitchenMenuItem
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PlateMenuItem'
+              $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
       responses:
         '200':
-          description: Ordine aggiornato con successo
+          description: Ordine aggiornato con successo (invia notifica WebSocket)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlateMenuItem'
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
     delete:
       tags:
-        - Plate Menu Item
+        - Plate Kitchen Menu Item
       summary: Elimina un ordine
-      operationId: deletePlateMenuItem
+      operationId: deletePlateKitchenMenuItem
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -481,323 +673,371 @@ paths:
               description: ID dell'ordine da eliminare
       responses:
         '200':
-          description: Ordine eliminato con successo
-
-  /plate-item/{id}:
-    get:
-      tags:
-        - Plate Menu Item
-      summary: Recupera un ordine specifico
-      operationId: getPlateMenuItemById
-      parameters:
-        - $ref: '#/components/parameters/IdPathParam'
-      responses:
-        '200':
-          description: Ordine recuperato con successo
+          description: Ordine eliminato con successo (invia notifica WebSocket)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlateMenuItem'
-
-  /plate-item/ids:
-    post:
-      tags:
-        - Plate Menu Item
-      summary: Recupera ordini per lista di IDs
-      operationId: getPlateMenuItemsByIds
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        '200':
-          description: Ordini recuperati con successo
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlateMenuItem'
-
-  /plate-item/list:
-    post:
-      tags:
-        - Plate Menu Item
-      summary: Crea multipli ordini
-      operationId: createAllPlateMenuItems
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/PlateMenuItem'
-      responses:
-        '200':
-          description: Ordini creati con successo
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlateMenuItem'
-    put:
-      tags:
-        - Plate Menu Item
-      summary: Aggiorna multipli ordini
-      operationId: updateAllPlateMenuItems
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/PlateMenuItem'
-      responses:
-        '200':
-          description: Ordini aggiornati con successo
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlateMenuItem'
-    delete:
-      tags:
-        - Plate Menu Item
-      summary: Elimina multipli ordini
-      operationId: deleteAllPlateMenuItems
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                type: string
-      responses:
-        '200':
-          description: Ordini eliminati con successo
-
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+                
   /plate-item/unassigned:
     get:
       tags:
-        - Plate Menu Item
-      summary: Recupera ordini non assegnati
-      operationId: getUnassignedPlateMenuItems
+        - Plate Kitchen Menu Item
+      summary: Recupera tutti gli ordini non assegnati a un piatto
+      operationId: getUnassignedPlateKitchenMenuItems
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       responses:
         '200':
-          description: Ordini non assegnati recuperati con successo
+          description: Lista di ordini non assegnati
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PlateMenuItem'
+                  $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+                  
+  /plate-item/ids:
+    post:
+      tags:
+        - Plate Kitchen Menu Item
+      summary: Recupera ordini per una lista di ID
+      operationId: getPlateKitchenMenuItemsByIds
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Lista di ordini
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+                  
+  /plate-item/list:
+    post:
+      tags:
+        - Plate Kitchen Menu Item
+      summary: Crea multipli ordini in batch
+      operationId: createAllPlateKitchenMenuItems
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+      responses:
+        '200':
+          description: Ordini creati con successo (invia notifica WebSocket)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+    put:
+      tags:
+        - Plate Kitchen Menu Item
+      summary: Aggiorna multipli ordini in batch
+      operationId: updateAllPlateKitchenMenuItems
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+      responses:
+        '200':
+          description: Ordini aggiornati con successo (invia notifica WebSocket)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlateKitchenMenuItemDTO'
+    delete:
+      tags:
+        - Plate Kitchen Menu Item
+      summary: Elimina multipli ordini in batch
+      operationId: deleteAllPlateKitchenMenuItems
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+              description: Lista di ID degli ordini da eliminare
+      responses:
+        '200':
+          description: Risultato dell'eliminazione (invia notifica WebSocket)
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+                description: Mappa con ID ordine e risultato dell'eliminazione (true/false)
 
+  # Stats endpoints
   /stats:
     get:
       tags:
         - Stats
-      summary: Recupera statistiche per periodo
-      operationId: getStats
+      summary: Recupera statistiche in un range temporale
+      operationId: getStatsInRange
       parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
         - name: from
           in: query
           required: true
           schema:
             type: string
-            example: "01/01/2026"
-          description: Data inizio periodo (formato dd/MM/yyyy)
+            format: date-time
+          description: Data di inizio (formato date-time)
         - name: to
           in: query
+          required: false
           schema:
             type: string
-            example: "31/01/2026"
-          description: Data fine periodo (formato dd/MM/yyyy, opzionale)
+            format: date-time
+          description: Data di fine (formato date-time)
       responses:
         '200':
-          description: Statistiche recuperate con successo
+          description: Lista di statistiche
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Stats'
+        '400':
+          description: Formato data non valido
 
+  # GSG Integration endpoints
   /gsg/init:
     post:
       tags:
         - GSG Integration
-      summary: Inizializza l'integrazione GSG
-      operationId: initGsg
+      summary: Inizializza l'integrazione con GSG
+      description: Importa categorie e articoli dal sistema esterno GSG
+      operationId: gsgInit
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       responses:
         '200':
-          description: Integrazione inizializzata con successo
+          description: Integrazione completata con successo
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GsgIntegrationResult'
+                $ref: '#/components/schemas/GSGIntegrationResult'
 
 components:
-  parameters:
-    IdPathParam:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-      description: ID della risorsa
-
   schemas:
     Category:
       type: object
       properties:
         id:
           type: string
+          description: ID univoco della categoria
         name:
           type: string
+          description: Nome della categoria
         description:
           type: string
+          description: Descrizione della categoria
         color:
           type: string
-          description: Colore esadecimale per la categoria
-      required:
-        - name
-
-    MenuItem:
+          description: Colore associato alla categoria (es. codice esadecimale)
+        externalId:
+          type: integer
+          description: ID nel database esterno (GSG)
+        visible:
+          type: boolean
+          description: Flag di visibilità della categoria
+          
+    KitchenMenuItem:
       type: object
       properties:
         id:
           type: string
+          description: ID univoco dell'articolo
         name:
           type: string
-        categoryId:
-          type: string
+          description: Nome dell'articolo
         description:
           type: string
-        price:
-          type: number
-          format: double
-      required:
-        - name
-        - categoryId
-
+          description: Descrizione dell'articolo
+        categoryId:
+          type: string
+          description: ID della categoria di appartenenza
+        externalId:
+          type: integer
+          description: ID nel database esterno (GSG)
+          
     Plate:
       type: object
       properties:
         id:
           type: string
+          description: ID univoco del piatto
         name:
           type: string
+          description: Nome del piatto/postazione
+        description:
+          type: string
+          description: Descrizione del piatto
+        color:
+          type: string
+          description: Colore associato al piatto
+        manager:
+          type: string
+          description: Responsabile del piatto
         slot:
           type: array
           items:
             type: integer
-          minItems: 2
-          maxItems: 2
-          description: "[used, total] - slot utilizzati e totali"
+          description: Slot disponibili [min, max]
+          default: [0, 0]
         enabled:
           type: boolean
-        mode:
-          type: string
-          enum: [On, Off]
-        _status:
-          type: string
-          description: Status calcolato lato client
-        _severity:
-          type: string
-          description: Severity calcolato lato client (success, danger)
+          description: Flag di abilitazione del piatto
+          default: true
         categories:
           type: array
           items:
             type: string
-          description: Array di ID delle categorie associate a questa piastra
-      required:
-        - name
-        - enabled
-
-    PlateMenuItem:
+          description: Lista di ID categorie associate per inserimento automatico ordini
+          
+    PlateKitchenMenuItemDTO:
       type: object
       properties:
         id:
           type: string
-        plateId:
-          type: string
-        menuItemId:
-          type: string
+          description: ID univoco dell'ordine
+        menuItem:
+          $ref: '#/components/schemas/KitchenMenuItem'
+        plate:
+          $ref: '#/components/schemas/Plate'
+        status:
+          $ref: '#/components/schemas/ItemStatus'
+        orderNumber:
+          type: integer
+          description: Numero dell'ordine
         tableNumber:
           type: string
+          description: Numero del tavolo
         clientName:
           type: string
-        orderNumber:
-          type: string
-        status:
-          type: string
-          enum: [TODO, PROGRESS, DONE, CANCELLED]
+          description: Nome del cliente
         notes:
           type: string
-      required:
-        - plateId
-        - menuItemId
-        - status
-
-    PagePlateMenuItem:
-      type: object
-      properties:
-        content:
-          type: array
-          items:
-            $ref: '#/components/schemas/PlateMenuItem'
-        totalElements:
-          type: integer
-        totalPages:
-          type: integer
-        size:
-          type: integer
-        number:
-          type: integer
-
+          description: Note sull'ordine
+        orderNotes:
+          type: string
+          description: Note aggiuntive sull'ordine
+        createdDate:
+          type: string
+          format: date-time
+          description: Data e ora di creazione dell'ordine
+        takeAway:
+          type: boolean
+          description: Flag per indicare se è un ordine da asporto
+          
+    ItemStatus:
+      type: string
+      enum:
+        - TODO
+        - PROGRESS
+        - DONE
+        - CANCELLED
+      description: |
+        Stato di un ordine:
+        - TODO: Da fare
+        - PROGRESS: In lavorazione
+        - DONE: Completato
+        - CANCELLED: Annullato
+        
     Stats:
       type: object
       properties:
-        date:
+        id:
           type: string
-        itemId:
-          type: string
-        itemName:
-          type: string
-        categoryId:
-          type: string
-        categoryName:
-          type: string
+          description: ID univoco della statistica
         count:
           type: integer
-        totalAmount:
-          type: number
-
-    GsgIntegrationResult:
+          description: Conteggio totale degli ordini
+        statusCount:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Conteggio degli ordini per ogni stato (TODO, PROGRESS, DONE, CANCELLED)
+          
+    GSGIntegrationResult:
       type: object
       properties:
-        success:
-          type: boolean
-        message:
-          type: string
-
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
-
-security: []
-
-externalDocs:
-  description: Repository GitHub
-  url: https://github.com/BearBeerCompany/kitchen-management
+        createdCategoryList:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+          description: Lista delle categorie create dall'integrazione
+        createdKmiList:
+          type: array
+          items:
+            $ref: '#/components/schemas/KitchenMenuItem'
+          description: Lista degli articoli del menù creati dall'integrazione
