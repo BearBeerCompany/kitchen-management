@@ -21,6 +21,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 const routes: Routes = [
   {
@@ -54,7 +55,8 @@ const routes: Routes = [
     ProgressBarModule,
     TagModule,
     TooltipModule,
-    DropdownModule
+    DropdownModule,
+    MultiSelectModule
   ],
   providers: [MessageService, ConfirmationService]
 })

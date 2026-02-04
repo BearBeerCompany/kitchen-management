@@ -11,6 +11,8 @@ import { DelayThresholdsService, DelayThresholds } from '../../../services/delay
 import { ThemeService } from '../../../services/theme.service';
 import { PlatePairsService, PlatePair } from '../../plates/services/plate-pairs.service';
 import { Router } from '@angular/router';
+import { CategoryService } from '../../plate-menu-items/services/category.service';
+import { Category } from '../../plate-menu-items/plate-menu-item';
 
 @Component({
   selector: 'settings',
@@ -30,6 +32,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public showItemDelays: boolean = false;
   public delayThresholds: DelayThresholds = { warning: 10, danger: 20 };
   public isDarkTheme: boolean = false;
+  public currentLanguage: 'it' | 'en' = 'it';
+  public availableLanguages: {code: 'it' | 'en', label: string, flag: string}[] = [];
+  public categories: Category[] = [];
 
   // Plate Pairs
   public platePairs: PlatePair[] = [];
@@ -55,7 +60,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
               private _delayThresholdsService: DelayThresholdsService,
               private _themeService: ThemeService,
               private _platePairsService: PlatePairsService,
-              private _router: Router) {
+              private _router: Router,
+              private _categoryService: CategoryService) {
     this.i18n = i18nService.instance;
   }
 
@@ -63,9 +69,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this._platesService.getAll().subscribe(plates => {
       this.plates = plates;
     });
+    this._categoryService.getAll().subscribe(categories => {
+      this.categories = categories;
+    });
     this._loadSettingsFromLocalStorage();
     this.delayThresholds = this._delayThresholdsService.getThresholds();
     this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
+
+    // Load current language and available languages
+    this.availableLanguages = this.i18nService.getAvailableLanguages();
+    this.subs.add(
+      this.i18nService.currentLanguage$.subscribe(lang => {
+        this.currentLanguage = lang;
+      })
+    );
 
     // Load plate pairs
     this.subs.add(
@@ -79,7 +96,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
       color: new FormControl("", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
       quickMoveEnabled: new FormControl(false),
-      quickMoveTargetPlateId: new FormControl("")
+      quickMoveTargetPlateId: new FormControl(""),
+      categories: new FormControl([])
     });
 
     this.pairForm = new FormGroup({
@@ -127,7 +145,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
         ...this.form?.value,
         enabled: true,
         slot: [0, this.form?.get("number")?.value],
-        id: plateId
+        id: plateId,
+        categories: this.form?.get("categories")?.value || []
       }).subscribe(
         _ => {
           // Salva quickMove settings in localStorage
@@ -148,7 +167,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
       this._platesService.create({
         ...this.form?.value,
         enabled: false,
-        slot: [0, this.form?.get("number")?.value]
+        slot: [0, this.form?.get("number")?.value],
+        categories: this.form?.get("categories")?.value || []
       }).subscribe(
         (createdPlate: Plate) => {
           // Salva quickMove settings in localStorage
@@ -182,7 +202,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
       color: new FormControl("#3b82f6", Validators.required),
       number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
       quickMoveEnabled: new FormControl(false),
-      quickMoveTargetPlateId: new FormControl("")
+      quickMoveTargetPlateId: new FormControl(""),
+      categories: new FormControl([])
     });
     this.display = true;
   }
@@ -201,7 +222,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
           color: new FormControl(plate.color, Validators.required),
           number: new FormControl(plate.slot![1], [Validators.required, Validators.pattern("^[0-9]*$")]),
           quickMoveEnabled: new FormControl(quickMoveSettings.enabled),
-          quickMoveTargetPlateId: new FormControl(quickMoveSettings.targetPlateId)
+          quickMoveTargetPlateId: new FormControl(quickMoveSettings.targetPlateId),
+          categories: new FormControl(plate.categories || [])
         });
         this.display = true;
       }
@@ -443,6 +465,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public getEnabledPlates(): Plate[] {
     return this.plates.filter(p => p.enabled);
+  }
+
+  public onLanguageChange(language: 'it' | 'en'): void {
+    this.i18nService.setLanguage(language);
+    
+    // Mostra messaggio prima del reload
+    this._messageService.add({
+      severity: 'success',
+      summary: language === 'it' ? 'Lingua Modificata' : 'Language Changed',
+      detail: language === 'it' ? 'Ricaricamento in corso...' : 'Reloading...',
+      life: 1000
+    });
+    
+    // Ricarica la pagina dopo un breve delay per mostrare il messaggio
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   }
 
 }

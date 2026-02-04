@@ -6,8 +6,8 @@
     <div class="header-title">
       <i class="pi pi-list"></i>
       <div>
-        <h2>Gestione Ordini</h2>
-        <p class="header-subtitle">{{toggleCompleted ? 'Ordini Completati e Chiusi' : 'Ordini Attivi e In Lavorazione'}}</p>
+        <h2>{{i18n.ORDERS.TITLE}}</h2>
+        <p class="header-subtitle">{{toggleCompleted ? i18n.ORDERS.SUBTITLE_COMPLETED : i18n.ORDERS.SUBTITLE_ACTIVE}}</p>
       </div>
     </div>
 
@@ -17,7 +17,7 @@
         <i class="pi pi-list"></i>
         <div class="stat-mini-content">
           <span class="value">{{totalRecords}}</span>
-          <span class="label">Totali</span>
+          <span class="label">{{i18n.ORDERS.STATS.TOTAL}}</span>
         </div>
       </div>
       
@@ -25,7 +25,7 @@
         <i class="pi pi-check-square"></i>
         <div class="stat-mini-content">
           <span class="value">{{selectedPlateMenuItems?.length || 0}}</span>
-          <span class="label">Selezionati</span>
+          <span class="label">{{i18n.ORDERS.STATS.SELECTED}}</span>
         </div>
       </div>
 
@@ -33,7 +33,7 @@
         <i class="pi pi-filter"></i>
         <div class="stat-mini-content">
           <span class="value">{{pkmiRows.length}}</span>
-          <span class="label">Visibili</span>
+          <span class="label">{{i18n.ORDERS.STATS.VISIBLE}}</span>
         </div>
       </div>
     </div>
@@ -41,9 +41,9 @@
     <div class="header-actions">
       <div class="notify-toggle">
         <p-inputSwitch [(ngModel)]="showNotify" (onChange)="onShowNotifyChange()"></p-inputSwitch>
-        <label pTooltip="Abilita/Disabilita notifiche in tempo reale" tooltipPosition="bottom">
+        <label [pTooltip]="i18n.ORDERS.NOTIFICATIONS_TOOLTIP" tooltipPosition="bottom">
           <i class="pi pi-bell"></i>
-          Notifiche
+          {{i18n.ORDERS.NOTIFICATIONS}}
         </label>
       </div>
     </div>
@@ -53,16 +53,16 @@
   <div class="orders-toolbar">
     <div class="toolbar-left">
       <button pButton pRipple 
-              [label]="toggleCompleted ? 'Mostra In Corso' : 'Mostra Completati'" 
+              [label]="toggleCompleted ? i18n.ORDERS.SHOW_IN_PROGRESS : i18n.ORDERS.SHOW_COMPLETED" 
               [icon]="toggleCompleted ? 'pi pi-replay' : 'pi pi-check-circle'"
               class="p-button-outlined"
               (click)="viewCompletedPlateMenuItems()"
-              pTooltip="Passa alla visualizzazione degli ordini completati/in corso"
+              [pTooltip]="i18n.ORDERS.TOGGLE_TOOLTIP"
               tooltipPosition="bottom">
       </button>
       
       <button pButton pRipple 
-              label="Nuovo Ordine" 
+              [label]="i18n.ORDERS.NEW_ORDER" 
               icon="pi pi-plus" 
               class="p-button-success"
               (click)="addPlateMenuItems()">
@@ -75,28 +75,28 @@
         <input pInputText 
                type="text" 
                (input)="filterGlobal($event)" 
-               placeholder="Cerca per ordine, prodotto, cliente, tavolo..." />
+               [placeholder]="i18n.ORDERS.SEARCH_PLACEHOLDER" />
       </span>
     </div>
 
     <div class="toolbar-right">
       <button pButton pRipple 
-              label="Modifica Batch" 
+              [label]="i18n.ORDERS.BATCH_EDIT" 
               icon="pi pi-pencil" 
               class="p-button-warning p-button-outlined"
               (click)="openBatchEditDialog()" 
               [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"
-              pTooltip="Modifica più ordini contemporaneamente"
+              [pTooltip]="i18n.ORDERS.BATCH_EDIT_TOOLTIP"
               tooltipPosition="bottom">
       </button>
       
       <button pButton pRipple 
-              label="Elimina" 
+              [label]="i18n.COMMON.DELETE" 
               icon="pi pi-trash" 
               class="p-button-danger p-button-outlined"
               (click)="deleteSelectedPkmis()" 
               [disabled]="!selectedPlateMenuItems || !selectedPlateMenuItems.length"
-              pTooltip="Elimina gli ordini selezionati"
+              [pTooltip]="i18n.ORDERS.DELETE_TOOLTIP"
               tooltipPosition="bottom">
       </button>
     </div>
@@ -115,7 +115,7 @@
              [rowsPerPageOptions]="[10,25,50]"
              [loading]="loading"
              [paginator]="true"
-             currentPageReportTemplate="Mostrando {first} - {last} di {totalRecords} ordini"
+             [currentPageReportTemplate]="'Mostrando {first} - {last} di {totalRecords} ' + i18n.ORDERS.TITLE.toLowerCase()"
              [filterDelay]="0"
              [globalFilterFields]="['orderNumber','menuItem.label','status','plate','clientName','tableNumber']"
              editMode="row"
@@ -131,55 +131,55 @@
         <th pSortableColumn="menuItem.data.name">
           <div class="header-content">
             <i class="pi pi-tag"></i>
-            <span>Prodotto</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.PRODUCT}}</span>
             <p-sortIcon field="menuItem.data.name"></p-sortIcon>
           </div>
         </th>
         <th>
           <div class="header-content">
             <i class="pi pi-bookmark"></i>
-            <span>Categoria</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.CATEGORY}}</span>
           </div>
         </th>
         <th pSortableColumn="orderNumber" style="width: 8rem">
           <div class="header-content">
             <i class="pi pi-hashtag"></i>
-            <span>Ordine</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.ORDER}}</span>
             <p-sortIcon field="orderNumber"></p-sortIcon>
           </div>
         </th>
         <th pSortableColumn="tableNumber" style="width: 8rem">
           <div class="header-content">
             <i class="pi pi-home"></i>
-            <span>Tavolo</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.TABLE}}</span>
             <p-sortIcon field="tableNumber"></p-sortIcon>
           </div>
         </th>
         <th pSortableColumn="clientName" style="width: 12rem">
           <div class="header-content">
             <i class="pi pi-user"></i>
-            <span>Cliente</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.CLIENT}}</span>
             <p-sortIcon field="clientName"></p-sortIcon>
           </div>
         </th>
         <th pSortableColumn="createdDate" style="width: 11rem">
           <div class="header-content">
             <i class="pi pi-calendar"></i>
-            <span>Data</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.DATE}}</span>
             <p-sortIcon field="createdDate"></p-sortIcon>
           </div>
         </th>
         <th pSortableColumn="status" style="width: 10rem">
           <div class="header-content">
             <i class="pi pi-flag"></i>
-            <span>Stato</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.STATUS}}</span>
             <p-sortIcon field="status"></p-sortIcon>
           </div>
         </th>
         <th style="width: 10rem">
           <div class="header-content">
             <i class="pi pi-server"></i>
-            <span>Piastra</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.PLATE}}</span>
           </div>
         </th>
         <th style="width: 7rem">
@@ -203,7 +203,7 @@
         <th style="width: 10rem">
           <div class="header-content">
             <i class="pi pi-cog"></i>
-            <span>Azioni</span>
+            <span>{{i18n.ORDERS.TABLE_HEADERS.ACTIONS}}</span>
           </div>
         </th>
       </tr>
@@ -214,7 +214,7 @@
         class="p-selectable-row"
         (dblclick)="!editing && onRowDblClick(plateMenuItem, ri)"
         [style.cursor]="!editing ? 'pointer' : 'default'"
-        pTooltip="Doppio click per modificare"
+        [pTooltip]="i18n.COMMON.DOUBLE_CLICK_EDIT"
         [tooltipDisabled]="editing"
         tooltipPosition="left">
       <td>
@@ -288,7 +288,7 @@
                         scrollHeight="250px"></p-dropdown>
           </ng-template>
           <ng-template pTemplate="output">
-            <span>{{plateMenuItem?.takeAway ? 'SI' : 'NO'}}</span>
+            <span>{{plateMenuItem?.takeAway ? i18n.COMMON.YES : i18n.COMMON.NO}}</span>
           </ng-template>
         </p-cellEditor>
       </td>
@@ -315,19 +315,19 @@
       <td class="actions-cell" style="text-align:center">
         <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil"
                 (click)="onRowEditInit(plateMenuItem)" class="p-button-rounded p-button-text"
-                pTooltip="Modifica" tooltipPosition="top"
+                [pTooltip]="i18n.COMMON.EDIT" tooltipPosition="top"
         ></button>
         <button *ngIf="!editing" pButton pRipple type="button" icon="pi pi-trash"
                 (click)="deletePkmi(plateMenuItem)" class="p-button-rounded p-button-text p-button-danger"
-                pTooltip="Elimina" tooltipPosition="top"
+                [pTooltip]="i18n.COMMON.DELETE" tooltipPosition="top"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check"
                 (click)="onRowEditSave(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-success p-mr-2"
-                pTooltip="Salva modifiche" tooltipPosition="top"
+                [pTooltip]="i18n.COMMON.SAVE_CHANGES" tooltipPosition="top"
         ></button>
         <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times"
                 (click)="onRowEditCancel(plateMenuItem, ri)" class="p-button-rounded p-button-text p-button-danger"
-                pTooltip="Annulla" tooltipPosition="top"
+                [pTooltip]="i18n.COMMON.UNDO" tooltipPosition="top"
         ></button>
       </td>
     </tr>
@@ -338,8 +338,8 @@
         <td colspan="13" class="empty-message">
           <div class="empty-state">
             <i class="pi pi-inbox"></i>
-            <h4>Nessun ordine trovato</h4>
-            <p>{{toggleCompleted ? 'Non ci sono ordini completati nel sistema' : 'Non ci sono ordini attivi al momento'}}</p>
+            <h4>{{i18n.ORDERS.NO_ORDERS}}</h4>
+            <p>{{toggleCompleted ? i18n.ORDERS.NO_COMPLETED_ORDERS : i18n.ORDERS.NO_ACTIVE_ORDERS}}</p>
           </div>
         </td>
       </tr>
@@ -355,7 +355,7 @@
 <!-- Batch Edit Dialog -->
 <p-dialog [(visible)]="batchEditDialog" 
           [style]="{width: '550px'}" 
-          header="Modifica Multipla Ordini" 
+          [header]="i18n.ORDERS.BATCH_DIALOG.TITLE_MULTI" 
           [modal]="true" 
           styleClass="p-fluid batch-edit-dialog"
           [closable]="true"
@@ -365,8 +365,8 @@
     <div class="dialog-header-content">
       <i class="pi pi-pencil"></i>
       <div>
-        <span class="dialog-title">Modifica Multipla Ordini</span>
-        <span class="dialog-subtitle">Applica modifiche a {{selectedPlateMenuItems.length}} ordini contemporaneamente</span>
+        <span class="dialog-title">{{i18n.ORDERS.BATCH_DIALOG.TITLE_MULTI}}</span>
+        <span class="dialog-subtitle">{{i18n.ORDERS.BATCH_DIALOG.DESCRIPTION_APPLY.replace('{{count}}', selectedPlateMenuItems.length)}}</span>
       </div>
     </div>
   </ng-template>
@@ -377,8 +377,8 @@
         <i class="pi pi-info-circle"></i>
       </div>
       <div class="info-content">
-        <h4>Come funziona</h4>
-        <p>Modifica solo i campi che desideri aggiornare. I campi lasciati vuoti manterranno i loro valori originali.</p>
+        <h4>{{i18n.ORDERS.BATCH_DIALOG.HOW_IT_WORKS}}</h4>
+        <p>{{i18n.ORDERS.BATCH_DIALOG.HOW_IT_WORKS_DESC}}</p>
       </div>
     </div>
 
@@ -386,14 +386,14 @@
       <div class="form-field">
         <label for="batchStatus">
           <i class="pi pi-flag"></i>
-          Stato
+          {{i18n.ORDERS.BATCH_DIALOG.STATUS_LABEL}}
         </label>
         <p-dropdown id="batchStatus"
                     [(ngModel)]="batchEditData.status"
                     [options]="statuses"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Non modificare lo stato"
+                    [placeholder]="i18n.ORDERS.BATCH_DIALOG.NO_CHANGE_STATUS"
                     [showClear]="true">
           <ng-template let-status pTemplate="item">
             <div class="dropdown-item" [style]="{'color': status.color}">
@@ -407,14 +407,14 @@
       <div class="form-field">
         <label for="batchPlate">
           <i class="pi pi-server"></i>
-          Piastra
+          {{i18n.ORDERS.BATCH_DIALOG.PLATE_LABEL}}
         </label>
         <p-dropdown id="batchPlate"
                     [(ngModel)]="batchEditData.plate"
                     [options]="platesOptions"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Non modificare la piastra"
+                    [placeholder]="i18n.ORDERS.BATCH_DIALOG.NO_CHANGE_PLATE"
                     [showClear]="true">
           <ng-template let-plate pTemplate="item">
             <div class="plate-item" [style]="{'background-color': plate.color}">
@@ -427,14 +427,14 @@
       <div class="form-field">
         <label for="batchTakeAway">
           <i class="pi pi-shopping-bag"></i>
-          Asporto
+          {{i18n.ORDERS.BATCH_DIALOG.TAKEAWAY_LABEL}}
         </label>
         <p-dropdown id="batchTakeAway"
                     [(ngModel)]="batchEditData.takeAway"
                     [options]="takeAwayOptions"
                     optionLabel="label"
                     optionValue="value"
-                    placeholder="Non modificare asporto"
+                    [placeholder]="i18n.ORDERS.BATCH_DIALOG.NO_CHANGE_TAKEAWAY"
                     [showClear]="true">
         </p-dropdown>
       </div>
@@ -442,17 +442,17 @@
       <div class="form-field">
         <label for="batchOrderNotes">
           <i class="pi pi-comment"></i>
-          Note Ordine
+          {{i18n.ORDERS.BATCH_DIALOG.ORDER_NOTES_LABEL}}
         </label>
         <textarea id="batchOrderNotes"
                   pInputTextarea
                   [(ngModel)]="batchEditData.orderNotes"
                   rows="3"
-                  placeholder="Aggiungi note ordine (sostituirà le note esistenti)">
+                  [placeholder]="i18n.ORDERS.BATCH_DIALOG.ADD_NOTES_PLACEHOLDER">
         </textarea>
         <small class="field-hint">
           <i class="pi pi-exclamation-triangle"></i>
-          Le note verranno sovrascritte per tutti gli ordini selezionati
+          {{i18n.ORDERS.BATCH_DIALOG.NOTES_WARNING}}
         </small>
       </div>
     </div>
@@ -461,13 +461,13 @@
   <ng-template pTemplate="footer">
     <div class="dialog-footer-actions">
       <button pButton pRipple 
-              label="Annulla" 
+              [label]="i18n.COMMON.UNDO" 
               icon="pi pi-times" 
               class="p-button-text p-button-secondary" 
               (click)="closeBatchEditDialog()">
       </button>
       <button pButton pRipple 
-              label="Applica a {{selectedPlateMenuItems.length}} ordini" 
+              [label]="i18n.ORDERS.BATCH_DIALOG.APPLY_BUTTON.replace('{{count}}', selectedPlateMenuItems.length)" 
               icon="pi pi-check" 
               class="p-button-success" 
               (click)="applyBatchEdit()">

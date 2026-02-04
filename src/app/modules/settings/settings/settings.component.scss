@@ -660,3 +660,35 @@
   }
 
 }
+
+// Language Selection
+.language-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .language-flag {
+    font-size: 1.25rem;
+  }
+}
+
+// Category Selection
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .category-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+}
+
+// Fix z-index for language dropdown
+::ng-deep {
+  .p-dropdown-panel {
+    z-index: 9999 !important;
+  }
+}

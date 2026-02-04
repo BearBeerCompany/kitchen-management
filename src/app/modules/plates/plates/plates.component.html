@@ -6,21 +6,21 @@
     <i class="pi pi-inbox"></i>
     <div>
       <h2>{{i18n.PLATE.TITLE}}</h2>
-      <p class="header-subtitle">Gestione piastre e ordini in tempo reale</p>
+      <p class="header-subtitle">{{i18n.PLATE.SUBTITLE}}</p>
     </div>
   </div>
   
   <div class="header-actions" *ngIf="!loading">
     <button pButton 
             pRipple
-            label="Coppie Piastre"
+            [label]="i18n.PLATE.PAIRS_BUTTON"
             icon="pi pi-link"
             class="p-button-secondary"
             routerLink="/plates/pairs-config">
     </button>
     <button pButton 
             pRipple
-            [label]="'Ordini non assegnati' + (unassignedItems.length > 0 ? ' (' + unassignedItems.length + ')' : '')"
+            [label]="i18n.PLATE.UNASSIGNED_ORDERS + (unassignedItems.length > 0 ? ' (' + unassignedItems.length + ')' : '')"
             [icon]="showOverlay ? 'pi pi-times' : 'pi pi-list'"
             [class]="showOverlay ? 'p-button-danger' : 'p-button-info'"
             (click)="toggleNoQueuedItemsOverlay()">
@@ -47,7 +47,7 @@
   <div class="plates-carousel">
     <div class="carousel-loading" *ngIf="loading">
       <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
-      <p>Caricamento piastre...</p>
+      <p>{{i18n.PLATE.LOADING_PLATES}}</p>
     </div>
     
     <ng-container *ngIf="!loading">

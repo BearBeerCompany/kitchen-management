@@ -2,16 +2,16 @@
   <div class="summary-header">
     <h2>
       <i class="pi pi-chart-bar"></i>
-      Riepilogo Piastre e Tempi
+      {{i18n.SUMMARY.TITLE}}
     </h2>
     <div class="header-actions">
       <div class="auto-refresh-controls">
         <p-inputSwitch [(ngModel)]="autoRefreshEnabled" 
                        (onChange)="onAutoRefreshChange()"
-                       pTooltip="Abilita aggiornamento automatico"
+                       [pTooltip]="i18n.SUMMARY.AUTO_REFRESH_TOOLTIP"
                        tooltipPosition="bottom">
         </p-inputSwitch>
-        <label>Auto-refresh</label>
+        <label>{{i18n.SUMMARY.AUTO_REFRESH}}</label>
         <p-dropdown *ngIf="autoRefreshEnabled"
                     [(ngModel)]="autoRefreshInterval"
                     [options]="refreshIntervalOptions"
@@ -19,20 +19,20 @@
                     optionValue="value"
                     (onChange)="onIntervalChange()"
                     [style]="{'width': '120px'}"
-                    pTooltip="Intervallo di aggiornamento"
+                    [pTooltip]="i18n.SUMMARY.INTERVAL_TOOLTIP"
                     tooltipPosition="bottom">
         </p-dropdown>
       </div>
       <button pButton pRipple 
               icon="pi pi-refresh" 
-              label="Aggiorna" 
+              [label]="i18n.SUMMARY.REFRESH_BUTTON" 
               class="p-button-sm p-button-outlined"
               (click)="refreshData()"
               [loading]="loading">
       </button>
       <button pButton pRipple 
               icon="pi pi-times" 
-              label="Chiudi" 
+              [label]="i18n.SUMMARY.CLOSE_BUTTON" 
               class="p-button-sm p-button-text"
               routerLink="/plates">
       </button>
@@ -41,7 +41,7 @@
 
   <div *ngIf="loading" class="loading-container">
     <i class="pi pi-spin pi-spinner" style="font-size: 3rem"></i>
-    <p>Caricamento dati...</p>
+    <p>{{i18n.SUMMARY.LOADING}}</p>
   </div>
 
   <ng-container *ngIf="!loading">
@@ -53,7 +53,7 @@
         </div>
         <div class="stat-content">
           <h3>{{globalStats.totalProgress}}</h3>
-          <p>Ordini in Corso</p>
+          <p>{{i18n.SUMMARY.STATS.IN_PROGRESS}}</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@
         </div>
         <div class="stat-content">
           <h3>{{globalStats.totalTodo}}</h3>
-          <p>Ordini in Coda</p>
+          <p>{{i18n.SUMMARY.STATS.IN_QUEUE}}</p>
         </div>
       </div>
 
@@ -73,7 +73,7 @@
         </div>
         <div class="stat-content">
           <h3>{{globalStats.activePlates}}/{{globalStats.totalPlates}}</h3>
-          <p>Piastre Attive</p>
+          <p>{{i18n.SUMMARY.STATS.ACTIVE_PLATES}}</p>
         </div>
       </div>
 
@@ -83,7 +83,7 @@
         </div>
         <div class="stat-content">
           <h3>{{formatTime(globalStats.maxDelayAllPlates)}}</h3>
-          <p>Ritardo Massimo</p>
+          <p>{{i18n.SUMMARY.STATS.MAX_DELAY}}</p>
         </div>
       </div>
 
@@ -93,7 +93,7 @@
         </div>
         <div class="stat-content">
           <h3>{{formatTime(globalStats.avgDelayAllPlates)}}</h3>
-          <p>Ritardo Medio</p>
+          <p>{{i18n.SUMMARY.STATS.AVG_DELAY}}</p>
         </div>
       </div>
 
@@ -103,7 +103,7 @@
         </div>
         <div class="stat-content">
           <h3>{{globalStats.criticalOrders}}</h3>
-          <p>Ordini Critici (>20min)</p>
+          <p>{{i18n.SUMMARY.STATS.CRITICAL_ORDERS}}</p>
         </div>
       </div>
     </div>
@@ -111,19 +111,19 @@
     <!-- Tabella Dettagli Piastre -->
     <div class="plates-table-container">
       <div class="table-header-with-legend">
-        <h3>Dettaglio Piastre</h3>
+        <h3>{{i18n.SUMMARY.PLATES_DETAIL}}</h3>
         <div class="legend-inline">
           <div class="legend-item">
             <p-tag severity="success" [value]="'< ' + warningThreshold + ' min'"></p-tag>
-            <span>Ottimo</span>
+            <span>{{i18n.SUMMARY.LEGEND.GOOD}}</span>
           </div>
           <div class="legend-item">
             <p-tag severity="warning" [value]="warningThreshold + '-' + dangerThreshold + ' min'"></p-tag>
-            <span>Attenzione</span>
+            <span>{{i18n.SUMMARY.LEGEND.WARNING}}</span>
           </div>
           <div class="legend-item">
             <p-tag severity="danger" [value]="'> ' + dangerThreshold + ' min'"></p-tag>
-            <span>Critico</span>
+            <span>{{i18n.SUMMARY.LEGEND.CRITICAL}}</span>
           </div>
         </div>
       </div>
@@ -133,17 +133,17 @@
                [paginator]="true"
                [rows]="10"
                [showCurrentPageReport]="true"
-               currentPageReportTemplate="{totalRecords} piastre totali">
+               [currentPageReportTemplate]="'{totalRecords} ' + i18n.SUMMARY.PLATES_TOTAL">
         
         <ng-template pTemplate="header">
           <tr>
-            <th>Piastra</th>
-            <th>In Corso</th>
-            <th>In Coda</th>
-            <th>Ritardo Max</th>
-            <th>Ritardo Medio</th>
-            <th>Ordine Più Vecchio</th>
-            <th>Stato</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.PLATE}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.IN_PROGRESS}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.IN_QUEUE}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.MAX_DELAY}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.AVG_DELAY}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.OLDEST_ORDER}}</th>
+            <th>{{i18n.SUMMARY.TABLE_HEADERS.STATUS}}</th>
           </tr>
         </ng-template>
 
@@ -182,22 +182,22 @@
               <i *ngIf="stat.maxDelayMinutes === 0" 
                  class="pi pi-check-circle" 
                  style="color: var(--green-500); font-size: 1.2rem"
-                 pTooltip="Nessun ritardo">
+                 [pTooltip]="i18n.SUMMARY.TOOLTIPS.NO_DELAY">
               </i>
               <i *ngIf="stat.maxDelayMinutes > 0 && stat.maxDelayMinutes < 10" 
                  class="pi pi-thumbs-up" 
                  style="color: var(--green-500); font-size: 1.2rem"
-                 pTooltip="Tempi buoni">
+                 [pTooltip]="i18n.SUMMARY.TOOLTIPS.GOOD_TIMES">
               </i>
               <i *ngIf="stat.maxDelayMinutes >= 10 && stat.maxDelayMinutes < 20" 
                  class="pi pi-exclamation-triangle" 
                  style="color: var(--orange-500); font-size: 1.2rem"
-                 pTooltip="Attenzione ai tempi">
+                 [pTooltip]="i18n.SUMMARY.TOOLTIPS.WATCH_TIMES">
               </i>
               <i *ngIf="stat.maxDelayMinutes >= 20" 
                  class="pi pi-times-circle" 
                  style="color: var(--red-500); font-size: 1.2rem"
-                 pTooltip="Ritardo critico!">
+                 [pTooltip]="i18n.SUMMARY.TOOLTIPS.CRITICAL_DELAY">
               </i>
             </td>
           </tr>
@@ -207,7 +207,7 @@
           <tr>
             <td colspan="7" class="empty-message">
               <i class="pi pi-inbox"></i>
-              <p>Nessuna piastra attiva al momento</p>
+              <p>{{i18n.SUMMARY.NO_ACTIVE_PLATES}}</p>
             </td>
           </tr>
         </ng-template>
@@ -220,9 +220,9 @@
         <div class="chart-header">
           <h3>
             <i class="pi pi-chart-bar"></i>
-            Carico di Lavoro per Piastra
+            {{i18n.SUMMARY.WORKLOAD_CHART}}
           </h3>
-          <p>Distribuzione degli ordini in corso e in coda per ogni piastra</p>
+          <p>{{i18n.SUMMARY.WORKLOAD_DESC}}</p>
         </div>
         <div class="chart-content">
           <p-chart type="bar" 
@@ -237,9 +237,9 @@
         <div class="chart-header">
           <h3>
             <i class="pi pi-clock"></i>
-            Ritardi Medi per Piastra
+            {{i18n.SUMMARY.DELAY_CHART}}
           </h3>
-          <p>Tempo medio di ritardo per piastra (solo piastre con ordini attivi)</p>
+          <p>{{i18n.SUMMARY.DELAY_DESC}}</p>
         </div>
         <div class="chart-content">
           <p-chart type="bar" 
@@ -261,10 +261,10 @@
             <i class="pi pi-times-circle"></i>
           </div>
           <div class="kpi-content">
-            <h4>Tasso di Cancellazione</h4>
+            <h4>{{i18n.SUMMARY.CANCELLATION_RATE}}</h4>
             <div class="kpi-value">{{cancellationRate}}%</div>
             <p class="kpi-details">
-              {{completedOrdersCount}} completati • {{cancelledOrdersCount}} cancellati
+              {{completedOrdersCount}} {{i18n.SUMMARY.COMPLETED}} • {{cancelledOrdersCount}} {{i18n.SUMMARY.CANCELLED}}
             </p>
           </div>
         </div>
@@ -278,9 +278,9 @@
           <div class="chart-header">
             <h3>
               <i class="pi pi-star"></i>
-              Top 10 Prodotti Più Ordinati
+              {{i18n.SUMMARY.TOP_PRODUCTS}}
             </h3>
-            <p>I prodotti più richiesti nel periodo selezionato</p>
+            <p>{{i18n.SUMMARY.TOP_PRODUCTS_DESC}}</p>
           </div>
           <div class="chart-content">
             <p-chart type="bar" 
@@ -296,7 +296,7 @@
           <div class="chart-header">
             <h3>
               <i class="pi pi-calendar"></i>
-              Andamento Ordini per Ora
+              {{i18n.SUMMARY.HOURLY_ORDERS}}
             </h3>
             <p>Distribuzione degli ordini durante il giorno</p>
           </div>

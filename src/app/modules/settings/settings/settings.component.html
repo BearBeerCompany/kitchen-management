@@ -7,36 +7,8 @@
       <i class="pi pi-cog"></i>
       <div>
         <h2>{{i18n.SETTINGS.TITLE}}</h2>
-        <p class="header-subtitle">Configura le impostazioni dell'applicazione</p>
+        <p class="header-subtitle">{{i18n.SETTINGS.SUBTITLE}}</p>
       </div>
-    </div>
-  </div>
-
-  <!-- GSG Integration Section -->
-  <div class="settings-card">
-    <div class="card-header">
-      <div class="header-content">
-        <i class="pi pi-database"></i>
-        <div>
-          <h3>Inizializzazione GSG</h3>
-          <p>Importa categorie e voci di menù dal sistema GSG</p>
-        </div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="gsg-info-alert">
-        <i class="pi pi-info-circle"></i>
-        <div>
-          <strong>Attenzione:</strong>
-          <p>L'inizializzazione sovrascriverà tutti i dati esistenti di ordini, categorie e voci di menù.</p>
-        </div>
-      </div>
-      <button pButton pRipple 
-        label="Inizializza da GSG"
-        icon="pi pi-download"
-        class="p-button-info"
-        (click)="onGSGInit()">
-      </button>
     </div>
   </div>
 
@@ -46,8 +18,8 @@
       <div class="header-content">
         <i class="pi pi-eye"></i>
         <div>
-          <h3>Impostazioni Visualizzazione</h3>
-          <p>Gestisci le preferenze di visualizzazione dell'interfaccia</p>
+          <h3>{{i18n.SETTINGS.DISPLAY.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.DISPLAY.DESCRIPTION}}</p>
         </div>
       </div>
     </div>
@@ -56,9 +28,9 @@
         <div class="setting-info">
           <div class="setting-label">
             <i class="pi" [ngClass]="isDarkTheme ? 'pi-moon' : 'pi-sun'"></i>
-            <label for="darkMode">Tema Scuro</label>
+            <label for="darkMode">{{i18n.SETTINGS.DISPLAY.DARK_THEME}}</label>
           </div>
-          <small>Attiva la modalità scura per ridurre l'affaticamento visivo</small>
+          <small>{{i18n.SETTINGS.DISPLAY.DARK_THEME_DESC}}</small>
         </div>
         <p-inputSwitch inputId="darkMode" [(ngModel)]="isDarkTheme" (onChange)="onThemeChange()"></p-inputSwitch>
       </div>
@@ -66,9 +38,9 @@
         <div class="setting-info">
           <div class="setting-label">
             <i class="pi pi-bell"></i>
-            <label for="showNotify">Notifiche</label>
+            <label for="showNotify">{{i18n.SETTINGS.DISPLAY.NOTIFICATIONS}}</label>
           </div>
-          <small>Attiva le notifiche per i nuovi ordini in arrivo</small>
+          <small>{{i18n.SETTINGS.DISPLAY.NOTIFICATIONS_DESC}}</small>
         </div>
         <p-inputSwitch inputId="showNotify" [(ngModel)]="showNotify" (onChange)="onShowNotifyChange()"></p-inputSwitch>
       </div>
@@ -76,11 +48,57 @@
         <div class="setting-info">
           <div class="setting-label">
             <i class="pi pi-clock"></i>
-            <label for="showItemDelays">Mostra Ritardi Singoli</label>
+            <label for="showItemDelays">{{i18n.SETTINGS.DISPLAY.SHOW_DELAYS}}</label>
           </div>
-          <small>Visualizza i badge di ritardo sugli elementi nella dashboard delle piastre</small>
+          <small>{{i18n.SETTINGS.DISPLAY.SHOW_DELAYS_DESC}}</small>
         </div>
         <p-inputSwitch inputId="showItemDelays" [(ngModel)]="showItemDelays" (onChange)="onShowItemDelaysChange()"></p-inputSwitch>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language Settings Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-globe"></i>
+        <div>
+          <h3>{{i18n.SETTINGS.LANGUAGE.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.LANGUAGE.DESCRIPTION}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-label">
+            <i class="pi pi-language"></i>
+            <label for="languageSelect">{{i18n.SETTINGS.LANGUAGE.SELECT_LABEL}}</label>
+          </div>
+          <small>{{i18n.SETTINGS.LANGUAGE.SELECT_DESC}}</small>
+        </div>
+        <p-dropdown 
+          inputId="languageSelect"
+          [options]="availableLanguages" 
+          [(ngModel)]="currentLanguage"
+          (onChange)="onLanguageChange($event.value)"
+          optionLabel="label" 
+          optionValue="code"
+          appendTo="body"
+          [style]="{'width': '200px'}">
+          <ng-template let-lang pTemplate="selectedItem">
+            <div class="language-item">
+              <span class="language-flag">{{lang.flag}}</span>
+              <span>{{lang.label}}</span>
+            </div>
+          </ng-template>
+          <ng-template let-lang pTemplate="item">
+            <div class="language-item">
+              <span class="language-flag">{{lang.flag}}</span>
+              <span>{{lang.label}}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
       </div>
     </div>
   </div>
@@ -91,8 +109,8 @@
       <div class="header-content">
         <i class="pi pi-clock"></i>
         <div>
-          <h3>Soglie Ritardi</h3>
-          <p>Configura i limiti temporali per gli avvisi di ritardo</p>
+          <h3>{{i18n.SETTINGS.DELAYS.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.DELAYS.DESCRIPTION}}</p>
         </div>
       </div>
     </div>
@@ -103,8 +121,8 @@
             <i class="pi pi-exclamation-triangle"></i>
           </div>
           <div class="threshold-content">
-            <label for="warningThreshold">Soglia Avviso (Giallo)</label>
-            <small>Tempo in minuti prima che un ordine diventi giallo</small>
+            <label for="warningThreshold">{{i18n.SETTINGS.DELAYS.WARNING_THRESHOLD}}</label>
+            <small>{{i18n.SETTINGS.DELAYS.WARNING_DESC}}</small>
             <p-inputNumber 
               inputId="warningThreshold"
               [(ngModel)]="delayThresholds.warning"
@@ -122,8 +140,8 @@
             <i class="pi pi-exclamation-circle"></i>
           </div>
           <div class="threshold-content">
-            <label for="dangerThreshold">Soglia Pericolo (Rosso)</label>
-            <small>Tempo in minuti prima che un ordine diventi rosso</small>
+            <label for="dangerThreshold">{{i18n.SETTINGS.DELAYS.DANGER_THRESHOLD}}</label>
+            <small>{{i18n.SETTINGS.DELAYS.DANGER_DESC}}</small>
             <p-inputNumber 
               inputId="dangerThreshold"
               [(ngModel)]="delayThresholds.danger"
@@ -139,7 +157,7 @@
       
       <div class="card-actions">
         <button pButton 
-          label="Ripristina Predefiniti" 
+          [label]="i18n.SETTINGS.DELAYS.RESET" 
           icon="pi pi-refresh"
           class="p-button-secondary"
           (click)="resetDelayThresholds()">
@@ -154,12 +172,12 @@
       <div class="header-content">
         <i class="pi pi-inbox"></i>
         <div>
-          <h3>Gestione Piastre</h3>
-          <p>Configura e gestisci le piastre di cottura</p>
+          <h3>{{i18n.SETTINGS.PLATES.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.PLATES.DESCRIPTION}}</p>
         </div>
       </div>
       <button pButton pRipple
-        label="Nuova Piastra"
+        [label]="i18n.PLATE.NEW_PLATE"
         icon="pi pi-plus"
         class="p-button-success"
         (click)="showCreateDialog()">
@@ -171,12 +189,12 @@
                *ngIf="plates.length > 0">
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 60px">Colore</th>
-            <th>Nome</th>
-            <th style="width: 100px">Numero</th>
-            <th style="width: 150px">Disponibilità</th>
-            <th style="width: 120px">Stato</th>
-            <th style="width: 200px">Azioni</th>
+            <th style="width: 60px">{{i18n.COMMON.COLOR}}</th>
+            <th>{{i18n.COMMON.NAME}}</th>
+            <th style="width: 100px">{{i18n.PLATE.PLATE_NUMBER}}</th>
+            <th style="width: 150px">{{i18n.PLATE.AVAILABILITY}}</th>
+            <th style="width: 120px">{{i18n.PLATE.STATUS}}</th>
+            <th style="width: 200px">{{i18n.PLATE.ACTIONS}}</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-plate>
@@ -202,7 +220,7 @@
             </td>
             <td>
               <p-tag [severity]="plate.enabled ? 'success' : 'secondary'"
-                     [value]="plate.enabled ? 'ACCESO' : 'SPENTO'">
+                     [value]="plate.enabled ? i18n.SETTINGS.PLATES.ON_STATUS : i18n.SETTINGS.PLATES.OFF_STATUS">
               </p-tag>
             </td>
             <td>
@@ -211,7 +229,7 @@
                         type="button"
                         [icon]="plate.enabled ? 'pi pi-power-off' : 'pi pi-check'"
                         [class]="plate.enabled ? 'p-button-warning p-button-sm p-button-text' : 'p-button-success p-button-sm p-button-text'"
-                        [pTooltip]="plate.enabled ? 'Spegni' : 'Accendi'"
+                        [pTooltip]="plate.enabled ? i18n.SETTINGS.PLATES.TURN_OFF : i18n.SETTINGS.PLATES.TURN_ON"
                         tooltipPosition="top"
                         (click)="onSwitchPlate({ id: plate.id, enable: !plate.enabled })">
                 </button>
@@ -219,7 +237,7 @@
                         type="button"
                         icon="pi pi-pencil"
                         class="p-button-info p-button-sm p-button-text"
-                        pTooltip="Modifica"
+                        [pTooltip]="i18n.COMMON.EDIT"
                         tooltipPosition="top"
                         (click)="showEditDialog(plate.id)">
                 </button>
@@ -227,7 +245,7 @@
                         type="button"
                         icon="pi pi-trash"
                         class="p-button-danger p-button-sm p-button-text"
-                        pTooltip="Elimina"
+                        [pTooltip]="i18n.COMMON.DELETE"
                         tooltipPosition="top"
                         (click)="onDelete(plate.id)">
                 </button>
@@ -239,10 +257,10 @@
       
       <div class="empty-state" *ngIf="plates.length === 0">
         <i class="pi pi-inbox"></i>
-        <h4>Nessuna Piastra Configurata</h4>
-        <p>Crea la tua prima piastra per iniziare a gestire gli ordini</p>
+        <h4>{{i18n.SETTINGS.PLATES.NO_PLATES}}</h4>
+        <p>{{i18n.SETTINGS.PLATES.NO_PLATES_DESC}}</p>
         <button pButton pRipple
-          label="Crea Prima Piastra"
+          [label]="i18n.SETTINGS.PLATES.CREATE_FIRST"
           icon="pi pi-plus"
           class="p-button-success"
           (click)="showCreateDialog()">
@@ -257,12 +275,12 @@
       <div class="header-content">
         <i class="pi pi-link"></i>
         <div>
-          <h3>Coppie di Piastre</h3>
-          <p>Configura le coppie di piastre per la visualizzazione affiancata</p>
+          <h3>{{i18n.SETTINGS.PAIRS.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.PAIRS.DESCRIPTION}}</p>
         </div>
       </div>
       <button pButton pRipple
-        label="Nuova Coppia"
+        [label]="i18n.SETTINGS.PAIRS.NEW_PAIR"
         icon="pi pi-plus"
         class="p-button-success"
         (click)="showPairDialog()">
@@ -274,10 +292,10 @@
                *ngIf="platePairs.length > 0">
         <ng-template pTemplate="header">
           <tr>
-            <th>Nome Coppia</th>
-            <th>Piastra 1</th>
-            <th>Piastra 2</th>
-            <th style="width: 250px">Azioni</th>
+            <th>{{i18n.SETTINGS.PAIRS.PAIR_NAME}}</th>
+            <th>{{i18n.SETTINGS.PAIRS.PLATE_1}}</th>
+            <th>{{i18n.SETTINGS.PAIRS.PLATE_2}}</th>
+            <th style="width: 250px">{{i18n.PLATE.ACTIONS}}</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-pair>
@@ -297,7 +315,7 @@
                         type="button"
                         icon="pi pi-eye"
                         class="p-button-info p-button-sm p-button-text"
-                        pTooltip="Apri"
+                        [pTooltip]="i18n.SETTINGS.PAIRS.OPEN"
                         tooltipPosition="top"
                         (click)="openPairView(pair.id)">
                 </button>
@@ -305,7 +323,7 @@
                         type="button"
                         icon="pi pi-copy"
                         class="p-button-secondary p-button-sm p-button-text"
-                        pTooltip="Copia Link"
+                        [pTooltip]="i18n.SETTINGS.PAIRS.COPY_LINK"
                         tooltipPosition="top"
                         (click)="copyPairLink(pair.id)">
                 </button>
@@ -313,7 +331,7 @@
                         type="button"
                         icon="pi pi-pencil"
                         class="p-button-warning p-button-sm p-button-text"
-                        pTooltip="Modifica"
+                        [pTooltip]="i18n.COMMON.EDIT"
                         tooltipPosition="top"
                         (click)="showEditPairDialog(pair)">
                 </button>
@@ -321,7 +339,7 @@
                         type="button"
                         icon="pi pi-trash"
                         class="p-button-danger p-button-sm p-button-text"
-                        pTooltip="Elimina"
+                        [pTooltip]="i18n.COMMON.DELETE"
                         tooltipPosition="top"
                         (click)="deletePair(pair.id)">
                 </button>
@@ -333,15 +351,43 @@
       
       <div class="empty-state" *ngIf="platePairs.length === 0">
         <i class="pi pi-link"></i>
-        <h4>Nessuna Coppia Configurata</h4>
-        <p>Crea una coppia di piastre per visualizzarle affiancate</p>
+        <h4>{{i18n.SETTINGS.PAIRS.NO_PAIRS}}</h4>
+        <p>{{i18n.SETTINGS.PAIRS.NO_PAIRS_DESC}}</p>
         <button pButton pRipple
-          label="Crea Prima Coppia"
+          [label]="i18n.SETTINGS.PAIRS.CREATE_FIRST"
           icon="pi pi-plus"
           class="p-button-success"
           (click)="showPairDialog()">
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- GSG Integration Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-database"></i>
+        <div>
+          <h3>{{i18n.SETTINGS.GSG.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.GSG.DESCRIPTION}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="gsg-info-alert">
+        <i class="pi pi-info-circle"></i>
+        <div>
+          <strong>{{i18n.COMMON.ATTENTION}}:</strong>
+          <p>{{i18n.SETTINGS.GSG.WARNING}}</p>
+        </div>
+      </div>
+      <button pButton pRipple 
+        [label]="i18n.SETTINGS.GSG.INIT_BUTTON"
+        icon="pi pi-download"
+        class="p-button-info"
+        (click)="onGSGInit()">
+      </button>
     </div>
   </div>
 </div>
@@ -508,6 +554,33 @@
       </p-inputNumber>
       <small class="field-hint">
         Numero identificativo della piastra (0-200)
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="categories">
+        <i class="pi pi-list"></i>
+        Categorie Associate
+      </label>
+      <p-multiSelect 
+        id="categories"
+        formControlName="categories"
+        [options]="categories"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Seleziona categorie"
+        [showClear]="true"
+        appendTo="body"
+        [style]="{'width': '100%'}">
+        <ng-template let-category pTemplate="item">
+          <div class="category-item">
+            <span class="category-color" [style.background-color]="category.color"></span>
+            <span>{{category.name}}</span>
+          </div>
+        </ng-template>
+      </p-multiSelect>
+      <small class="field-hint">
+        Seleziona le categorie che possono essere gestite in questa piastra
       </small>
     </div>
 

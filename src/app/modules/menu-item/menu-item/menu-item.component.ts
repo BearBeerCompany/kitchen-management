@@ -69,19 +69,22 @@ export class MenuItemComponent implements OnInit {
     this._getFormCallback("category")
       .subscribe((category: Category | MenuItem) => {
         this.selectedCategory = category as Category;
-        this._categoryService.getAll()
-            .subscribe(
-              (response: Category[]) => {
-                this._messageService.add({
-                  severity: 'success',
-                  summary: this.isEdit ? 'Categoria aggiornata' : 'Categoria creata',
-                  detail: `La categoria è stata ${this.isEdit ? 'modificata' : 'creata'} correttamente`
-                });
-                this.categories$ = of(response);
-                this.categoryDisplay = false;
-                this.isEdit = false;
-              })
+        this._refreshCategoriesAndShowSuccess();
+      });
+  }
 
+  private _refreshCategoriesAndShowSuccess(): void {
+    this._categoryService.getAll()
+      .subscribe(
+        (response: Category[]) => {
+          this._messageService.add({
+            severity: 'success',
+            summary: this.isEdit ? 'Categoria aggiornata' : 'Categoria creata',
+            detail: `La categoria è stata ${this.isEdit ? 'modificata' : 'creata'} correttamente`
+          });
+          this.categories$ = of(response);
+          this.categoryDisplay = false;
+          this.isEdit = false;
         }
       );
   }
