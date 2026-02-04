@@ -139,17 +139,6 @@
              pInputText
              type="number">
     </div>
-    
-    <div class="form-field">
-      <label>
-        <i class="pi pi-th-large"></i>
-        {{i18n.ITEM.PLATE_ASSOCIATED}}
-      </label>
-      <select formControlName="plateId" class="form-select">
-        <option [value]="null">{{i18n.ITEM.NO_PLATE}}</option>
-        <option *ngFor="let plate of (plates$ | async)" [value]="plate.id">{{plate.name}}</option>
-      </select>
-    </div>
   </form>
   
   <ng-template pTemplate="footer">
