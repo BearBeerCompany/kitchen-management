@@ -558,6 +558,33 @@
     </div>
 
     <div class="form-field">
+      <label for="categories">
+        <i class="pi pi-list"></i>
+        Categorie Associate
+      </label>
+      <p-multiSelect 
+        id="categories"
+        formControlName="categories"
+        [options]="categories"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Seleziona categorie"
+        [showClear]="true"
+        appendTo="body"
+        [style]="{'width': '100%'}">
+        <ng-template let-category pTemplate="item">
+          <div class="category-item">
+            <span class="category-color" [style.background-color]="category.color"></span>
+            <span>{{category.name}}</span>
+          </div>
+        </ng-template>
+      </p-multiSelect>
+      <small class="field-hint">
+        Seleziona le categorie che possono essere gestite in questa piastra
+      </small>
+    </div>
+
+    <div class="form-field">
       <label for="quickMoveEnabled">
         <i class="pi pi-arrow-right"></i>
         Spostamento Rapido

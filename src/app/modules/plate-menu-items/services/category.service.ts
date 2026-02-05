@@ -58,27 +58,4 @@ export class CategoryService extends RequestService implements CRUDService<Categ
       })
     );
   }
-
-  public associatePlate(categoryId: string, plateId: string): Observable<any> {
-    return this._http.post(
-      this._getUrl(categoryId) + '/plate', 
-      { plateId }, 
-      RequestService.baseHttpOptions
-    ).pipe(
-      map((res: any) => {
-        return res;
-      })
-    );
-  }
-
-  public getAssociatedPlate(categoryId: string): Observable<{plateId: string | null}> {
-    return this._http.get(
-      this._getUrl(categoryId) + '/plate', 
-      RequestService.baseHttpOptions
-    ).pipe(
-      map((res: any) => {
-        return res || { plateId: null };
-      })
-    );
-  }
 }
