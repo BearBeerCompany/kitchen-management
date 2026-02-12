@@ -44,6 +44,8 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "chart.js": "^3.9.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.1.0",
     "net": "^1.0.2",
     "primeflex": "^3.2.1",
     "primeicons": "^5.0.0",

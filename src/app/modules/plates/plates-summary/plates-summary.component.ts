@@ -11,6 +11,8 @@ import {Stats, StatsChart} from '../../shared/interface/stats.interface';
 import {MessageService} from 'primeng/api';
 import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
 import {ThemeService} from '../../../services/theme.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface PlateStats {
   plate: Plate;
@@ -64,6 +66,8 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
   public plateWorkloadChartData: any;
   public plateDelayChartData: any;
   public chartOptions: any;
+  public hourlyChartOptions: any; // Opzioni specifiche per grafico orario
+  public doughnutChartOptions: any; // Opzioni specifiche per grafici a torta
 
   // Nuove analisi basate su ordini storici
   public topProductsChartData: any;
@@ -232,6 +236,82 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
           }
         }
       }
+    };
+
+    // Opzioni specifiche per il grafico orario con padding ridotto
+    this.hourlyChartOptions = {
+      ...this.chartOptions,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 10,
+          bottom: 0
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 11
+            },
+            color: textColor,
+            padding: 5
+          },
+          grid: {
+            color: gridColor,
+            drawBorder: true
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            },
+            color: textColor,
+            padding: 5,
+            maxRotation: 0,
+            minRotation: 0
+          },
+          grid: {
+            display: false,
+            drawBorder: true
+          }
+        }
+      }
+    };
+
+    // Opzioni specifiche per grafici doughnut/pie (senza assi)
+    this.doughnutChartOptions = {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            },
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          padding: 12,
+          titleFont: {
+            size: 14
+          },
+          bodyFont: {
+            size: 13
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
     };
   }
 
@@ -544,6 +624,12 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
                 ];
                 
                 console.log('Total orders loaded for analysis:', allOrders.length);
+                console.log('Sample order data structure (first 3):', allOrders.slice(0, 3).map(o => ({
+                  id: o.id,
+                  menuItem: o.menuItem,
+                  hasCategory: !!o.menuItem?.category,
+                  categoryData: o.menuItem?.category
+                })));
                 
                 // Filtra per data (confronta solo giorno/mese/anno, ignora ore)
                 const fromDateOnly = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
@@ -865,6 +951,162 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
     // Carica analisi dettagliate ordini
     this.loadOrderAnalysis(this.dateFrom, this.dateTo);
+  }
+
+  public async exportToPDF(): Promise<void> {
+    try {
+      this._messageService.add({
+        severity: 'info',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_LOADING,
+        life: 3000
+      });
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPosition = margin;
+
+      // Header
+      pdf.setFontSize(20);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(this.i18n.SUMMARY.TITLE, margin, yPosition);
+      yPosition += 10;
+
+      // Data e periodo
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      const now = new Date();
+      pdf.text(`${this.i18n.SUMMARY.EXPORT_DATE}: ${now.toLocaleDateString('it-IT')} ${now.toLocaleTimeString('it-IT')}`, margin, yPosition);
+      yPosition += 6;
+      
+      if (this.selectedStats) {
+        const periodText = `${this.i18n.SUMMARY.EXPORT_PERIOD}: ${this.dateFrom.toLocaleDateString('it-IT')} - ${this.dateTo.toLocaleDateString('it-IT')}`;
+        pdf.text(periodText, margin, yPosition);
+        yPosition += 6;
+      }
+
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 8;
+
+      // Statistiche Globali
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(this.i18n.SUMMARY.STATS.TITLE || 'Statistiche Globali', margin, yPosition);
+      yPosition += 8;
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      const stats = [
+        `${this.i18n.SUMMARY.STATS.IN_PROGRESS}: ${this.globalStats.totalProgress}`,
+        `${this.i18n.SUMMARY.STATS.IN_QUEUE}: ${this.globalStats.totalTodo}`,
+        `${this.i18n.SUMMARY.STATS.ACTIVE_PLATES}: ${this.globalStats.activePlates}/${this.globalStats.totalPlates}`,
+        `${this.i18n.SUMMARY.STATS.MAX_DELAY}: ${this.formatTime(this.globalStats.maxDelayAllPlates)}`,
+        `${this.i18n.SUMMARY.STATS.AVG_DELAY}: ${this.formatTime(this.globalStats.avgDelayAllPlates)}`
+      ];
+      
+      if (this.globalStats.criticalOrders > 0) {
+        stats.push(`${this.i18n.SUMMARY.STATS.CRITICAL_ORDERS}: ${this.globalStats.criticalOrders}`);
+      }
+
+      stats.forEach(stat => {
+        pdf.text(stat, margin + 5, yPosition);
+        yPosition += 6;
+      });
+      yPosition += 5;
+
+      // Cattura grafici e altre sezioni
+      const elements = [
+        { selector: '.plates-table-container', title: this.i18n.SUMMARY.PLATES_DETAIL },
+        { selector: '.charts-container', title: this.i18n.SUMMARY.CHARTS_TITLE || 'Grafici Analisi Piastre' },
+        { selector: '.advanced-analysis-section', title: this.i18n.SUMMARY.ADVANCED_ANALYSIS || 'Analisi Ordini Avanzate' },
+        { selector: '.orders-stats-section', title: 'Statistiche Ordini per Periodo' }
+      ];
+
+      for (const element of elements) {
+        const htmlElement = document.querySelector(element.selector) as HTMLElement;
+        if (htmlElement && htmlElement.offsetHeight > 0) {
+          // Aggiungi titolo sezione
+          if (yPosition > pageHeight - 40) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+
+          pdf.setFontSize(12);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(element.title, margin, yPosition);
+          yPosition += 8;
+
+          // Cattura l'elemento con html2canvas
+          const canvas = await html2canvas(htmlElement, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = pageWidth - (2 * margin);
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          // Se l'immagine è troppo alta, dividila in più pagine
+          if (imgHeight > pageHeight - yPosition - margin) {
+            pdf.addPage();
+            yPosition = margin;
+          }
+
+          // Aggiungi l'immagine al PDF
+          if (imgHeight <= pageHeight - (2 * margin)) {
+            pdf.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
+            yPosition += imgHeight + 10;
+          } else {
+            // Se troppo grande, ridimensiona per adattare
+            const maxImgHeight = pageHeight - (2 * margin);
+            const scaledImgWidth = (canvas.width * maxImgHeight) / canvas.height;
+            const scaledWidth = Math.min(imgWidth, scaledImgWidth);
+            const scaledHeight = (canvas.height * scaledWidth) / canvas.width;
+            
+            pdf.addImage(imgData, 'PNG', margin, yPosition, scaledWidth, scaledHeight);
+            yPosition = pageHeight - margin; // Forza nuova pagina per elemento successivo
+          }
+        }
+      }
+
+      // Footer in ultima pagina
+      const totalPages = (pdf as any).internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'italic');
+        pdf.text(
+          `${this.i18n.SUMMARY.EXPORT_PAGE || 'Pagina'} ${i} ${this.i18n.SUMMARY.EXPORT_OF || 'di'} ${totalPages}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        );
+      }
+
+      // Salva il PDF
+      const fileName = `riepilogo-piastre-${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.pdf`;
+      pdf.save(fileName);
+
+      this._messageService.add({
+        severity: 'success',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_SUCCESS,
+        life: 3000
+      });
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      this._messageService.add({
+        severity: 'error',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_ERROR,
+        life: 5000
+      });
+    }
   }
 
   private _loadDiagramData(stats: Stats[]) {
