@@ -37,7 +37,7 @@ export class PlatesComponent implements OnInit, AfterViewInit, OnDestroy {
   public showItemDelays: boolean = false;
   public platePairs: PlatePair[] = [];
 
-  private readonly _MIN_DELTA_SWIPE = 90;
+  private readonly _MIN_DELTA_SWIPE = 150;
 
   private _start: number | null = 0;
   private _end: number = 0;

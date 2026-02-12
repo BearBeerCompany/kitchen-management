@@ -308,8 +308,20 @@ export const I18N_ENG = {
       ACTIVE_PLATES: "Active Plates",
       MAX_DELAY: "Maximum Delay",
       AVG_DELAY: "Average Delay",
-      CRITICAL_ORDERS: "Critical Orders"
-    }
+      CRITICAL_ORDERS: "Critical Orders",
+      TITLE: "Global Statistics"
+    },
+    EXPORT_PDF_BUTTON: "Export PDF",
+    EXPORT_PDF: "PDF Export",
+    EXPORT_PDF_LOADING: "Generating PDF...",
+    EXPORT_PDF_SUCCESS: "PDF generated successfully!",
+    EXPORT_PDF_ERROR: "Error generating PDF",
+    EXPORT_DATE: "Generation date",
+    EXPORT_PERIOD: "Analyzed period",
+    EXPORT_PAGE: "Page",
+    EXPORT_OF: "of",
+    CHARTS_TITLE: "Plate Analysis Charts",
+    ADVANCED_ANALYSIS: "Advanced Order Analysis"
   },
   NAVBAR: {
     BRAND: "Kitchen Manager",
