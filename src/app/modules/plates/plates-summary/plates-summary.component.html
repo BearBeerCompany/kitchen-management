@@ -24,15 +24,6 @@
         </p-dropdown>
       </div>
       <button pButton pRipple 
-              icon="pi pi-file-pdf" 
-              [label]="i18n.SUMMARY.EXPORT_PDF_BUTTON" 
-              class="p-button-sm p-button-success"
-              (click)="exportToPDF()"
-              [loading]="loading"
-              pTooltip="Esporta riepilogo in PDF"
-              tooltipPosition="bottom">
-      </button>
-      <button pButton pRipple 
               icon="pi pi-refresh" 
               [label]="i18n.SUMMARY.REFRESH_BUTTON" 
               class="p-button-sm p-button-outlined"
@@ -267,6 +258,15 @@
           <i class="pi pi-calendar"></i>
           <h3>Statistiche Ordini per Periodo</h3>
         </div>
+        <button pButton pRipple 
+                icon="pi pi-file-pdf" 
+                [label]="i18n.SUMMARY.EXPORT_PDF_BUTTON" 
+                class="p-button-sm p-button-success"
+                (click)="exportToPDF()"
+                [loading]="analysisLoading"
+                pTooltip="Esporta analisi ordini in PDF"
+                tooltipPosition="bottom">
+        </button>
       </div>
 
       <!-- Date Filter Card -->
@@ -344,30 +344,13 @@
             </div>
           </div>
         </div>
-
-        <div class="chart-card" *ngIf="statsData && !showEmpty">
-          <div class="chart-header">
-            <h3>
-              <i class="pi pi-chart-pie"></i>
-              Distribuzione Stati Ordini
-            </h3>
-            <p>Ripartizione degli ordini per stato nel periodo selezionato</p>
-          </div>
-          <div class="chart-content">
-            <p-chart type="doughnut" 
-                     [data]="statsData"
-                     [options]="doughnutChartOptions"
-                     height="350px">
-            </p-chart>
-          </div>
-        </div>
       </div>
     </div>
 
     <!-- Analisi Ordini Avanzate -->
     <div class="advanced-analysis-section" *ngIf="!analysisLoading">
       
-      <!-- KPI Tasso di Cancellazione -->
+      <!-- KPI Tasso di Cancellazione e Tipologia Servizio -->
       <div class="kpi-cards">
         <div class="kpi-card" [ngClass]="cancellationRate > 10 ? 'warning' : 'success'">
           <div class="kpi-icon">
@@ -381,13 +364,41 @@
             </p>
           </div>
         </div>
+
+        <!-- KPI Ordini Asporto -->
+        <div class="kpi-card info" *ngIf="takeAwayCount > 0">
+          <div class="kpi-icon">
+            <i class="pi pi-shopping-bag"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>Ordini Asporto</h4>
+            <div class="kpi-value">{{takeAwayCount}}</div>
+            <p class="kpi-details">
+              {{((takeAwayCount / (takeAwayCount + dineInCount)) * 100).toFixed(1)}}% del totale
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI Ordini Al Tavolo -->
+        <div class="kpi-card info" *ngIf="dineInCount > 0">
+          <div class="kpi-icon">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>Ordini Al Tavolo</h4>
+            <div class="kpi-value">{{dineInCount}}</div>
+            <p class="kpi-details">
+              {{((dineInCount / (takeAwayCount + dineInCount)) * 100).toFixed(1)}}% del totale
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Grafici Analisi -->
       <div class="analysis-charts-grid">
         
         <!-- Grafico 1: Top Prodotti -->
-        <div class="chart-card full-width" *ngIf="topProductsChartData">
+        <div id="topProductsChart" class="chart-card full-width" *ngIf="topProductsChartData">
           <div class="chart-header">
             <h3>
               <i class="pi pi-star"></i>
@@ -405,7 +416,7 @@
         </div>
 
         <!-- Grafico 2: Andamento Orario (Full Width) -->
-        <div class="chart-card full-width" *ngIf="hourlyOrdersChartData">
+        <div id="hourlyOrdersChart" class="chart-card full-width" *ngIf="hourlyOrdersChartData">
           <div class="chart-header">
             <h3>
               <i class="pi pi-calendar"></i>
@@ -423,7 +434,7 @@
         </div>
 
         <!-- Grafico 3: Performance Temporale -->
-        <div class="chart-card" *ngIf="hourlyPerformanceChartData">
+        <div id="performanceChart" class="chart-card" *ngIf="hourlyPerformanceChartData">
           <div class="chart-header">
             <h3>
               <i class="pi pi-bolt"></i>
@@ -441,7 +452,7 @@
         </div>
 
         <!-- Grafico 4: Distribuzione Categorie -->
-        <div class="chart-card" *ngIf="categoryDistributionChartData">
+        <div id="categoryChart" class="chart-card" *ngIf="categoryDistributionChartData">
           <div class="chart-header">
             <h3>
               <i class="pi pi-tags"></i>
@@ -454,6 +465,78 @@
                      [data]="categoryDistributionChartData" 
                      [options]="doughnutChartOptions"
                      height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 5: Asporto vs Tavolo -->
+        <div id="takeAwayChart" class="chart-card" *ngIf="takeAwayDistributionChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-shopping-bag"></i>
+              Asporto vs Al Tavolo
+            </h3>
+            <p>Distribuzione ordini per tipo di servizio</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="takeAwayDistributionChartData" 
+                     [options]="doughnutChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico: Distribuzione Stati Ordini -->
+        <div id="orderStatusChart" class="chart-card" *ngIf="statsData && !showEmpty">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-chart-pie"></i>
+              Distribuzione Stati Ordini
+            </h3>
+            <p>Ripartizione degli ordini per stato nel periodo selezionato</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="statsData"
+                     [options]="doughnutChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 6: Categorie per Tipo Servizio (Stacked) -->
+        <div id="categoryServiceChart" class="chart-card full-width" *ngIf="categoryByServiceChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-chart-bar"></i>
+              Categorie per Tipo Servizio
+            </h3>
+            <p>Confronto tra asporto e consumazione al tavolo per categoria</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="bar" 
+                     [data]="categoryByServiceChartData" 
+                     [options]="stackedBarChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 7: Top Stazioni di Lavoro -->
+        <div id="topStationsChart" class="chart-card full-width" *ngIf="topStationsChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-briefcase"></i>
+              Top 10 Stazioni di Lavoro
+            </h3>
+            <p>Stazioni di lavoro con più ordini nel periodo</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="bar" 
+                     [data]="topStationsChartData" 
+                     [options]="horizontalBarChartOptions"
+                     height="400px">
             </p-chart>
           </div>
         </div>
