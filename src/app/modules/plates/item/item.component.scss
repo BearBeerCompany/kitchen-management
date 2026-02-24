@@ -265,6 +265,28 @@
         }
       }
     }
+    
+    // Pulsante done per vista espansa
+    .item_done_expanded {
+      position: absolute;
+      bottom: $spacing-md;
+      right: calc($spacing-lg + 70px); // Posizionato a sinistra del quick move button
+      
+      button {
+        width: 56px;
+        height: 56px;
+        
+        ::ng-deep .pi {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+      }
+    }
   }
 }
 

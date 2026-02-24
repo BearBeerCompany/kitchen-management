@@ -168,7 +168,7 @@ export class PlateComponent implements OnInit, OnChanges, OnDestroy {
         ]
       }];
 
-      this.viewMode = this.config.viewMode || 'rows';
+      this.viewMode = this.config?.viewMode || 'rows';
   }
 
   public ngOnDestroy(): void {

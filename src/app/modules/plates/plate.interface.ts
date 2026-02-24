@@ -38,5 +38,6 @@ export interface Plate {
   _status?: string;
   quickMoveEnabled?: boolean;
   quickMoveTargetPlateId?: string;
+  expandedDoneButtonEnabled?: boolean;
   categories?: string[];
 }

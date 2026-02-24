@@ -487,7 +487,7 @@
     {{isEditMode ? 'Modifica Piastra' : 'Crea Nuova Piastra'}}
   </ng-template>
   
-  <form (ngSubmit)="onSubmit()" [formGroup]="form!">
+  <form *ngIf="formReady && form" (ngSubmit)="onSubmit()" [formGroup]="form">
     <div class="form-field">
       <label for="plateName">
         <i class="pi pi-tag"></i>
@@ -617,6 +617,25 @@
             Scegli la piastra dove verranno spostati gli item con il pulsante rapido
           </small>
         </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="expandedDoneButtonEnabled">
+        <i class="pi pi-check"></i>
+        Pulsante Done in Vista Espansa
+      </label>
+      <div class="quick-move-container">
+        <div class="quick-move-toggle">
+          <p-inputSwitch 
+            id="expandedDoneButtonEnabled" 
+            formControlName="expandedDoneButtonEnabled">
+          </p-inputSwitch>
+          <span class="toggle-label">Abilita pulsante done in vista espansa</span>
+        </div>
+        <small class="field-hint">
+          Mostra il pulsante verde per settare "done" lo stato dell'item anche nella vista espansa (come nella vista multi piastra)
+        </small>
       </div>
     </div>
   </form>
