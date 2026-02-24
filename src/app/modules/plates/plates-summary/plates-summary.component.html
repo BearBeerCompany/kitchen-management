@@ -374,7 +374,7 @@
             <h4>Ordini Asporto</h4>
             <div class="kpi-value">{{takeAwayCount}}</div>
             <p class="kpi-details">
-              {{((takeAwayCount / (takeAwayCount + dineInCount)) * 100).toFixed(1)}}% del totale
+              {{getServicePercentage(takeAwayCount)}}% del totale
             </p>
           </div>
         </div>
@@ -388,7 +388,7 @@
             <h4>Ordini Al Tavolo</h4>
             <div class="kpi-value">{{dineInCount}}</div>
             <p class="kpi-details">
-              {{((dineInCount / (takeAwayCount + dineInCount)) * 100).toFixed(1)}}% del totale
+              {{getServicePercentage(dineInCount)}}% del totale
             </p>
           </div>
         </div>

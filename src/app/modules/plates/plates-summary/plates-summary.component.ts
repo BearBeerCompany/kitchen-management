@@ -14,11 +14,6 @@ import {CategoryService} from '../../plate-menu-items/services/category.service'
 import {ThemeService} from '../../../services/theme.service';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { Chart } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-
-// Registra il plugin datalabels globalmente
-Chart.register(ChartDataLabels);
 
 interface PlateStats {
   plate: Plate;
@@ -856,10 +851,19 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     this.showEmpty = false;
 
     // 1. Distribuzione Stati Ordini (per date range selezionato)
-    const todoCount = orders.filter(o => o.status === Status.Todo).length;
-    const progressCount = orders.filter(o => o.status === Status.Progress).length;
-    const doneCount = orders.filter(o => o.status === Status.Done).length;
-    const cancelledCount = orders.filter(o => o.status === Status.Cancelled).length;
+    const counts = orders.reduce<Record<Status, number>>((acc, o) => {
+      // Verifica che lo status sia uno dei valori Status validi
+      if (Object.values(Status).includes(o.status as Status)) {
+        const status = o.status as Status;
+        acc[status] = (acc[status] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<Status, number>);
+
+    const todoCount = counts[Status.Todo] || 0;
+    const progressCount = counts[Status.Progress] || 0;
+    const doneCount = counts[Status.Done] || 0;
+    const cancelledCount = counts[Status.Cancelled] || 0;
 
     // Aggiorna il conteggio totale per il badge "Ordini Totali"
     this.selectedStats = {
@@ -1254,6 +1258,19 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     this.loadOrderAnalysis(this.dateFrom, this.dateTo);
   }
 
+  /**
+   * Calcola la percentuale di un servizio rispetto al totale degli ordini
+   * @param count Numero di ordini del servizio specifico
+   * @returns Percentuale formattata con 1 decimale
+   */
+  public getServicePercentage(count: number): string {
+    const total = this.takeAwayCount + this.dineInCount;
+    if (total === 0) {
+      return '0.0';
+    }
+    return ((count / total) * 100).toFixed(1);
+  }
+
   public async exportToPDF(): Promise<void> {
     try {
       this._messageService.add({
@@ -1273,24 +1290,22 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       let yPosition = 40;
 
       // Logo (se disponibile)
-      try {
-        const logoImg = new Image();
-        logoImg.src = 'assets/img/logo_feston.png';
-        await new Promise((resolve, reject) => {
-          logoImg.onload = resolve;
-          logoImg.onerror = reject;
-          setTimeout(reject, 2000); // Timeout dopo 2 secondi
-        });
-        
+      const logoImg = new Image();
+      logoImg.src = 'assets/img/logo_feston.png';
+      
+      logoImg.onload = () => {
         const logoWidth = 60;
         const logoHeight = (logoImg.height * logoWidth) / logoImg.width;
-        
         pdf.addImage(logoImg, 'PNG', (pageWidth - logoWidth) / 2, yPosition, logoWidth, logoHeight);
-        yPosition += logoHeight + 20;
-      } catch (e) {
+        console.log('Logo caricato con successo');
+      };
+
+      logoImg.onerror = () => {
         console.log('Logo non disponibile, skip');
-        yPosition += 10;
-      }
+      };
+      
+      // Continua senza aspettare il caricamento del logo
+      yPosition += 10;
 
       // Titolo principale
       pdf.setFontSize(24);
