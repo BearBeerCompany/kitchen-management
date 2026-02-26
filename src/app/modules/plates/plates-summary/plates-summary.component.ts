@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PlateService} from '../services/plate.service';
 import {PlateQueueManagerService} from '../services/plate-queue-manager.service';
 import {Plate} from '../plate.interface';
-import {PlateMenuItem, Status} from '../../plate-menu-items/plate-menu-item';
+import {PlateMenuItem, Status, Category} from '../../plate-menu-items/plate-menu-item';
 import {Subscription} from 'rxjs';
 import {I18nService} from '../../../services/i18n.service';
 import {DelayThresholdsService} from '../../../services/delay-thresholds.service';
@@ -10,7 +10,10 @@ import {StatsService} from '../../shared/service/stats.service';
 import {Stats, StatsChart} from '../../shared/interface/stats.interface';
 import {MessageService} from 'primeng/api';
 import {PlateMenuItemsService} from '../../shared/service/plate-menu-items.service';
+import {CategoryService} from '../../plate-menu-items/services/category.service';
 import {ThemeService} from '../../../services/theme.service';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface PlateStats {
   plate: Plate;
@@ -64,12 +67,21 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
   public plateWorkloadChartData: any;
   public plateDelayChartData: any;
   public chartOptions: any;
+  public hourlyChartOptions: any; // Opzioni specifiche per grafico orario
+  public doughnutChartOptions: any; // Opzioni specifiche per grafici a torta
+  public stackedBarChartOptions: any; // Opzioni per grafici a barre impilate
+  public horizontalBarChartOptions: any; // Opzioni per grafici a barre orizzontali
 
   // Nuove analisi basate su ordini storici
   public topProductsChartData: any;
   public hourlyOrdersChartData: any;
   public categoryDistributionChartData: any;
   public hourlyPerformanceChartData: any;
+  public takeAwayDistributionChartData: any; // Nuovo: Asporto vs Tavolo
+  public categoryByServiceChartData: any; // Nuovo: Categorie per Tipo Servizio
+  public topStationsChartData: any; // Nuovo: Top Stazioni di Lavoro
+  public takeAwayCount: number = 0;
+  public dineInCount: number = 0;
   public cancellationRate: number = 0;
   public completedOrdersCount: number = 0;
   public cancelledOrdersCount: number = 0;
@@ -99,6 +111,7 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
   private _autoRefreshInterval: any;
   private _subscriptions: Subscription = new Subscription();
   private readonly AUTO_REFRESH_STORAGE_KEY = 'summary_auto_refresh_settings';
+  private _categoriesMap: Map<string, Category> = new Map();
 
   constructor(
     private _plateService: PlateService,
@@ -108,6 +121,7 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _statsService: StatsService,
     private _messageService: MessageService,
     private _plateMenuItemsService: PlateMenuItemsService,
+    private _categoryService: CategoryService,
     private _themeService: ThemeService
   ) {
     this.i18n = _i18nService.instance;
@@ -131,6 +145,17 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Carica le categorie per il grafico di distribuzione
+    this._categoryService.getAll().subscribe(categories => {
+      this._categoriesMap.clear();
+      categories.forEach(cat => {
+        if (cat.id) {
+          this._categoriesMap.set(cat.id, cat);
+        }
+      });
+      console.log('Categories loaded:', this._categoriesMap.size, 'categories');
+    });
+    
     // Carica le piastre e inizializza le code prima di caricare i dati
     this._plateService.getAll().subscribe(plates => {
       // Controlla se le code sono già inizializzate
@@ -202,6 +227,18 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
           bodyFont: {
             size: 13
           }
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: textColor,
+          font: {
+            weight: 'bold',
+            size: 11
+          },
+          formatter: (value: any) => {
+            return value;
+          }
         }
       },
       responsive: true,
@@ -229,6 +266,194 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
           },
           grid: {
             display: false
+          }
+        }
+      }
+    };
+
+    // Opzioni specifiche per il grafico orario con padding ridotto
+    this.hourlyChartOptions = {
+      ...this.chartOptions,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 10,
+          bottom: 0
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 11
+            },
+            color: textColor,
+            padding: 5
+          },
+          grid: {
+            color: gridColor,
+            drawBorder: true
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 11
+            },
+            color: textColor,
+            padding: 5,
+            maxRotation: 0,
+            minRotation: 0
+          },
+          grid: {
+            display: false,
+            drawBorder: true
+          }
+        }
+      }
+    };
+
+    // Opzioni specifiche per grafici doughnut/pie (senza assi)
+    this.doughnutChartOptions = {
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            padding: 15,
+            font: {
+              size: 12
+            },
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          padding: 12,
+          titleFont: {
+            size: 14
+          },
+          bodyFont: {
+            size: 13
+          }
+        },
+        datalabels: {
+          color: '#ffffff',
+          font: {
+            weight: 'bold',
+            size: 12
+          },
+          formatter: (value: any, context: any) => {
+            // Calcola la percentuale
+            const dataset = context.chart.data.datasets[0];
+            const total = dataset.data.reduce((acc: number, val: number) => acc + val, 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0';
+            return `${value}\n(${percentage}%)`;
+          },
+          textAlign: 'center'
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false
+    };
+
+    // Configurazione per grafici a barre impilate con etichette
+    this.stackedBarChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          display: true, 
+          position: 'top',
+          labels: {
+            color: textColor
+          }
+        },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff'
+        },
+        datalabels: {
+          color: '#ffffff',
+          font: {
+            weight: 'bold',
+            size: 10
+          },
+          formatter: (value: any) => {
+            return value > 0 ? value : '';
+          }
+        }
+      },
+      scales: {
+        x: { 
+          stacked: true,
+          ticks: {
+            color: textColor
+          },
+          grid: {
+            color: gridColor
+          }
+        },
+        y: { 
+          stacked: true, 
+          beginAtZero: true,
+          ticks: {
+            color: textColor
+          },
+          grid: {
+            color: gridColor
+          }
+        }
+      }
+    };
+
+    // Configurazione per grafici a barre orizzontali con etichette
+    this.horizontalBarChartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: tooltipBg,
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff'
+        },
+        datalabels: {
+          anchor: 'end',
+          align: 'end',
+          color: textColor,
+          font: {
+            weight: 'bold',
+            size: 11
+          },
+          formatter: (value: any) => {
+            return value;
+          }
+        }
+      },
+      scales: {
+        x: { 
+          beginAtZero: true,
+          ticks: {
+            color: textColor
+          },
+          grid: {
+            color: gridColor
+          }
+        },
+        y: {
+          ticks: {
+            color: textColor
+          },
+          grid: {
+            color: gridColor
           }
         }
       }
@@ -609,13 +834,60 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       this.hourlyOrdersChartData = undefined;
       this.categoryDistributionChartData = undefined;
       this.hourlyPerformanceChartData = undefined;
+      this.takeAwayDistributionChartData = undefined;
+      this.categoryByServiceChartData = undefined;
+      this.topStationsChartData = undefined;
+      this.statsData = undefined; // Reset anche il grafico stati ordini
+      this.selectedStats = undefined; // Reset il conteggio totale
+      this.showEmpty = true; // Mostra messaggio "nessun ordine"
       this.cancellationRate = 0;
       this.completedOrdersCount = 0;
       this.cancelledOrdersCount = 0;
+      this.takeAwayCount = 0;
+      this.dineInCount = 0;
       return;
     }
 
-    // 1. Tasso di cancellazione
+    this.showEmpty = false;
+
+    // 1. Distribuzione Stati Ordini (per date range selezionato)
+    const counts = orders.reduce<Record<Status, number>>((acc, o) => {
+      // Verifica che lo status sia uno dei valori Status validi
+      if (Object.values(Status).includes(o.status as Status)) {
+        const status = o.status as Status;
+        acc[status] = (acc[status] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<Status, number>);
+
+    const todoCount = counts[Status.Todo] || 0;
+    const progressCount = counts[Status.Progress] || 0;
+    const doneCount = counts[Status.Done] || 0;
+    const cancelledCount = counts[Status.Cancelled] || 0;
+
+    // Aggiorna il conteggio totale per il badge "Ordini Totali"
+    this.selectedStats = {
+      count: orders.length,
+      statusCount: {
+        [Status.Todo]: todoCount,
+        [Status.Progress]: progressCount,
+        [Status.Done]: doneCount,
+        [Status.Cancelled]: cancelledCount
+      }
+    } as Stats;
+
+    this.statsData = {
+      labels: ['Attesa', 'In Corso', 'Completati', 'Cancellati'],
+      datasets: [
+        {
+          data: [todoCount, progressCount, doneCount, cancelledCount],
+          backgroundColor: ['#0d91e8', '#f6dd38', '#5ff104', '#f31919']
+        }
+      ]
+    };
+    console.log('Stats distribution:', { todo: todoCount, progress: progressCount, done: doneCount, cancelled: cancelledCount });
+
+    // 2. Tasso di cancellazione
     this.completedOrdersCount = orders.filter(o => o.status === Status.Done).length;
     this.cancelledOrdersCount = orders.filter(o => o.status === Status.Cancelled).length;
     this.cancellationRate = orders.length > 0 
@@ -624,7 +896,7 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     
     console.log('Cancellation rate:', this.cancellationRate, '%');
 
-    // 2. Top prodotti più ordinati
+    // 3. Top prodotti più ordinati
     const productCount = new Map<string, { name: string; count: number; category?: string }>();
     orders.forEach(order => {
       const productName = order.menuItem?.name || 'Sconosciuto';
@@ -706,18 +978,22 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       data: hourRange
     });
 
-    // 4. Distribuzione per categoria
+    // 5. Distribuzione per categoria
     const categoryCount = new Map<string, number>();
     orders.forEach((order, index) => {
-      const categoryName = order.menuItem?.category?.name || 'Senza Categoria';
+      // Usa categoryId per trovare la categoria dalla mappa
+      const categoryId = order.menuItem?.categoryId;
+      const category = categoryId ? this._categoriesMap.get(categoryId) : undefined;
+      const categoryName = category?.name || 'Senza Categoria';
       categoryCount.set(categoryName, (categoryCount.get(categoryName) || 0) + 1);
       
       // Log primi 3 ordini per debug
       if (index < 3) {
-        console.log('Sample order category:', {
+        console.log('Sample order category (using categoryId):', {
           menuItem: order.menuItem?.name,
-          category: order.menuItem?.category?.name,
-          fullCategory: order.menuItem?.category
+          categoryId: categoryId,
+          categoryName: categoryName,
+          categoryFound: !!category
         });
       }
     });
@@ -824,11 +1100,123 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
       console.log('No performance data available');
     }
     
+    // 7. Distribuzione Asporto vs Tavolo
+    this.takeAwayCount = 0;
+    this.dineInCount = 0;
+    
+    orders.forEach(order => {
+      // Considera null come dine-in (consumazione al tavolo)
+      if (order.takeAway === true) {
+        this.takeAwayCount++;
+      } else {
+        this.dineInCount++;
+      }
+    });
+
+    if (this.takeAwayCount > 0 || this.dineInCount > 0) {
+      this.takeAwayDistributionChartData = {
+        labels: ['Asporto', 'Al Tavolo'],
+        datasets: [{
+          data: [this.takeAwayCount, this.dineInCount],
+          backgroundColor: ['#ff9800', '#2196f3']
+        }]
+      };
+      console.log('Take-away distribution:', {
+        takeAway: this.takeAwayCount,
+        dineIn: this.dineInCount,
+        total: this.takeAwayCount + this.dineInCount
+      });
+    } else {
+      this.takeAwayDistributionChartData = undefined;
+    }
+
+    // 8. Categorie per Tipo Servizio (Stacked)
+    const categoryServiceMap = new Map<string, { takeAway: number; dineIn: number }>();
+    
+    orders.forEach(order => {
+      const categoryId = order.menuItem?.categoryId;
+      const category = categoryId ? this._categoriesMap.get(categoryId) : undefined;
+      const categoryName = category?.name || 'Senza Categoria';
+      
+      if (!categoryServiceMap.has(categoryName)) {
+        categoryServiceMap.set(categoryName, { takeAway: 0, dineIn: 0 });
+      }
+      
+      const stats = categoryServiceMap.get(categoryName)!;
+      if (order.takeAway === true) {
+        stats.takeAway++;
+      } else {
+        stats.dineIn++;
+      }
+    });
+
+    if (categoryServiceMap.size > 0) {
+      const categoryNames = Array.from(categoryServiceMap.keys());
+      const takeAwayData = categoryNames.map(cat => categoryServiceMap.get(cat)!.takeAway);
+      const dineInData = categoryNames.map(cat => categoryServiceMap.get(cat)!.dineIn);
+
+      this.categoryByServiceChartData = {
+        labels: categoryNames,
+        datasets: [
+          {
+            label: 'Asporto',
+            backgroundColor: '#ff9800',
+            data: takeAwayData
+          },
+          {
+            label: 'Al Tavolo',
+            backgroundColor: '#2196f3',
+            data: dineInData
+          }
+        ]
+      };
+      console.log('Category by service chart generated:', categoryNames.length, 'categories');
+    } else {
+      this.categoryByServiceChartData = undefined;
+    }
+
+    // 9. Top Stazioni di Lavoro
+    const stationCount = new Map<string, number>();
+    
+    orders.forEach(order => {
+      const stationName = order.plate?.name || 'Sconosciuta';
+      stationCount.set(stationName, (stationCount.get(stationName) || 0) + 1);
+    });
+
+    if (stationCount.size > 0) {
+      // Ordina per numero di ordini e prendi top 10
+      const sortedStations = Array.from(stationCount.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+      const stationColors = sortedStations.map(([_, count], index) => {
+        // Usa i colori delle stazioni se disponibili, altrimenti colori default
+        const colorPalette = ['#2196f3', '#ff9800', '#4caf50', '#f44336', '#9c27b0', 
+                              '#00bcd4', '#ffeb3b', '#795548', '#607d8b', '#e91e63'];
+        return colorPalette[index % colorPalette.length];
+      });
+
+      this.topStationsChartData = {
+        labels: sortedStations.map(s => s[0]),
+        datasets: [{
+          label: 'Numero Ordini',
+          backgroundColor: stationColors,
+          data: sortedStations.map(s => s[1])
+        }]
+      };
+      console.log('Top stations chart generated:', sortedStations.length, 'stations');
+    } else {
+      this.topStationsChartData = undefined;
+    }
+    
     console.log('Analysis complete. Charts state:', {
       topProducts: !!this.topProductsChartData,
       hourlyOrders: !!this.hourlyOrdersChartData,
       categories: !!this.categoryDistributionChartData,
-      performance: !!this.hourlyPerformanceChartData
+      performance: !!this.hourlyPerformanceChartData,
+      takeAwayDistribution: !!this.takeAwayDistributionChartData,
+      categoryByService: !!this.categoryByServiceChartData,
+      topStations: !!this.topStationsChartData
     });
   }
 
@@ -851,6 +1239,9 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
             this.showEmpty = true;
           }
           this.statsLoading = false;
+          
+          // Carica anche le analisi ordini avanzate per lo stesso periodo
+          this.loadOrderAnalysis(this.dateFrom, this.dateTo);
         }, error: () => {
           this._messageService.add({
             severity: 'error',
@@ -865,6 +1256,236 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
 
     // Carica analisi dettagliate ordini
     this.loadOrderAnalysis(this.dateFrom, this.dateTo);
+  }
+
+  /**
+   * Calcola la percentuale di un servizio rispetto al totale degli ordini
+   * @param count Numero di ordini del servizio specifico
+   * @returns Percentuale formattata con 1 decimale
+   */
+  public getServicePercentage(count: number): string {
+    const total = this.takeAwayCount + this.dineInCount;
+    if (total === 0) {
+      return '0.0';
+    }
+    return ((count / total) * 100).toFixed(1);
+  }
+
+  public async exportToPDF(): Promise<void> {
+    try {
+      this._messageService.add({
+        severity: 'info',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_LOADING,
+        life: 3000
+      });
+
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const now = new Date();
+
+      // ========== PAGINA 1: COPERTINA ==========
+      let yPosition = 40;
+
+      // Logo (se disponibile)
+      const logoImg = new Image();
+      logoImg.src = 'assets/img/logo_feston.png';
+      
+      logoImg.onload = () => {
+        const logoWidth = 60;
+        const logoHeight = (logoImg.height * logoWidth) / logoImg.width;
+        pdf.addImage(logoImg, 'PNG', (pageWidth - logoWidth) / 2, yPosition, logoWidth, logoHeight);
+        console.log('Logo caricato con successo');
+      };
+
+      logoImg.onerror = () => {
+        console.log('Logo non disponibile, skip');
+      };
+      
+      // Continua senza aspettare il caricamento del logo
+      yPosition += 10;
+
+      // Titolo principale
+      pdf.setFontSize(24);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(33, 150, 243); // Blu
+      pdf.text('Analisi Ordini per Periodo', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 15;
+
+      // Sottotitolo
+      pdf.setFontSize(12);
+      pdf.setTextColor(100, 100, 100);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text('Report Dettagliato della Cucina', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 25;
+
+      // Box periodo
+      pdf.setDrawColor(33, 150, 243);
+      pdf.setLineWidth(0.5);
+      pdf.roundedRect(margin + 10, yPosition, pageWidth - 2 * margin - 20, 25, 3, 3);
+      
+      yPosition += 8;
+      pdf.setFontSize(10);
+      pdf.setTextColor(60, 60, 60);
+      pdf.text('Periodo Analizzato:', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 7;
+      
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(0, 0, 0);
+      const periodText = `${this.dateFrom.toLocaleDateString('it-IT')} - ${this.dateTo.toLocaleDateString('it-IT')}`;
+      pdf.text(periodText, pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+
+      // KPI Summary
+      yPosition += 10;
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(33, 150, 243);
+      pdf.text('Riepilogo KPI', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 10;
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(60, 60, 60);
+      
+      const totalOrders = this.takeAwayCount + this.dineInCount;
+      const kpiData = [
+        { label: 'Ordini Totali', value: totalOrders.toString(), icon: '' },
+        { label: 'Tasso Cancellazione', value: `${this.cancellationRate}%`, icon: '' },
+        { label: 'Ordini Completati', value: this.completedOrdersCount.toString(), icon: '' },
+        { label: 'Ordini Asporto', value: `${this.takeAwayCount} (${totalOrders > 0 ? ((this.takeAwayCount / totalOrders) * 100).toFixed(1) : 0}%)`, icon: '' },
+        { label: 'Ordini Al Tavolo', value: `${this.dineInCount} (${totalOrders > 0 ? ((this.dineInCount / totalOrders) * 100).toFixed(1) : 0}%)`, icon: '' }
+      ];
+
+      const kpiBoxWidth = (pageWidth - 2 * margin - 10) / 2;
+      const kpiBoxHeight = 18;
+      let kpiX = margin;
+      let kpiY = yPosition;
+
+      kpiData.forEach((kpi, index) => {
+        if (index % 2 === 0 && index > 0) {
+          kpiY += kpiBoxHeight + 5;
+          kpiX = margin;
+        }
+
+        pdf.setFillColor(245, 245, 245);
+        pdf.roundedRect(kpiX, kpiY, kpiBoxWidth, kpiBoxHeight, 2, 2, 'F');
+        
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(33, 150, 243);
+        pdf.text(`${kpi.icon} ${kpi.label}`, kpiX + 3, kpiY + 7);
+        
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(kpi.value, kpiX + 3, kpiY + 14);
+
+        kpiX += kpiBoxWidth + 5;
+      });
+
+      yPosition = kpiY + kpiBoxHeight + 20;
+
+      // Footer copertina
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'italic');
+      pdf.setTextColor(150, 150, 150);
+      pdf.text(`Generato il: ${now.toLocaleDateString('it-IT')} alle ${now.toLocaleTimeString('it-IT')}`, pageWidth / 2, pageHeight - 15, { align: 'center' });
+
+      // ========== PAGINE SUCCESSIVE: GRAFICI ==========
+      // Seleziona tutti i grafici individuali
+      const chartSelectors = [
+        { selector: '#topProductsChart', title: 'Top 10 Prodotti Più Ordinati' },
+        { selector: '#hourlyOrdersChart', title: 'Distribuzione Ordini per Ora' },
+        { selector: '#performanceChart', title: 'Performance Temporale' },
+        { selector: '#categoryChart', title: 'Distribuzione per Categoria' },
+        { selector: '#takeAwayChart', title: 'Asporto vs Al Tavolo' },
+        { selector: '#categoryServiceChart', title: 'Categorie per Tipo Servizio' },
+        { selector: '#topStationsChart', title: 'Top 10 Stazioni di Lavoro' }
+      ];
+
+      let chartsPerPage = 0;
+      const maxChartsPerPage = 3;
+
+      for (const chart of chartSelectors) {
+        const chartElement = document.querySelector(`${chart.selector} .chart-content`) as HTMLElement;
+        
+        if (!chartElement || chartElement.offsetHeight === 0) {
+          console.log(`Grafico ${chart.title} non trovato o vuoto, skip`);
+          continue;
+        }
+
+        // Nuova pagina dopo ogni 3 grafici
+        if (chartsPerPage === 0 || chartsPerPage >= maxChartsPerPage) {
+          pdf.addPage();
+          yPosition = margin;
+          chartsPerPage = 0;
+        }
+
+        // Titolo grafico
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(33, 150, 243);
+        pdf.text(chart.title, margin, yPosition);
+        yPosition += 8;
+
+        // Cattura il grafico con qualità ottimizzata
+        const canvas = await html2canvas(chartElement, {
+          scale: 1.5, // Aumentato per migliore qualità
+          logging: false,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.92); // JPEG con qualità 92%
+        const imgWidth = pageWidth - (2 * margin);
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, 110); // Max 110mm per grafico
+        
+        pdf.addImage(imgData, 'JPEG', margin, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 10;
+        chartsPerPage++;
+      }
+
+      // Footer con numerazione pagine
+      const totalPages = (pdf as any).internal.pages.length - 1;
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'italic');
+        pdf.setTextColor(150, 150, 150);
+        
+        if (i > 1) { // Skip footer sulla copertina
+          pdf.text(
+            `Pagina ${i - 1} di ${totalPages - 1}`,
+            pageWidth / 2,
+            pageHeight - 10,
+            { align: 'center' }
+          );
+        }
+      }
+
+      // Salva il PDF
+      const fileName = `analisi-ordini-${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}.pdf`;
+      pdf.save(fileName);
+
+      this._messageService.add({
+        severity: 'success',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_SUCCESS,
+        life: 3000
+      });
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      this._messageService.add({
+        severity: 'error',
+        summary: this.i18n.SUMMARY.EXPORT_PDF,
+        detail: this.i18n.SUMMARY.EXPORT_PDF_ERROR,
+        life: 5000
+      });
+    }
   }
 
   private _loadDiagramData(stats: Stats[]) {

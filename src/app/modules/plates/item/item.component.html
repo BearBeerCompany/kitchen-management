@@ -55,6 +55,17 @@
             pButton
             pRipple></button>
   </span>
+
+  <!-- Pulsante done per vista espansa -->
+  <span class="item_done_expanded" *ngIf="readonly && currentPlate?.expandedDoneButtonEnabled">
+    <button (click)="onDone()"
+            class="p-button-rounded p-button-text p-button-success"
+            icon="pi pi-check"
+            [pTooltip]="i18n.ITEM.DONE"
+            tooltipPosition="top"
+            pButton
+            pRipple></button>
+  </span>
 </div>
 <ng-template #overlay>
   <div class="delete-options__container">

@@ -224,7 +224,7 @@
           </h3>
           <p>{{i18n.SUMMARY.WORKLOAD_DESC}}</p>
         </div>
-        <div class="chart-content">
+        <div class="chart-content chart-content-wide">
           <p-chart type="bar" 
                    [data]="plateWorkloadChartData" 
                    [options]="chartOptions"
@@ -251,116 +251,6 @@
       </div>
     </div>
 
-    <!-- Analisi Ordini Avanzate -->
-    <div class="advanced-analysis-section" *ngIf="!analysisLoading">
-      
-      <!-- KPI Tasso di Cancellazione -->
-      <div class="kpi-cards">
-        <div class="kpi-card" [ngClass]="cancellationRate > 10 ? 'warning' : 'success'">
-          <div class="kpi-icon">
-            <i class="pi pi-times-circle"></i>
-          </div>
-          <div class="kpi-content">
-            <h4>{{i18n.SUMMARY.CANCELLATION_RATE}}</h4>
-            <div class="kpi-value">{{cancellationRate}}%</div>
-            <p class="kpi-details">
-              {{completedOrdersCount}} {{i18n.SUMMARY.COMPLETED}} • {{cancelledOrdersCount}} {{i18n.SUMMARY.CANCELLED}}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Grafici Analisi -->
-      <div class="analysis-charts-grid">
-        
-        <!-- Grafico 1: Top Prodotti -->
-        <div class="chart-card full-width" *ngIf="topProductsChartData">
-          <div class="chart-header">
-            <h3>
-              <i class="pi pi-star"></i>
-              {{i18n.SUMMARY.TOP_PRODUCTS}}
-            </h3>
-            <p>{{i18n.SUMMARY.TOP_PRODUCTS_DESC}}</p>
-          </div>
-          <div class="chart-content">
-            <p-chart type="bar" 
-                     [data]="topProductsChartData" 
-                     [options]="chartOptions"
-                     height="350px">
-            </p-chart>
-          </div>
-        </div>
-
-        <!-- Grafico 2: Andamento Orario -->
-        <div class="chart-card" *ngIf="hourlyOrdersChartData">
-          <div class="chart-header">
-            <h3>
-              <i class="pi pi-calendar"></i>
-              {{i18n.SUMMARY.HOURLY_ORDERS}}
-            </h3>
-            <p>Distribuzione degli ordini durante il giorno</p>
-          </div>
-          <div class="chart-content">
-            <p-chart type="line" 
-                     [data]="hourlyOrdersChartData" 
-                     [options]="chartOptions"
-                     height="300px">
-            </p-chart>
-          </div>
-        </div>
-
-        <!-- Grafico 3: Performance Temporale -->
-        <div class="chart-card" *ngIf="hourlyPerformanceChartData">
-          <div class="chart-header">
-            <h3>
-              <i class="pi pi-bolt"></i>
-              Performance Temporale
-            </h3>
-            <p>Tempo medio di completamento ordini per fascia oraria</p>
-          </div>
-          <div class="chart-content">
-            <p-chart type="bar" 
-                     [data]="hourlyPerformanceChartData" 
-                     [options]="chartOptions"
-                     height="300px">
-            </p-chart>
-          </div>
-        </div>
-
-        <!-- Grafico 4: Distribuzione Categorie -->
-        <div class="chart-card" *ngIf="categoryDistributionChartData">
-          <div class="chart-header">
-            <h3>
-              <i class="pi pi-tags"></i>
-              Distribuzione per Categoria
-            </h3>
-            <p>Ripartizione ordini per categoria di prodotto</p>
-          </div>
-          <div class="chart-content">
-            <p-chart type="doughnut" 
-                     [data]="categoryDistributionChartData" 
-                     [options]="chartOptions"
-                     height="300px">
-            </p-chart>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Loading analisi -->
-    <div *ngIf="analysisLoading" class="loading-container">
-      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-      <p>Caricamento analisi avanzate...</p>
-    </div>
-
-    <!-- Nessun dato disponibile -->
-    <div *ngIf="!analysisLoading && !topProductsChartData && !hourlyOrdersChartData && !categoryDistributionChartData" 
-         class="loading-container">
-      <i class="pi pi-info-circle" style="font-size: 2rem; color: #2196f3"></i>
-      <p>Nessun ordine trovato per il periodo selezionato</p>
-    </div>
-
     <!-- Statistiche Ordini per Periodo -->
     <div class="orders-stats-section">
       <div class="section-header">
@@ -368,6 +258,15 @@
           <i class="pi pi-calendar"></i>
           <h3>Statistiche Ordini per Periodo</h3>
         </div>
+        <button pButton pRipple 
+                icon="pi pi-file-pdf" 
+                [label]="i18n.SUMMARY.EXPORT_PDF_BUTTON" 
+                class="p-button-sm p-button-success"
+                (click)="exportToPDF()"
+                [loading]="analysisLoading"
+                pTooltip="Esporta analisi ordini in PDF"
+                tooltipPosition="bottom">
+        </button>
       </div>
 
       <!-- Date Filter Card -->
@@ -445,16 +344,218 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div class="stats-content-grid" *ngIf="statsData && !showEmpty">
-          <div class="chart-container">
-            <div class="chart-card">
-              <h4>Distribuzione Stati Ordini</h4>
-              <p-chart type="doughnut" [data]="statsData"></p-chart>
-            </div>
+    <!-- Analisi Ordini Avanzate -->
+    <div class="advanced-analysis-section" *ngIf="!analysisLoading">
+      
+      <!-- KPI Tasso di Cancellazione e Tipologia Servizio -->
+      <div class="kpi-cards">
+        <div class="kpi-card" [ngClass]="cancellationRate > 10 ? 'warning' : 'success'">
+          <div class="kpi-icon">
+            <i class="pi pi-times-circle"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>{{i18n.SUMMARY.CANCELLATION_RATE}}</h4>
+            <div class="kpi-value">{{cancellationRate}}%</div>
+            <p class="kpi-details">
+              {{completedOrdersCount}} {{i18n.SUMMARY.COMPLETED}} • {{cancelledOrdersCount}} {{i18n.SUMMARY.CANCELLED}}
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI Ordini Asporto -->
+        <div class="kpi-card info" *ngIf="takeAwayCount > 0">
+          <div class="kpi-icon">
+            <i class="pi pi-shopping-bag"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>Ordini Asporto</h4>
+            <div class="kpi-value">{{takeAwayCount}}</div>
+            <p class="kpi-details">
+              {{getServicePercentage(takeAwayCount)}}% del totale
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI Ordini Al Tavolo -->
+        <div class="kpi-card info" *ngIf="dineInCount > 0">
+          <div class="kpi-icon">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="kpi-content">
+            <h4>Ordini Al Tavolo</h4>
+            <div class="kpi-value">{{dineInCount}}</div>
+            <p class="kpi-details">
+              {{getServicePercentage(dineInCount)}}% del totale
+            </p>
           </div>
         </div>
       </div>
+
+      <!-- Grafici Analisi -->
+      <div class="analysis-charts-grid">
+        
+        <!-- Grafico 1: Top Prodotti -->
+        <div id="topProductsChart" class="chart-card full-width" *ngIf="topProductsChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-star"></i>
+              {{i18n.SUMMARY.TOP_PRODUCTS}}
+            </h3>
+            <p>{{i18n.SUMMARY.TOP_PRODUCTS_DESC}}</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="bar" 
+                     [data]="topProductsChartData" 
+                     [options]="chartOptions"
+                     height="350px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 2: Andamento Orario (Full Width) -->
+        <div id="hourlyOrdersChart" class="chart-card full-width" *ngIf="hourlyOrdersChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-calendar"></i>
+              {{i18n.SUMMARY.HOURLY_ORDERS}}
+            </h3>
+            <p>Distribuzione degli ordini durante il giorno</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="line" 
+                     [data]="hourlyOrdersChartData" 
+                     [options]="hourlyChartOptions"
+                     height="350px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 3: Performance Temporale -->
+        <div id="performanceChart" class="chart-card" *ngIf="hourlyPerformanceChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-bolt"></i>
+              Performance Temporale
+            </h3>
+            <p>Tempo medio di completamento ordini per fascia oraria</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="bar" 
+                     [data]="hourlyPerformanceChartData" 
+                     [options]="chartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 4: Distribuzione Categorie -->
+        <div id="categoryChart" class="chart-card" *ngIf="categoryDistributionChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-tags"></i>
+              Distribuzione per Categoria
+            </h3>
+            <p>Ripartizione ordini per categoria di prodotto</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="categoryDistributionChartData" 
+                     [options]="doughnutChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 5: Asporto vs Tavolo -->
+        <div id="takeAwayChart" class="chart-card" *ngIf="takeAwayDistributionChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-shopping-bag"></i>
+              Asporto vs Al Tavolo
+            </h3>
+            <p>Distribuzione ordini per tipo di servizio</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="takeAwayDistributionChartData" 
+                     [options]="doughnutChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico: Distribuzione Stati Ordini -->
+        <div id="orderStatusChart" class="chart-card" *ngIf="statsData && !showEmpty">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-chart-pie"></i>
+              Distribuzione Stati Ordini
+            </h3>
+            <p>Ripartizione degli ordini per stato nel periodo selezionato</p>
+          </div>
+          <div class="chart-content">
+            <p-chart type="doughnut" 
+                     [data]="statsData"
+                     [options]="doughnutChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 6: Categorie per Tipo Servizio (Stacked) -->
+        <div id="categoryServiceChart" class="chart-card full-width" *ngIf="categoryByServiceChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-chart-bar"></i>
+              Categorie per Tipo Servizio
+            </h3>
+            <p>Confronto tra asporto e consumazione al tavolo per categoria</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="bar" 
+                     [data]="categoryByServiceChartData" 
+                     [options]="stackedBarChartOptions"
+                     height="300px">
+            </p-chart>
+          </div>
+        </div>
+
+        <!-- Grafico 7: Top Stazioni di Lavoro -->
+        <div id="topStationsChart" class="chart-card full-width" *ngIf="topStationsChartData">
+          <div class="chart-header">
+            <h3>
+              <i class="pi pi-briefcase"></i>
+              Top 10 Stazioni di Lavoro
+            </h3>
+            <p>Stazioni di lavoro con più ordini nel periodo</p>
+          </div>
+          <div class="chart-content chart-content-wide">
+            <p-chart type="bar" 
+                     [data]="topStationsChartData" 
+                     [options]="horizontalBarChartOptions"
+                     height="400px">
+            </p-chart>
+          </div>
+        </div>
+
+      </div>
     </div>
+
+    <!-- Loading analisi -->
+    <div *ngIf="analysisLoading" class="loading-container">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <p>Caricamento analisi avanzate...</p>
+    </div>
+
+    <!-- Nessun dato disponibile -->
+    <div *ngIf="!analysisLoading && !topProductsChartData && !hourlyOrdersChartData && !categoryDistributionChartData" 
+         class="loading-container">
+      <i class="pi pi-info-circle" style="font-size: 2rem; color: #2196f3"></i>
+      <p>Nessun ordine trovato per il periodo selezionato</p>
+    </div>
+
   </ng-container>
 </div>

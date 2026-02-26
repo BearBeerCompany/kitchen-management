@@ -212,20 +212,37 @@ export class PlatePairViewComponent implements OnInit, OnDestroy {
   private _enrichPlateWithQuickMoveSettings(plate: Plate): Plate {
     if (!plate.id) return plate;
     
-    const saved = localStorage.getItem(`plate_quickMove_${plate.id}`);
-    if (saved) {
+    const savedQuickMove = localStorage.getItem(`plate_quickMove_${plate.id}`);
+    const savedExpandedDoneButton = localStorage.getItem(`plate_expandedDoneButton_${plate.id}`);
+    
+    let enrichedPlate = { ...plate };
+    
+    if (savedQuickMove) {
       try {
-        const settings = JSON.parse(saved);
-        return {
-          ...plate,
+        const settings = JSON.parse(savedQuickMove);
+        enrichedPlate = {
+          ...enrichedPlate,
           quickMoveEnabled: settings.enabled,
           quickMoveTargetPlateId: settings.targetPlateId
         };
       } catch (e) {
-        return plate;
+        // Ignora errori di parsing
       }
     }
-    return plate;
+    
+    if (savedExpandedDoneButton) {
+      try {
+        const settings = JSON.parse(savedExpandedDoneButton);
+        enrichedPlate = {
+          ...enrichedPlate,
+          expandedDoneButtonEnabled: settings.enabled
+        };
+      } catch (e) {
+        // Ignora errori di parsing
+      }
+    }
+    
+    return enrichedPlate;
   }
 
   public onPlateViewModeChange(viewMode: 'rows' | 'columns', plate: Plate): void {

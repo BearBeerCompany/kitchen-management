@@ -308,8 +308,20 @@ export const I18N = {
       ACTIVE_PLATES: "Piastre Attive",
       MAX_DELAY: "Ritardo Massimo",
       AVG_DELAY: "Ritardo Medio",
-      CRITICAL_ORDERS: "Ordini Critici"
-    }
+      CRITICAL_ORDERS: "Ordini Critici",
+      TITLE: "Statistiche Globali"
+    },
+    EXPORT_PDF_BUTTON: "Esporta PDF",
+    EXPORT_PDF: "Esportazione PDF",
+    EXPORT_PDF_LOADING: "Generazione PDF in corso...",
+    EXPORT_PDF_SUCCESS: "PDF generato con successo!",
+    EXPORT_PDF_ERROR: "Errore durante la generazione del PDF",
+    EXPORT_DATE: "Data generazione",
+    EXPORT_PERIOD: "Periodo analizzato",
+    EXPORT_PAGE: "Pagina",
+    EXPORT_OF: "di",
+    CHARTS_TITLE: "Grafici Analisi Piastre",
+    ADVANCED_ANALYSIS: "Analisi Ordini Avanzate"
   },
   NAVBAR: {
     BRAND: "Kitchen Manager",

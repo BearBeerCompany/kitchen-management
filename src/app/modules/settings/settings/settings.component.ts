@@ -24,6 +24,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public readonly i18n: any;
 
   public display: boolean = false;
+  public formReady: boolean = false;
   public isEditMode: boolean = false;
   public selectedPlate?: Plate;
   public plates: Plate[] = [];
@@ -138,6 +139,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     const plateId = this.selectedPlate?.id;
     const quickMoveEnabled = this.form?.get("quickMoveEnabled")?.value;
     const quickMoveTargetPlateId = this.form?.get("quickMoveTargetPlateId")?.value;
+    const expandedDoneButtonEnabled = this.form?.get("expandedDoneButtonEnabled")?.value;
 
     if (this.isEditMode) {
       // Update existing plate
@@ -151,6 +153,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
         _ => {
           // Salva quickMove settings in localStorage
           this._saveQuickMoveSettings(plateId!, quickMoveEnabled, quickMoveTargetPlateId);
+          // Salva expandedDoneButton settings in localStorage
+          this._saveExpandedDoneButtonSettings(plateId!, expandedDoneButtonEnabled);
           
           this._messageService.add({
             severity: 'success',
@@ -174,6 +178,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
           // Salva quickMove settings in localStorage
           if (createdPlate.id) {
             this._saveQuickMoveSettings(createdPlate.id, quickMoveEnabled, quickMoveTargetPlateId);
+            // Salva expandedDoneButton settings in localStorage
+            this._saveExpandedDoneButtonSettings(createdPlate.id, expandedDoneButtonEnabled);
           }
           
           this._messageService.add({
@@ -192,40 +198,59 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public discardForm(): void {
     this.form?.reset();
     this.display = false;
+    this.formReady = false;
   }
 
   public showCreateDialog(): void {
     this.isEditMode = false;
     this.selectedPlate = undefined;
-    this.form = new FormGroup({
-      name: new FormControl("", Validators.required),
-      color: new FormControl("#3b82f6", Validators.required),
-      number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
-      quickMoveEnabled: new FormControl(false),
-      quickMoveTargetPlateId: new FormControl(""),
-      categories: new FormControl([])
-    });
-    this.display = true;
+    this.formReady = false;
+    this.display = false;
+    
+    // Crea il form e poi mostra il dialog
+    setTimeout(() => {
+      this.form = new FormGroup({
+        name: new FormControl("", Validators.required),
+        color: new FormControl("#3b82f6", Validators.required),
+        number: new FormControl(0, [Validators.required, Validators.pattern("^[0-9]*$")]),
+        quickMoveEnabled: new FormControl(false),
+        quickMoveTargetPlateId: new FormControl(""),
+        expandedDoneButtonEnabled: new FormControl(false),
+        categories: new FormControl([])
+      });
+      this.formReady = true;
+      this.display = true;
+    }, 0);
   }
 
   public showEditDialog(id: string) {
     this.isEditMode = true;
+    this.formReady = false;
+    this.display = false;
+    
     this._platesService.getById(id).subscribe(
       (plate: Plate) => {
         this.selectedPlate = plate;
         
         // Carica quickMove settings dal localStorage
         const quickMoveSettings = this._loadQuickMoveSettings(id);
+        // Carica expandedDoneButton settings dal localStorage
+        const expandedDoneButtonEnabled = this._loadExpandedDoneButtonSettings(id);
         
-        this.form = new FormGroup({
-          name: new FormControl(plate.name, Validators.required),
-          color: new FormControl(plate.color, Validators.required),
-          number: new FormControl(plate.slot![1], [Validators.required, Validators.pattern("^[0-9]*$")]),
-          quickMoveEnabled: new FormControl(quickMoveSettings.enabled),
-          quickMoveTargetPlateId: new FormControl(quickMoveSettings.targetPlateId),
-          categories: new FormControl(plate.categories || [])
-        });
-        this.display = true;
+        // Crea il form e poi mostra il dialog
+        setTimeout(() => {
+          this.form = new FormGroup({
+            name: new FormControl(plate.name, Validators.required),
+            color: new FormControl(plate.color, Validators.required),
+            number: new FormControl(plate.slot![1], [Validators.required, Validators.pattern("^[0-9]*$")]),
+            quickMoveEnabled: new FormControl(quickMoveSettings.enabled),
+            quickMoveTargetPlateId: new FormControl(quickMoveSettings.targetPlateId),
+            expandedDoneButtonEnabled: new FormControl(expandedDoneButtonEnabled),
+            categories: new FormControl(plate.categories || [])
+          });
+          this.formReady = true;
+          this.display = true;
+        }, 0);
       }
     );
   }
@@ -351,7 +376,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   private _saveQuickMoveSettings(plateId: string, enabled: boolean, targetPlateId: string): void {
     const settings = {
-      enabled: enabled || false,
+      enabled: enabled ?? false,
       targetPlateId: targetPlateId || ''
     };
     localStorage.setItem(`plate_quickMove_${plateId}`, JSON.stringify(settings));
@@ -367,6 +392,26 @@ export class SettingsComponent implements OnInit, OnDestroy {
       }
     }
     return { enabled: false, targetPlateId: '' };
+  }
+
+  private _saveExpandedDoneButtonSettings(plateId: string, enabled: boolean): void {
+    const settings = {
+      enabled: enabled ?? false
+    };
+    localStorage.setItem(`plate_expandedDoneButton_${plateId}`, JSON.stringify(settings));
+  }
+
+  private _loadExpandedDoneButtonSettings(plateId: string): boolean {
+    const saved = localStorage.getItem(`plate_expandedDoneButton_${plateId}`);
+    if (saved) {
+      try {
+        const settings = JSON.parse(saved);
+        return settings.enabled;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
   }
 
   // ========================================
