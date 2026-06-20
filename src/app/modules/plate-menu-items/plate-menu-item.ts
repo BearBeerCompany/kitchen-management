@@ -40,6 +40,30 @@ export interface Category {
   menuItems?: MenuItemExtended[];
 }
 
+/**
+ * Override of the category an item belongs to in this application with respect to the category it has
+ * in the external GSG system. Applied during the GSG import; survives re-imports.
+ *
+ * All references use stable GSG external ids (Category.externalId / MenuItem.externalId), not Mongo ids.
+ * Exactly one of {@link externalItemId} (item-level) or {@link sourceExternalCategoryId}
+ * (category-level) must be set; item-level overrides take precedence over category-level ones.
+ */
+export interface CategoryMapping {
+  id?: string;
+  /** GSG Articolo.id (MenuItem.externalId) - item-level override. Mutually exclusive with sourceExternalCategoryId */
+  externalItemId?: number;
+  /** GSG Tipologia.id (Category.externalId) - category-level override. Mutually exclusive with externalItemId */
+  sourceExternalCategoryId?: number;
+  /** GSG Tipologia.id (Category.externalId) of the destination category */
+  targetExternalCategoryId?: number;
+  description?: string;
+}
+
+export enum CategoryMappingType {
+  Item = "ITEM",
+  Category = "CATEGORY"
+}
+
 export enum Status {
   Todo = "TODO",
   Progress = "PROGRESS",
