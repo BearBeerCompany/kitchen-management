@@ -124,7 +124,7 @@ export class PlatesSummaryComponent implements OnInit, OnDestroy {
     private _messageService: MessageService,
     private _plateMenuItemsService: PlateMenuItemsService,
     private _categoryService: CategoryService,
-    private _themeService: ThemeService
+    private _themeService: ThemeService,
     private _route: ActivatedRoute
   ) {
     this.i18n = _i18nService.instance;

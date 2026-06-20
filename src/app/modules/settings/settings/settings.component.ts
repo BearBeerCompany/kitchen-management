@@ -12,7 +12,9 @@ import { ThemeService } from '../../../services/theme.service';
 import { PlatePairsService, PlatePair } from '../../plates/services/plate-pairs.service';
 import { Router } from '@angular/router';
 import { CategoryService } from '../../plate-menu-items/services/category.service';
-import { Category } from '../../plate-menu-items/plate-menu-item';
+import { Category, CategoryMapping, CategoryMappingType, MenuItem } from '../../plate-menu-items/plate-menu-item';
+import { CategoryMappingService } from '../../plate-menu-items/services/category-mapping.service';
+import { MenuItemsService } from '../../plate-menu-items/services/menu-items.service';
 
 @Component({
   selector: 'settings',
@@ -36,6 +38,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
   public currentLanguage: 'it' | 'en' = 'it';
   public availableLanguages: {code: 'it' | 'en', label: string, flag: string}[] = [];
   public categories: Category[] = [];
+
+  // Category Mapping
+  public categoryMappings: CategoryMapping[] = [];
+  public menuItems: MenuItem[] = [];
+  public displayMappingDialog: boolean = false;
+  public isEditMappingMode: boolean = false;
+  public selectedMappingId?: string;
+  public mappingForm?: FormGroup;
+  public readonly mappingTypeEnum = CategoryMappingType;
+  public mappingTypeOptions: { label: string, value: CategoryMappingType }[] = [];
 
   // Plate Pairs
   public platePairs: PlatePair[] = [];
@@ -62,7 +74,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
               private _themeService: ThemeService,
               private _platePairsService: PlatePairsService,
               private _router: Router,
-              private _categoryService: CategoryService) {
+              private _categoryService: CategoryService,
+              private _categoryMappingService: CategoryMappingService,
+              private _menuItemsService: MenuItemsService) {
     this.i18n = i18nService.instance;
   }
 
@@ -73,6 +87,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this._categoryService.getAll().subscribe(categories => {
       this.categories = categories;
     });
+    this._menuItemsService.getAll().subscribe(items => {
+      this.menuItems = items;
+    });
+    this._loadCategoryMappings();
+    this.mappingTypeOptions = [
+      {label: this.i18n.SETTINGS.CATEGORY_MAPPING.TYPE_ITEM, value: CategoryMappingType.Item},
+      {label: this.i18n.SETTINGS.CATEGORY_MAPPING.TYPE_CATEGORY, value: CategoryMappingType.Category}
+    ];
     this._loadSettingsFromLocalStorage();
     this.delayThresholds = this._delayThresholdsService.getThresholds();
     this.isDarkTheme = this._themeService.getCurrentTheme() === 'dark';
@@ -106,6 +128,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
       plateId1: new FormControl("", Validators.required),
       plateId2: new FormControl("", Validators.required)
     });
+
+    this.mappingForm = new FormGroup({
+      type: new FormControl(CategoryMappingType.Item, Validators.required),
+      externalItemId: new FormControl(null),
+      sourceExternalCategoryId: new FormControl(null),
+      targetExternalCategoryId: new FormControl(null, Validators.required),
+      description: new FormControl(""),
+      id: new FormControl(null)
+    });
   }
 
   public ngOnDestroy(): void {
@@ -124,10 +155,148 @@ export class SettingsComponent implements OnInit, OnDestroy {
               summary: 'App inizializzata',
               detail: `L'applicazione è stata inizializzata da GSG correttamente`
             });
+            // refresh categories and menu items used by the category mapping form
+            this._categoryService.getAll().subscribe(categories => this.categories = categories);
+            this._menuItemsService.getAll().subscribe(items => this.menuItems = items);
           })
         );
       }
     });
+  }
+
+  // ========================================
+  // Category Mapping Methods
+  // ========================================
+
+  private _loadCategoryMappings(): void {
+    this._categoryMappingService.getAll().subscribe(mappings => this.categoryMappings = mappings);
+  }
+
+  public showMappingDialog(): void {
+    this.isEditMappingMode = false;
+    this.selectedMappingId = undefined;
+    this.mappingForm?.reset({
+      type: CategoryMappingType.Item,
+      externalItemId: null,
+      sourceExternalCategoryId: null,
+      targetExternalCategoryId: null,
+      description: "",
+      id: null
+    });
+    this.displayMappingDialog = true;
+  }
+
+  public showEditMappingDialog(mapping: CategoryMapping): void {
+    this.isEditMappingMode = true;
+    this.selectedMappingId = mapping.id;
+    this.mappingForm?.reset({
+      type: mapping.externalItemId != null ? CategoryMappingType.Item : CategoryMappingType.Category,
+      externalItemId: mapping.externalItemId ?? null,
+      sourceExternalCategoryId: mapping.sourceExternalCategoryId ?? null,
+      targetExternalCategoryId: mapping.targetExternalCategoryId ?? null,
+      description: mapping.description ?? "",
+      id: mapping.id ?? null
+    });
+    this.displayMappingDialog = true;
+  }
+
+  public get isItemMapping(): boolean {
+    return this.mappingForm?.get('type')?.value === CategoryMappingType.Item;
+  }
+
+  public onMappingTypeChange(): void {
+    // clear the field that is not relevant for the selected type
+    if (this.isItemMapping) {
+      this.mappingForm?.get('sourceExternalCategoryId')?.setValue(null);
+    } else {
+      this.mappingForm?.get('externalItemId')?.setValue(null);
+    }
+  }
+
+  public isMappingValid(): boolean {
+    if (!this.mappingForm) return false;
+    const targetSet = this.mappingForm.get('targetExternalCategoryId')?.value != null;
+    const sourceSet = this.isItemMapping
+      ? this.mappingForm.get('externalItemId')?.value != null
+      : this.mappingForm.get('sourceExternalCategoryId')?.value != null;
+    return targetSet && sourceSet;
+  }
+
+  public saveMapping(): void {
+    if (!this.isMappingValid()) return;
+
+    const value = this.mappingForm!.value;
+    const dto: CategoryMapping = {
+      targetExternalCategoryId: value.targetExternalCategoryId,
+      description: value.description || undefined,
+      externalItemId: value.type === CategoryMappingType.Item ? value.externalItemId : undefined,
+      sourceExternalCategoryId: value.type === CategoryMappingType.Category ? value.sourceExternalCategoryId : undefined
+    };
+
+    if (this.isEditMappingMode && this.selectedMappingId) {
+      dto.id = this.selectedMappingId;
+    }
+
+    const request$ = this.isEditMappingMode
+      ? this._categoryMappingService.update(dto)
+      : this._categoryMappingService.create(dto);
+
+    request$.subscribe({
+      next: () => {
+        this._messageService.add({
+          severity: 'success',
+          summary: this.isEditMappingMode ? 'Mappatura Modificata' : 'Mappatura Creata',
+          detail: `La mappatura è stata ${this.isEditMappingMode ? 'modificata' : 'creata'} con successo`
+        });
+        this.displayMappingDialog = false;
+        this._loadCategoryMappings();
+      },
+      error: () => {
+        this._messageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: 'Impossibile salvare la mappatura'
+        });
+      }
+    });
+  }
+
+  public deleteMapping(mapping: CategoryMapping): void {
+    this._confirmationService.confirm({
+      message: this.i18n.SETTINGS.CATEGORY_MAPPING.DELETE_CONFIRM,
+      accept: () => {
+        this._categoryMappingService.delete(mapping.id!).subscribe(() => {
+          this._messageService.add({
+            severity: 'success',
+            summary: 'Mappatura Eliminata',
+            detail: 'La mappatura è stata eliminata'
+          });
+          this._loadCategoryMappings();
+        });
+      }
+    });
+  }
+
+  public isItemMappingRow(mapping: CategoryMapping): boolean {
+    return mapping.externalItemId != null;
+  }
+
+  public getCategoryNameByExternalId(externalId?: number): string {
+    if (externalId == null) return this.i18n.SETTINGS.CATEGORY_MAPPING.UNKNOWN;
+    const category = this.categories.find(c => c.externalId === externalId);
+    return category?.name ?? `#${externalId}`;
+  }
+
+  public getItemNameByExternalId(externalId?: number): string {
+    if (externalId == null) return this.i18n.SETTINGS.CATEGORY_MAPPING.UNKNOWN;
+    const item = this.menuItems.find(i => i.externalId === externalId);
+    return item?.name ?? `#${externalId}`;
+  }
+
+  public getMappingSourceLabel(mapping: CategoryMapping): string {
+    return this.isItemMappingRow(mapping)
+      ? this.getItemNameByExternalId(mapping.externalItemId)
+      : this.getCategoryNameByExternalId(mapping.sourceExternalCategoryId);
   }
 
   public onDelete(id: string): void {

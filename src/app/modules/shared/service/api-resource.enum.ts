@@ -4,5 +4,6 @@ export enum ApiResourceEnum {
     PLATE = "plate",
     PLATE_MENU_ITEM = "plate-item",
     STATS = "stats",
-    GSG_INTEGRATION = "gsg"
+    GSG_INTEGRATION = "gsg",
+    CATEGORY_MAPPING = "category-mapping"
 }

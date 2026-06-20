@@ -382,12 +382,100 @@
           <p>{{i18n.SETTINGS.GSG.WARNING}}</p>
         </div>
       </div>
-      <button pButton pRipple 
+      <button pButton pRipple
         [label]="i18n.SETTINGS.GSG.INIT_BUTTON"
         icon="pi pi-download"
         class="p-button-info"
         (click)="onGSGInit()">
       </button>
+    </div>
+  </div>
+
+  <!-- Category Mapping Section -->
+  <div class="settings-card">
+    <div class="card-header">
+      <div class="header-content">
+        <i class="pi pi-sitemap"></i>
+        <div>
+          <h3>{{i18n.SETTINGS.CATEGORY_MAPPING.TITLE}}</h3>
+          <p>{{i18n.SETTINGS.CATEGORY_MAPPING.DESCRIPTION}}</p>
+        </div>
+      </div>
+      <button pButton pRipple
+        [label]="i18n.SETTINGS.CATEGORY_MAPPING.NEW_MAPPING"
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="showMappingDialog()">
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="gsg-info-alert">
+        <i class="pi pi-info-circle"></i>
+        <div>
+          <strong>{{i18n.COMMON.ATTENTION}}:</strong>
+          <p>{{i18n.SETTINGS.CATEGORY_MAPPING.INFO}}</p>
+        </div>
+      </div>
+
+      <p-table [value]="categoryMappings"
+               styleClass="p-datatable-sm"
+               *ngIf="categoryMappings.length > 0">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 140px">{{i18n.SETTINGS.CATEGORY_MAPPING.COL_TYPE}}</th>
+            <th>{{i18n.SETTINGS.CATEGORY_MAPPING.COL_SOURCE}}</th>
+            <th>{{i18n.SETTINGS.CATEGORY_MAPPING.COL_TARGET}}</th>
+            <th>{{i18n.SETTINGS.CATEGORY_MAPPING.COL_NOTES}}</th>
+            <th style="width: 120px">{{i18n.SETTINGS.CATEGORY_MAPPING.COL_ACTIONS}}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-mapping>
+          <tr>
+            <td>
+              <p-tag [value]="isItemMappingRow(mapping) ? i18n.SETTINGS.CATEGORY_MAPPING.TYPE_ITEM : i18n.SETTINGS.CATEGORY_MAPPING.TYPE_CATEGORY"
+                     [severity]="isItemMappingRow(mapping) ? 'warning' : 'info'"></p-tag>
+            </td>
+            <td>{{ getMappingSourceLabel(mapping) }}</td>
+            <td>
+              <i class="pi pi-arrow-right" style="font-size: 0.75rem; margin-right: 0.4rem; opacity: 0.6"></i>
+              {{ getCategoryNameByExternalId(mapping.targetExternalCategoryId) }}
+            </td>
+            <td>{{ mapping.description || '-' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button pButton pRipple
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-warning p-button-sm p-button-text"
+                        [pTooltip]="i18n.COMMON.EDIT"
+                        tooltipPosition="top"
+                        (click)="showEditMappingDialog(mapping)">
+                </button>
+                <button pButton pRipple
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-danger p-button-sm p-button-text"
+                        [pTooltip]="i18n.COMMON.DELETE"
+                        tooltipPosition="top"
+                        (click)="deleteMapping(mapping)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+      <div class="empty-state" *ngIf="categoryMappings.length === 0">
+        <i class="pi pi-sitemap"></i>
+        <h4>{{i18n.SETTINGS.CATEGORY_MAPPING.NO_MAPPINGS}}</h4>
+        <p>{{i18n.SETTINGS.CATEGORY_MAPPING.NO_MAPPINGS_DESC}}</p>
+        <button pButton pRipple
+          [label]="i18n.SETTINGS.CATEGORY_MAPPING.CREATE_FIRST"
+          icon="pi pi-plus"
+          class="p-button-success"
+          (click)="showMappingDialog()">
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -472,6 +560,119 @@
       icon="pi pi-check"
       class="p-button-success"
       (click)="savePair()">
+    </button>
+  </ng-template>
+</p-dialog>
+
+<!-- Category Mapping Dialog -->
+<p-dialog
+  [(visible)]="displayMappingDialog"
+  [draggable]="false"
+  [modal]="true"
+  styleClass="dialog-md">
+
+  <ng-template pTemplate="header">
+    <i [class]="isEditMappingMode ? 'pi pi-pencil' : 'pi pi-plus'"></i>
+    {{isEditMappingMode ? i18n.SETTINGS.CATEGORY_MAPPING.EDIT_MAPPING : i18n.SETTINGS.CATEGORY_MAPPING.NEW_MAPPING}}
+  </ng-template>
+
+  <form [formGroup]="mappingForm!" *ngIf="mappingForm">
+    <div class="form-field">
+      <label for="mappingType">
+        <i class="pi pi-filter"></i>
+        {{i18n.SETTINGS.CATEGORY_MAPPING.TYPE}}
+      </label>
+      <p-dropdown
+        id="mappingType"
+        formControlName="type"
+        [options]="mappingTypeOptions"
+        optionLabel="label"
+        optionValue="value"
+        (onChange)="onMappingTypeChange()"
+        appendTo="body">
+      </p-dropdown>
+    </div>
+
+    <div class="form-field" *ngIf="isItemMapping">
+      <label for="mappingItem">
+        <i class="pi pi-book"></i>
+        {{i18n.SETTINGS.CATEGORY_MAPPING.ITEM}}
+      </label>
+      <p-dropdown
+        id="mappingItem"
+        formControlName="externalItemId"
+        [options]="menuItems"
+        optionLabel="name"
+        optionValue="externalId"
+        [filter]="true"
+        filterBy="name"
+        [placeholder]="i18n.SETTINGS.CATEGORY_MAPPING.ITEM_PLACEHOLDER"
+        appendTo="body">
+      </p-dropdown>
+    </div>
+
+    <div class="form-field" *ngIf="!isItemMapping">
+      <label for="mappingSource">
+        <i class="pi pi-tag"></i>
+        {{i18n.SETTINGS.CATEGORY_MAPPING.SOURCE_CATEGORY}}
+      </label>
+      <p-dropdown
+        id="mappingSource"
+        formControlName="sourceExternalCategoryId"
+        [options]="categories"
+        optionLabel="name"
+        optionValue="externalId"
+        [filter]="true"
+        filterBy="name"
+        [placeholder]="i18n.SETTINGS.CATEGORY_MAPPING.SOURCE_CATEGORY_PLACEHOLDER"
+        appendTo="body">
+      </p-dropdown>
+    </div>
+
+    <div class="form-field">
+      <label for="mappingTarget">
+        <i class="pi pi-arrow-right"></i>
+        {{i18n.SETTINGS.CATEGORY_MAPPING.TARGET_CATEGORY}}
+      </label>
+      <p-dropdown
+        id="mappingTarget"
+        formControlName="targetExternalCategoryId"
+        [options]="categories"
+        optionLabel="name"
+        optionValue="externalId"
+        [filter]="true"
+        filterBy="name"
+        [placeholder]="i18n.SETTINGS.CATEGORY_MAPPING.TARGET_CATEGORY_PLACEHOLDER"
+        appendTo="body">
+      </p-dropdown>
+    </div>
+
+    <div class="form-field">
+      <label for="mappingDescription">
+        <i class="pi pi-comment"></i>
+        {{i18n.SETTINGS.CATEGORY_MAPPING.DESCRIPTION_LABEL}}
+      </label>
+      <input id="mappingDescription"
+             formControlName="description"
+             pInputText
+             type="text"
+             [placeholder]="i18n.SETTINGS.CATEGORY_MAPPING.DESCRIPTION_PLACEHOLDER">
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple
+      label="Annulla"
+      icon="pi pi-times"
+      class="p-button-text p-button-secondary"
+      (click)="displayMappingDialog = false">
+    </button>
+    <button pButton pRipple
+      [disabled]="!isMappingValid()"
+      label="Salva"
+      icon="pi pi-check"
+      class="p-button-success"
+      (click)="saveMapping()">
     </button>
   </ng-template>
 </p-dialog>
